@@ -9,13 +9,15 @@ import analyse.exceptions.NotEnoughArgumentException;
 
 public class SessionController {
 	private Session session;
+	SessionActive active;
 	
-	public SessionController() {
-		
+	public SessionController(SessionActive active) {
+		this.active = active;
 	}
 	
-	public SessionController(Session session) {
+	public SessionController(Session session, SessionActive active) {
 		this.session = session;
+		this.active = active;
 	}
 	
 	public Session getSession() {
@@ -28,6 +30,8 @@ public class SessionController {
 			System.out.println("No command");
 		} else if (s[0].contentEquals("start")) {
 			this.startSession();
+		} else if (s[0].contentEquals("quit")) {
+			this.active.off();
 		} else {
 			String[] args = {};
 			if (s.length > 1) {

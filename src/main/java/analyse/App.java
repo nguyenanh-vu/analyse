@@ -1,5 +1,8 @@
 package analyse;
 
+import java.util.Scanner;
+
+import analyse.session.SessionActive;
 import analyse.session.SessionController;
 
 /**
@@ -8,9 +11,15 @@ import analyse.session.SessionController;
  */
 public class App 
 {
+	public static Scanner input = new Scanner(System.in);
+	
     public static void main( String[] args )
     {
-    	SessionController controller = new SessionController();
-    	controller.decide("run ../test.txt");
+    	SessionActive active = new SessionActive();
+    	active.on();
+    	SessionController controller = new SessionController(active);
+    	while (Boolean.TRUE.equals(active.getActive())) {
+        	controller.decide(input.nextLine());	
+    	}
     }
 }
