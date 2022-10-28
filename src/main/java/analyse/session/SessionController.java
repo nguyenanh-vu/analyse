@@ -41,6 +41,8 @@ public class SessionController extends SessionTools{
 		String[] s = str.split(" ");
 		if (s.length == 0) {
 			System.out.println("No command");
+		} else if (str.startsWith("//")) {
+			
 		} else if (s[0].contentEquals("start")) {
 			this.startSession();
 		} else if (s[0].contentEquals("quit")) {
