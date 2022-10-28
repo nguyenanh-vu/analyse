@@ -85,7 +85,9 @@ public class SessionLoader {
 			for (int i = 0; i < authors.length() ; i++) {
 				JSONObject o = authors.getJSONObject(i);
 				Author author = new Author(o.getString("name"));
-				session.getAuthorList().add(author);
+				if (!session.getAuthorList().contains(author)) {
+					session.getAuthorList().add(author);
+				}
 				JSONArray labels = o.getJSONArray("labels");
 				for (int j = 0; j < labels.length(); j++) {
 					session.labelAuthor(author, labels.getString(j));

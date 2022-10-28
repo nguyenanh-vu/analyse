@@ -68,7 +68,9 @@ public class Author {
 	 * @param label analyse.messageanalysis.Label to attach
 	 */
 	public void addLabel(Label label) {
-		this.labels.add(label);
+		if (!this.labels.contains(label)) {
+			this.labels.add(label);	
+		}
 	}
 	
 	/**
