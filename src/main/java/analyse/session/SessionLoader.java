@@ -16,15 +16,27 @@ import org.json.JSONObject;
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Author;
+import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.utils.MessengerUtils;
+import analyse.utils.WhatsappUtils;
 
 /**
  * Data loader for analyse.session.Session
  */
-public class SessionLoader {
+public class SessionLoader extends SessionTools {
 	private static final DateTimeFormatter formatter = 
 			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+	private SessionEditor editor;
+	
+	/**
+	 * setter
+	 * @param editor SessionEditor
+	 */
+	public void setEditor(SessionEditor editor) {
+		this.editor = editor;
+	}
 	
 	/**
 	 * Command-line controller for data loader
@@ -32,8 +44,8 @@ public class SessionLoader {
 	 * @param session analyse.session.Session
 	 * @throws NotEnoughArgumentException
 	 */
-	public static void load(String[] s, Session session) throws NotEnoughArgumentException {
-		if (session == null) {
+	public void load(String[] s) throws NotEnoughArgumentException {
+		if (this.getSession() == null) {
 			System.out.println("No session started");
 		} else {
 			if (s.length < 3) {
@@ -47,14 +59,14 @@ public class SessionLoader {
 					}
 				}
 				if (s[0].contentEquals("whatsapp")) {
-					session.loadWhatsapp(s[1], labels, s[2]);
+					WhatsappUtils.load(s[1], labels, s[2], this.editor);
 				} else if (s[0].contentEquals("fb")) {
-					session.loadFb(s[1], labels, s[2]);
+					MessengerUtils.load(s[1], labels, s[2], this.editor);
 				} else if (s[0].contentEquals("session")) {
 					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
-						session = new Session();
+						this.getSession().restart();
 					}
-					SessionLoader.loadSession(s[1], session);
+					this.loadSession(s[1]);
 				} else {
 					System.out.println(String
 							.format("Mode \"%s\" unknown, expected whatsapp|fb|session", s[0]));
@@ -68,7 +80,7 @@ public class SessionLoader {
 	 * @param path String path to session save file
 	 * @param session analyse.session.Session
 	 */
-	public static void loadSession(String path, Session session) {
+	public void loadSession(String path) {
 		try {
 			File myObj = new File(path);
 			Scanner myReader = new Scanner(myObj);
@@ -85,25 +97,24 @@ public class SessionLoader {
 			for (int i = 0; i < authors.length() ; i++) {
 				JSONObject o = authors.getJSONObject(i);
 				Author author = new Author(o.getString("name"));
-				if (!session.getAuthorList().contains(author)) {
-					session.getAuthorList().add(author);
-				}
 				JSONArray labels = o.getJSONArray("labels");
 				for (int j = 0; j < labels.length(); j++) {
-					session.labelAuthor(author, labels.getString(j));
+					author.addLabel(new Label(labels.getString(j)));
 				}
+				editor.addAuthor(author);
 			}
 			
 			for (int i = 0; i < messages.length(); i++) {
 				JSONObject o = messages.getJSONObject(i);
 				LocalDateTime date = LocalDateTime.parse(o.getString("date"),formatter);
-				Author author = session.searchAuthor(o.getString("author"));
+				Author author = this.getSession().searchAuthor(o.getString("author"));
 				String conversation = o.getString("conversation");
 				String content = o.getString("content");
 				
-				session.getMessageList().add(new Message(date, author, conversation, content));
+				this.editor.addMessage(new Message(0l, date, author, 
+						content,new Conversation(conversation)));
 			}
-			session.setAdress(path);
+			this.getSession().setAdress(path);
 			System.out.println(String.format("Session data file %s finished parsing", path));
 			myReader.close();
 	    } catch (FileNotFoundException | JSONException | NotFoundException e) {

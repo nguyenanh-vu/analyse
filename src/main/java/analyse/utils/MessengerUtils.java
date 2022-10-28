@@ -14,8 +14,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import analyse.messageanalysis.Author;
+import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.session.SessionEditor;
 
 /**
  * Utils for handling Facebook Messenger backup file
@@ -25,15 +27,13 @@ public class MessengerUtils {
 	/**
 	 * Load data from Facebook Messenger backup file
 	 * @param path String path to backup file
-	 * @param messageList List<analyse.messageanalysis.List> 
-	 * @param authorList List<analyse.messageanalysis.Author>
 	 * @param labels List<analyse.messageanalysis.Label>
+	 * @param editor analyse.session.SessionEditor to use for edition
 	 * @param conversation String
 	 * @return
 	 */
-	public static void load(String path, List<Message> messageList, 
-			List<Author> authorList, List<Label> labels,
-			String conversation) {
+	public static void load(String path,  List<Label> labels,
+			String conversation, SessionEditor editor) {
 		try {
 			File myObj = new File(path);
 			Scanner myReader = new Scanner(myObj);
@@ -49,8 +49,7 @@ public class MessengerUtils {
 				JSONObject o = messages.getJSONObject(i);
 				if ((o.getString("type").contentEquals("Generic")) &&
 						(o.has("content"))) {
-					messageList.add(MessengerUtils
-							.parse((JSONObject)o, authorList, labels, conversation));
+					editor.addMessage(MessengerUtils.parse(o, labels, conversation));
 				}
 			}
 			System.out.println(String.format("Facebook Messenger file %s finished parsing", path));
@@ -64,13 +63,12 @@ public class MessengerUtils {
 	/**
 	 * <JSONObject,analyse.messageanalysis.Message> parser
 	 * @param o JSONObject
-	 * @param authorList List<analyse.messageanalysis.Author>
-	 * @param labels List<analyse.messageanalysis.Label>
+	 * @param labels List<analyse.messageanalysis.Label> to attach
+	 * @param editor analyse.session.SessionEditor to use for edition
 	 * @param conversation String
 	 * @return
 	 */
 	public static Message parse(JSONObject o, 
-			List<Author> authorList, 
 			List<Label> labels,
 			String conversation) {
 		LocalDateTime ts = LocalDateTime.ofInstant(
@@ -85,17 +83,9 @@ public class MessengerUtils {
 			e.printStackTrace();
 		}
 		Author author = new Author(o.getString("sender_name"));
-		int index = authorList.indexOf(author);
-		if (index != -1) {
-			author = authorList.get(index);
-		} else {
-			authorList.add(author);
-		}
 		for (Label label : labels) {
-			if (!author.getLabels().contains(label)) {
-				author.getLabels().add(label);
-			}
+			author.addLabel(label);
 		}
-		return new Message(ts, author, content, conversation);
+		return new Message(0l, ts, author, content, new Conversation(conversation));
 	}
 }

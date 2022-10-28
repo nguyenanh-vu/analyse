@@ -13,15 +13,15 @@ import analyse.utils.JSONUtils;
 /**
  * Util to export session data to JSON
  */
-public class SessionExporter {
+public class SessionExporter extends SessionTools {
 	/**
 	 * Export List<analyse.messageanalysis.Author> to JSON
 	 * @param session analyse.session.Session
 	 * @return JSON data
 	 */
-	public static String exportAuthors(Session session) {
+	public String exportAuthors() {
 		String str = "";
-		for (Author author : session.getAuthorList()) {
+		for (Author author : this.getSession().getAuthorList()) {
 			str += ",\n" + author.toString();
 		}
 		if (!str.isEmpty()) {
@@ -35,8 +35,8 @@ public class SessionExporter {
 	 * @param session analyse.session.Session
 	 * @return JSON data
 	 */
-	public static String exportMessages(Session session) {
-		return SessionExporter.exportMessages(session, false);
+	public String exportMessages() {
+		return this.exportMessages(false);
 	}
 	
 	/**
@@ -45,9 +45,9 @@ public class SessionExporter {
 	 * @param verbose Boolean if true add labels to message
 	 * @return JSON data
 	 */
-	public static String exportMessages(Session session, Boolean verbose) {
+	public String exportMessages(Boolean verbose) {
 		String str = "";
-		for (Message message : session.getMessageList()) {
+		for (Message message : this.getSession().getMessageList()) {
 			str += ",\n" + message.toString(verbose);
 		}
 		if (!str.isEmpty()) {
@@ -61,9 +61,9 @@ public class SessionExporter {
 	 * @param session analyse.session.Session
 	 * @return JSON data
 	 */
-	public static String exportLabels(Session session) {
+	public String exportLabels() {
 		String str = "";
-		for (Label label : session.getLabels()) {
+		for (Label label : this.getSession().getLabels()) {
 			str += ",\"" + label.toString() + "\"";
 		}
 		if (!str.isEmpty()) {
@@ -77,11 +77,11 @@ public class SessionExporter {
 	 * @param session analyse.session.Session
 	 * @return JSON data
 	 */
-	public static String exportSession(Session session) {
+	public String exportSession() {
 		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"messages\":%s\n}", 
-				JSONUtils.indent(SessionExporter.exportAuthors(session)),
-				JSONUtils.indent(SessionExporter.exportLabels(session)),
-				JSONUtils.indent(SessionExporter.exportMessages(session)));
+				JSONUtils.indent(this.exportAuthors()),
+				JSONUtils.indent(this.exportLabels()),
+				JSONUtils.indent(this.exportMessages()));
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class SessionExporter {
 	 * @param session analyse.session.Session
 	 * @throws NotEnoughArgumentException
 	 */
-	public static void export(String[] s, Session session) throws NotEnoughArgumentException {
+	public void export(String[] s) throws NotEnoughArgumentException {
 		if (s.length < 1) {
 			throw new NotEnoughArgumentException(String.join(" ", s), 1, s.length);
 		} else {
@@ -105,18 +105,18 @@ public class SessionExporter {
 			}
 			String str = "";
 			if (s[0].contentEquals("authors")) {
-				str = SessionExporter.exportAuthors(session);
+				str = this.exportAuthors();
 			} else if (s[0].contentEquals("labels")) {
-				str = SessionExporter.exportLabels(session);
+				str = this.exportLabels();
 			} else if (s[0].contentEquals("messages")) {
-				str = SessionExporter.exportMessages(session);
+				str = this.exportMessages();
 			} else if (s[0].contentEquals("vmessages")) {
-				str = SessionExporter.exportMessages(session, true);
+				str = this.exportMessages(true);
 			} else if (s[0].contentEquals("session")) {
 				if (toFile) {
-					session.setAdress(s[1]);
+					this.getSession().setAdress(s[1]);
 				}
-				str = SessionExporter.exportSession(session);
+				str = this.exportSession();
 			} else {
 				System.out.println(String
 						.format("Mode \"%s\" unknown, expected authors|labels|messages|session", s[0]));

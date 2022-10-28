@@ -5,10 +5,9 @@ import java.util.List;
 
 import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Author;
+import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
-import analyse.utils.MessengerUtils;
-import analyse.utils.WhatsappUtils;
 
 /**
  * class representing user session
@@ -17,7 +16,17 @@ public class Session {
 	private List<Author> authorList = new ArrayList<>();
 	private List<Message> messageList = new ArrayList<>();
 	private List<Label> labels = new ArrayList<>();
+	private List<Conversation> conversations = new ArrayList<>();
 	private String adress = "";
+	private Long counter = 0L;
+	
+	public void restart() {
+		this.authorList =  new ArrayList<>();
+		this.messageList = new ArrayList<>();
+		this.labels = new ArrayList<>();
+		this.conversations = new ArrayList<>();
+		this.adress = "";
+	}
 	
 	/**
 	 * getter
@@ -45,10 +54,33 @@ public class Session {
 	
 	/**
 	 * getter
+	 * @return List<analyse.messageanalysis.Conversation> this.conversations
+	 */
+	public List<Conversation> getConversations() {
+		return this.conversations;
+	}
+	
+	/**
+	 * getter
 	 * @return String this.adress
 	 */
 	public String getAdress() {
 		return this.adress;
+	}
+	
+	/**
+	 * getter
+	 * @return Long this.counter
+	 */
+	public Long getCounter() {
+		return this.counter;
+	}
+	
+	/**
+	 * Incrementer for this.counter
+	 */
+	public void incr() {
+		this.counter += 1;
 	}
 	
 	/**
@@ -58,36 +90,6 @@ public class Session {
 	public void setAdress(String adr) {
 		this.adress = adr;
 	}
-	
-	/**
-	 * Load data from Whatsapp backup file
-	 * @param path String path to file
-	 * @param labels List<analyse.messageanalysis.Label> of labels to attach to authors in conversation
-	 * @param conversation String name of conversation
-	 */
-	public void loadWhatsapp(String path, List<Label> labels, String conversation) {
-		WhatsappUtils.load(path, this.messageList, this.authorList, labels, conversation);
-		for (Label l : labels) {
-			if (!this.labels.contains(l)) {
-				this.labels.add(l);
-			}
-		}
-	} 
-	
-	/**
-	 * Load data from Facebook Messenger backup file
-	 * @param path String path to file
-	 * @param labels List<analyse.messageanalysis.Label> of labels to attach to authors in conversation
-	 * @param conversation String name of conversation
-	 */
-	public void loadFb(String path, List<Label> labels, String conversation) {
-		MessengerUtils.load(path, this.messageList, this.authorList, labels, conversation);
-		for (Label l : labels) {
-			if (!this.labels.contains(l)) {
-				this.labels.add(l);
-			}
-		}
-	} 
 	
 	/**
 	 * search for label in this.labels
@@ -101,6 +103,21 @@ public class Session {
 			return this.labels.get(index);
 		} else {
 			throw new NotFoundException(String.format("label %s not found", str));
+		}
+	}
+	
+	/**
+	 * search for conversation in this.conversations
+	 * @param str String name of conversation to find
+	 * @return analyse.messageanalysis.Conversation
+	 * @throws NotFoundException conversation not found
+	 */
+	public Conversation searchConversation(String str) throws NotFoundException {
+		int index = this.conversations.indexOf(new Conversation(str));
+		if (index != -1) {
+			return this.conversations.get(index);
+		} else {
+			throw new NotFoundException(String.format("conversation %s not found", str));
 		}
 	}
 	

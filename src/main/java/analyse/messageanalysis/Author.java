@@ -9,6 +9,7 @@ import java.util.List;
 public class Author {
 	private String name;
 	private List<Label> labels = new ArrayList<>();
+	private List<Conversation> conversations = new ArrayList<>();
 	
 	/**
 	 * Constructor
@@ -32,6 +33,14 @@ public class Author {
 	 */
 	public List<Label> getLabels() {
 		return this.labels;
+	}
+	
+	/**
+	 * getter
+	 * @return List<analyse.messageanalysis.Conversation> this.conversations
+	 */
+	public List<Conversation> getConversations() {
+		return this.conversations;
 	}
 	
 	@Override
@@ -72,14 +81,47 @@ public class Author {
 		this.labels.remove(label);
 	}
 	
+	/**
+	 * Attach conversations to author
+	 * @param conversations analyse.messageanalysis.Conversation to attach
+	 */
+	public void addConversation(Conversation conversation) {
+		if (!this.conversations.contains(conversation)) {
+			this.conversations.add(conversation);	
+		}
+	}
+	
+	/**
+	 * Remove all conversations
+	 */
+	public void clearConversation() {
+		this.conversations = new ArrayList<>();
+	}
+	
+	/**
+	 * Remove single conversation
+	 * @param conversation analyse.messageanalysis.Conversation to remove
+	 */
+	public void removeConversation(Conversation conversation) {
+		this.conversations.remove(conversation);
+	}
+	
 	public String toString() {
-		String str = "";
+		String lab = "";
+		String conv = "";
 		for (Label label : this.labels) {
-			str += ",\"" + label.getName() + "\"";
+			lab += ",\"" + label.getName() + "\"";
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(1);
+		if (!lab.isEmpty()) {
+			lab = lab.substring(1);
 		}
-		return String.format("{\"name\":\"%s\",\"labels\":[%s]}", this.name, str);
+		for (Conversation conversation: this.conversations) {
+			conv += ",\"" + conversation.getName() + "\"";
+		}
+		if (!conv.isEmpty()) {
+			conv = conv.substring(1);
+		}
+		return String.format("{\"name\":\"%s\",\"labels\":[%s], \"conversations\":[%s]}", 
+				this.name, lab, conv);
 	}
 }

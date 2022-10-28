@@ -1,17 +1,14 @@
 package analyse.messageanalysis;
 
-/**
- * class representing data label
- */
-public class Label extends DTO{
-	public Label(String name) {
+public class Conversation extends DTO {
+	public Conversation(String name) {
 		this.setName(name);
 	}
 	
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof Label) {
-			Label label = (Label) other;
+		if (other instanceof Conversation) {
+			Conversation label = (Conversation) other;
 			return this.getName().contentEquals(label.getName());
 		} else if (other instanceof String) {
 			String str = (String) other;

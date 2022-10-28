@@ -9,8 +9,10 @@ import java.util.Scanner;
 
 import analyse.exceptions.NotEnoughArgumentException;
 
-public class SessionController {
-	private Session session;
+public class SessionController extends SessionTools{
+	private SessionExporter exporter = new SessionExporter();
+	private SessionLoader loader = new SessionLoader();
+	private SessionEditor editor = new SessionEditor();
 	SessionActive active;
 	
 	/**
@@ -27,16 +29,8 @@ public class SessionController {
 	 * @param active analyse.session.SessionActive
 	 */
 	public SessionController(Session session, SessionActive active) {
-		this.session = session;
+		this.setSession(session);
 		this.active = active;
-	}
-	
-	/**
-	 * getter
-	 * @return analyse.session.Session this.session
-	 */
-	public Session getSession() {
-		return this.session;
 	}
 	
 	/**
@@ -61,9 +55,9 @@ public class SessionController {
 			
 			try {
 				if (s[0].contentEquals("load")) {
-					SessionLoader.load(args, this.session);
+					this.loader.load(args);
 				} else if (s[0].contentEquals("export")) {
-					SessionExporter.export(args, this.session);
+					this.exporter.export(args);
 				} else if (s[0].contentEquals("merge")) {
 					this.merge(args);
 				} else if (s[0].contentEquals("label")) {
@@ -83,7 +77,18 @@ public class SessionController {
 	 * Start new session in controller
 	 */
 	private void startSession() {
-		this.session = new Session();
+		if (this.getSession() == null) {
+			this.setSession(new Session());
+			this.exporter.setSession(this.getSession());
+			this.editor.setSession(this.getSession());
+			this.loader.setSession(this.getSession());
+			this.loader.setEditor(this.editor);
+			System.out.println("New session successfully started");
+		} else {
+			this.getSession().restart();
+			System.out.println("Session successfully restarted");
+		}
+		
 	}
 	
 	/**
@@ -104,7 +109,7 @@ public class SessionController {
 		if (s.length < 2) {
 			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
 		} else {
-			this.session.mergeAuthor(this.replaceSpace(s[0]), this.replaceSpace(s[1]));
+			this.getSession().mergeAuthor(this.replaceSpace(s[0]), this.replaceSpace(s[1]));
 		}
 	}
 	
@@ -117,7 +122,7 @@ public class SessionController {
 		if (s.length < 2) {
 			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
 		} else {
-			this.session.labelAuthor(this.replaceSpace(s[0]), s[1]);
+			this.getSession().labelAuthor(this.replaceSpace(s[0]), s[1]);
 		}
 	}
 	
@@ -132,12 +137,14 @@ public class SessionController {
 			throw new NotEnoughArgumentException(String.join(" ", s), 1, s.length);
 		} else {
 			try {
+				System.out.println(String.format("Running script %s", s[0]));
 				File myObj = new File(s[0]);
 				Scanner myReader = new Scanner(myObj);
 				while (myReader.hasNextLine()) {
 					this.decide(myReader.nextLine());
 				}
 				myReader.close();
+				System.out.println(String.format("Finished running script %s", s[0]));
 			} catch (FileNotFoundException e) {
 		    	System.out.println("An error occurred.");
 		    	System.out.println(e.getMessage());
@@ -150,12 +157,12 @@ public class SessionController {
 	 * Save to file as defined by session.address
 	 */
 	private void save() {
-		String adr = this.session.getAdress();
+		String adr = this.getSession().getAdress();
 		if (adr.isEmpty()) {
 			System.out.println("No save file address. Use \"export session [file path]\" instead");
 		} else {
 			try (FileWriter fw = new FileWriter(adr)){
-				fw.write(SessionExporter.exportSession(session));
+				fw.write(this.exporter.exportSession());
 				System.out.println(String.format("%s data written to %s", "session", adr));
 			} catch (IOException e) {
 				System.out.println(e.getMessage());

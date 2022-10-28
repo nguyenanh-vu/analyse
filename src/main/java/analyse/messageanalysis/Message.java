@@ -6,27 +6,38 @@ import java.time.format.DateTimeFormatter;
  * class representing messages
  */
 public class Message {
+	private Long id;
 	private LocalDateTime timestamp;
 	private Author author;
 	private String content;
-	private String conversation;
+	private Conversation conversation;
 	private static final DateTimeFormatter formatter = 
 			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 	
 	/**
 	 * all args constructor
+	 * @param id Long
 	 * @param timestamp LocalDateTime
 	 * @param author analyse.messageanalysis.Author
 	 * @param content String
 	 * @param conversation String
 	 */
-	public Message(LocalDateTime timestamp, 
+	public Message(Long id, LocalDateTime timestamp, 
 			Author author, String content,
-			String conversation) {
+			Conversation conversation) {
+		this.id = id;
 		this.timestamp = timestamp;
 		this.author = author;
 		this.content = content;
 		this.conversation = conversation;
+	}
+	
+	/**
+	 * getter
+	 * @return Long this.id
+	 */
+	public Long getId() {
+		return this.id;
 	}
 	
 	/**
@@ -63,9 +74,9 @@ public class Message {
 	
 	/**
 	 * getter
-	 * @return String this.converation
+	 * @return Conversation this.converation
 	 */
-	public String getConversation() {
+	public Conversation getConversation() {
 		return this.conversation;
 	}
 	
@@ -83,14 +94,16 @@ public class Message {
 			if (!str.isEmpty()) {
 				str = str.substring(1);
 			}
-			return String.format("{\"date\":\"%s\",\"author\":\"%s\",\"conversation\":\"%s\",\"labels\":[%s],\n	\"content\":\"%s\"}", 
+			return String.format("{\"id\":%s,\"date\":\"%s\",\"author\":\"%s\",\"conversation\":\"%s\",\"labels\":[%s],\n	\"content\":\"%s\"}", 
+					this.id.toString(),
 					this.timestamp.format(formatter), 
 					this.author.getName(), 
 					this.conversation,
 					str,
 					content.replace("\n", "\\n").replace("\"", "\\\""));
 		} else {
-			return String.format("{\"date\":\"%s\",\"author\":\"%s\",\"conversation\":\"%s\",\n	\"content\":\"%s\"}", 
+			return String.format("{\"id\":%s,\"date\":\"%s\",\"author\":\"%s\",\"conversation\":\"%s\",\n	\"content\":\"%s\"}", 
+					this.id.toString(),
 					this.timestamp.format(formatter), 
 					this.author.getName(), 
 					this.conversation,
