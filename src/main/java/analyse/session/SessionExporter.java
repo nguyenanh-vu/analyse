@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.messageanalysis.Author;
+import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
 import analyse.utils.JSONUtils;
@@ -73,14 +74,31 @@ public class SessionExporter extends SessionTools {
 	}
 	
 	/**
+	 * Export List<analyse.messageanalysis.Conversation> to JSON
+	 * @param session analyse.session.Session
+	 * @return JSON data
+	 */
+	public String exportConversations() {
+		String str = "";
+		for (Conversation conv : this.getSession().getConversations()) {
+			str += ",\"" + conv.toString() + "\"";
+		}
+		if (!str.isEmpty()) {
+			str = str.substring(1);
+		}
+		return "[" + str + "]";
+	}
+	
+	/**
 	 * Export whole session data
 	 * @param session analyse.session.Session
 	 * @return JSON data
 	 */
 	public String exportSession() {
-		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"messages\":%s\n}", 
+		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"conversations\":%s,\n	\"messages\":%s\n}", 
 				JSONUtils.indent(this.exportAuthors()),
 				JSONUtils.indent(this.exportLabels()),
+				JSONUtils.indent(this.exportConversations()),
 				JSONUtils.indent(this.exportMessages()));
 	}
 	

@@ -78,8 +78,10 @@ public class WhatsappUtils{
 				author.getLabels().add(label);
 			}
 		}
+		Conversation conv = new Conversation(conversation); 
+		author.addConversation(conv);
 		return new Message(0l, LocalDateTime.parse(s1[0], formatter), 
-				author, s2[1],new Conversation(conversation));
+				author, s2[1],conv);
 	}
 	
 }

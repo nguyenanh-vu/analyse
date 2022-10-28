@@ -98,8 +98,12 @@ public class SessionLoader extends SessionTools {
 				JSONObject o = authors.getJSONObject(i);
 				Author author = new Author(o.getString("name"));
 				JSONArray labels = o.getJSONArray("labels");
+				JSONArray conversations = o.getJSONArray("conversations");
 				for (int j = 0; j < labels.length(); j++) {
 					author.addLabel(new Label(labels.getString(j)));
+				}
+				for (int j = 0; j <  conversations.length(); j++) {
+					author.addConversation(new Conversation(conversations.getString(j)));
 				}
 				editor.addAuthor(author);
 			}
@@ -108,11 +112,11 @@ public class SessionLoader extends SessionTools {
 				JSONObject o = messages.getJSONObject(i);
 				LocalDateTime date = LocalDateTime.parse(o.getString("date"),formatter);
 				Author author = this.getSession().searchAuthor(o.getString("author"));
-				String conversation = o.getString("conversation");
+				Conversation conv = new Conversation(o.getString("conversation"));
+				author.addConversation(conv);
 				String content = o.getString("content");
 				
-				this.editor.addMessage(new Message(0l, date, author, 
-						content,new Conversation(conversation)));
+				this.editor.addMessage(new Message(0l, date, author, content,conv));
 			}
 			this.getSession().setAdress(path);
 			System.out.println(String.format("Session data file %s finished parsing", path));

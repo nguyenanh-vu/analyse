@@ -86,6 +86,8 @@ public class MessengerUtils {
 		for (Label label : labels) {
 			author.addLabel(label);
 		}
-		return new Message(0l, ts, author, content, new Conversation(conversation));
+		Conversation conv = new Conversation(conversation);
+		author.addConversation(conv);
+		return new Message(0l, ts, author, content, conv);
 	}
 }
