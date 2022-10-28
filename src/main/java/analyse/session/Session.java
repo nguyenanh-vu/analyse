@@ -45,35 +45,37 @@ public class Session {
 		}
 	} 
 	
-	public void addLabel(String str) {
-		this.labels.add(new Label(str));
-	}
-	
-	public Label searchLabel(String str) throws NotFoundException {
+	private Label searchLabel(String str) throws NotFoundException {
 		int index = this.labels.indexOf(new Label(str));
 		if (index != -1) {
 			return this.labels.get(index);
 		} else {
-			throw new NotFoundException("label not found");
+			throw new NotFoundException(String.format("label %s not found", str));
 		}
 	}
 	
-	public Author searchAuthor(String str) throws NotFoundException {
+	private Author searchAuthor(String str) throws NotFoundException {
 		int index = this.authorList.indexOf(new Author(str));
 		if (index != -1) {
 			return this.authorList.get(index);
 		} else {
-			throw new NotFoundException("author not found");
+			throw new NotFoundException(String.format("author %s not found", str));
 		}
 	}
 	
 	public void labelAuthor(String author, String label) {
 		try {
 			Author a = this.searchAuthor(author);
-			Label l = this.searchLabel(label);
+			Label l;
+			try {
+				l = this.searchLabel(label);
+			} catch (NotFoundException e) {
+				l = new Label(label);
+				this.labels.add(l);
+			}
 			a.addLabel(l);
 		} catch (NotFoundException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -83,7 +85,7 @@ public class Session {
 			Label l = this.searchLabel(label);
 			a.removeLabel(l);
 		} catch (NotFoundException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -103,7 +105,7 @@ public class Session {
 			}
 			this.authorList.remove(a2);
 		} catch (NotFoundException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 	}
 }

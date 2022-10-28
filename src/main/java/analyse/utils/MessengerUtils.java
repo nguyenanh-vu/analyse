@@ -29,7 +29,7 @@ public class MessengerUtils {
 				String data = myReader.nextLine();
 				str += data;
 			}
-			System.out.print(String.format("Facebook Messenger file %s finished loading\n", path));
+			System.out.println(String.format("Facebook Messenger file %s finished loading", path));
 			JSONObject jo = new JSONObject(str);
 			JSONArray messages = jo.getJSONArray("messages");
 			for (int i = 0; i < messages.length(); i++) {
@@ -40,7 +40,7 @@ public class MessengerUtils {
 							.parse((JSONObject)o, authorList, labels, conversation));
 				}
 			}
-			System.out.print(String.format("Facebook Messenger file %s finished parsing\n", path));
+			System.out.println(String.format("Facebook Messenger file %s finished parsing", path));
 			myReader.close();
 	    } catch (FileNotFoundException e) {
 	    	System.out.println("An error occurred.");

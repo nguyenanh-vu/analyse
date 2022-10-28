@@ -36,7 +36,7 @@ public class WhatsappUtils{
 					message.extend("\n" + data);
 				}
 			}
-			System.out.print(String.format("Whatsapp file %s finished loading and parsing\n", path));
+			System.out.println(String.format("Whatsapp file %s finished loading and parsing", path));
 			myReader.close();
 	    } catch (FileNotFoundException e) {
 	    	System.out.println("An error occurred.");
