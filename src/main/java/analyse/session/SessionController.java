@@ -59,9 +59,11 @@ public class SessionController extends SessionTools{
 				} else if (s[0].contentEquals("export")) {
 					this.exporter.export(args);
 				} else if (s[0].contentEquals("merge")) {
-					this.merge(args);
+					this.editor.merge(args);
+				} else if (s[0].contentEquals("rename")) {
+					this.editor.rename(args);
 				} else if (s[0].contentEquals("label")) {
-					this.label(args);
+					this.editor.label(args);
 				} else if (s[0].contentEquals("run")) {
 					this.run(args);
 				} else {
@@ -89,41 +91,6 @@ public class SessionController extends SessionTools{
 			System.out.println("Session successfully restarted");
 		}
 		
-	}
-	
-	/**
-	 * pre-treatment for text
-	 * @param str String to treat
-	 * @return String str with "__" replaced with " "
-	 */
-	private String replaceSpace(String str) {
-		return str.replace("__", " ");
-	}
-	
-	/**
-	 * Merge two authors with command line
-	 * @param s String[] arguments
-	 * @throws NotEnoughArgumentException
-	 */
-	private void merge(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 2) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
-		} else {
-			this.getSession().mergeAuthor(this.replaceSpace(s[0]), this.replaceSpace(s[1]));
-		}
-	}
-	
-	/**
-	 * Attach label with command line
-	 * @param s String[] arguments
-	 * @throws NotEnoughArgumentException
-	 */
-	private void label(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 2) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
-		} else {
-			this.getSession().labelAuthor(this.replaceSpace(s[0]), s[1]);
-		}
 	}
 	
 	/**

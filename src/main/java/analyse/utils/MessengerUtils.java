@@ -82,7 +82,7 @@ public class MessengerUtils {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		Author author = new Author(o.getString("sender_name"));
+		Author author = new Author(o.getString("sender_name").replace(" ", "_"));
 		for (Label label : labels) {
 			author.addLabel(label);
 		}

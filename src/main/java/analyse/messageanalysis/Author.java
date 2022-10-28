@@ -6,8 +6,7 @@ import java.util.List;
 /**
  * Class representing message author
  */
-public class Author {
-	private String name;
+public class Author extends DTO{
 	private List<Label> labels = new ArrayList<>();
 	private List<Conversation> conversations = new ArrayList<>();
 	
@@ -16,15 +15,7 @@ public class Author {
 	 * @param name String author's name
 	 */
 	public Author(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * getter
-	 * @return String this.name
-	 */
-	public String getName() {
-		return this.name;
+		this.setName(name);
 	}
 	
 	/**
@@ -47,10 +38,10 @@ public class Author {
 	public boolean equals(Object other) {
 		if (other instanceof Author) {
 			Author author = (Author) other;
-			return this.name.contentEquals(author.getName());
+			return this.getName().contentEquals(author.getName());
 		} else if (other instanceof String) {
 			String name = (String) other;
-			return this.name.contentEquals(name);
+			return this.getName().contentEquals(name);
 		} else {
 			return false;
 		}
@@ -64,13 +55,6 @@ public class Author {
 		if (!this.labels.contains(label)) {
 			this.labels.add(label);	
 		}
-	}
-	
-	/**
-	 * Remove all labels
-	 */
-	public void clearLabel() {
-		this.labels = new ArrayList<>();
 	}
 	
 	/**
@@ -92,13 +76,6 @@ public class Author {
 	}
 	
 	/**
-	 * Remove all conversations
-	 */
-	public void clearConversation() {
-		this.conversations = new ArrayList<>();
-	}
-	
-	/**
 	 * Remove single conversation
 	 * @param conversation analyse.messageanalysis.Conversation to remove
 	 */
@@ -106,6 +83,7 @@ public class Author {
 		this.conversations.remove(conversation);
 	}
 	
+	@Override
 	public String toString() {
 		String lab = "";
 		String conv = "";
@@ -122,6 +100,6 @@ public class Author {
 			conv = conv.substring(1);
 		}
 		return String.format("{\"name\":\"%s\",\"labels\":[%s], \"conversations\":[%s]}", 
-				this.name, lab, conv);
+				this.getName(), lab, conv);
 	}
 }

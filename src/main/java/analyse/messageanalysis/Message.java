@@ -49,14 +49,6 @@ public class Message {
 	}
 	
 	/**
-	 * setter
-	 * @param author analyse.messageanalysis.Author
-	 */
-	public void setAuthor(Author author) {
-		this.author = author;
-	}
-	
-	/**
 	 * getter
 	 * @return LocalDateTime this.timestamp
 	 */
@@ -78,6 +70,22 @@ public class Message {
 	 */
 	public Conversation getConversation() {
 		return this.conversation;
+	}
+	
+	/**
+	 * setter
+	 * @param author analyse.messageanalysis.Author
+	 */
+	public void setAuthor(Author author) {
+		this.author = author;
+	}
+	
+	/**
+	 * setter
+	 * @param author analyse.messageanalysis.Conversation
+	 */
+	public void setConversation(Conversation conv) {
+		this.conversation = conv;
 	}
 	
 	public String toString() {
