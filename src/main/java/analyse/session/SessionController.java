@@ -2,6 +2,8 @@ package analyse.session;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -49,6 +51,8 @@ public class SessionController {
 			this.startSession();
 		} else if (s[0].contentEquals("quit")) {
 			this.active.off();
+		} else if (s[0].contentEquals("save")) {
+			this.save();
 		} else {
 			String[] args = {};
 			if (s.length > 1) {
@@ -139,6 +143,23 @@ public class SessionController {
 		    	System.out.println(e.getMessage());
 		    }
 			
+		}
+	}
+	
+	/**
+	 * Save to file as defined by session.address
+	 */
+	private void save() {
+		String adr = this.session.getAdress();
+		if (adr.isEmpty()) {
+			System.out.println("No save file address. Use \"export session [file path]\" instead");
+		} else {
+			try (FileWriter fw = new FileWriter(adr)){
+				fw.write(SessionExporter.exportSession(session));
+				System.out.println(String.format("%s data written to %s", "session", adr));
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			}
 		}
 	}
 }

@@ -21,30 +21,14 @@ public class Label {
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof Label) {
-			return this.equals((Label) other);
+			Label label = (Label) other;
+			return this.name.contentEquals(label.getName());
 		} else if (other instanceof String) {
-			return this.equals((String) other);
-		} {
+			String str = (String) other;
+			return this.name.contentEquals(str);
+		} else {
 			return false;
 		}
-	}
-	
-	/**
-	 * comparator
-	 * @param str String 
-	 * @return
-	 */
-	public boolean equals(String str) {
-		return this.name.contentEquals(str);
-	}
-	
-	/**
-	 * comparator
-	 * @param label analyse.messageanalysis.Label
-	 * @return
-	 */
-	public boolean equals(Label label) {
-		return this.name.contentEquals(label.getName());
 	}
 	
 	public String toString() {

@@ -24,7 +24,7 @@ import analyse.messageanalysis.Message;
  */
 public class SessionLoader {
 	private static final DateTimeFormatter formatter = 
-			DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm");
+			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 	
 	/**
 	 * Command-line controller for data loader
@@ -103,7 +103,7 @@ public class SessionLoader {
 				
 				session.getMessageList().add(new Message(date, author, conversation, content));
 			}
-			
+			session.setAdress(path);
 			System.out.println(String.format("Session data file %s finished parsing", path));
 			myReader.close();
 	    } catch (FileNotFoundException | JSONException | NotFoundException e) {

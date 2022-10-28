@@ -36,9 +36,19 @@ public class SessionExporter {
 	 * @return JSON data
 	 */
 	public static String exportMessages(Session session) {
+		return SessionExporter.exportMessages(session, false);
+	}
+	
+	/**
+	 * Export List<analyse.messageanalysis.Message> to JSON
+	 * @param session analyse.session.Session
+	 * @param verbose Boolean if true add labels to message
+	 * @return JSON data
+	 */
+	public static String exportMessages(Session session, Boolean verbose) {
 		String str = "";
 		for (Message message : session.getMessageList()) {
-			str += ",\n" + message.toString();
+			str += ",\n" + message.toString(verbose);
 		}
 		if (!str.isEmpty()) {
 			str = str.substring(2);
@@ -76,6 +86,7 @@ public class SessionExporter {
 	
 	/**
 	 * Command-line controller for data exporter
+	 * set save file address if export session to file
 	 * @param s String[] arguments
 	 * @param session analyse.session.Session
 	 * @throws NotEnoughArgumentException
@@ -99,7 +110,12 @@ public class SessionExporter {
 				str = SessionExporter.exportLabels(session);
 			} else if (s[0].contentEquals("messages")) {
 				str = SessionExporter.exportMessages(session);
+			} else if (s[0].contentEquals("vmessages")) {
+				str = SessionExporter.exportMessages(session, true);
 			} else if (s[0].contentEquals("session")) {
+				if (toFile) {
+					session.setAdress(s[1]);
+				}
 				str = SessionExporter.exportSession(session);
 			} else {
 				System.out.println(String

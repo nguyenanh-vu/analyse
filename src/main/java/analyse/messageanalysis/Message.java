@@ -11,7 +11,7 @@ public class Message {
 	private String content;
 	private String conversation;
 	private static final DateTimeFormatter formatter = 
-			DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm");
+			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 	
 	/**
 	 * all args constructor
@@ -69,14 +69,33 @@ public class Message {
 		return this.conversation;
 	}
 	
-	
 	public String toString() {
+		return toString(false);
+	}
+	
+	public String toString(Boolean verbose) {
 		String content = this.content;
-		return String.format("{\n	\"date\":\"%s\",\n	\"author\":\"%s\",\n	\"conversation\":\"%s\",\n	\"content\":\"%s\"\n}", 
-				this.timestamp.format(formatter), 
-				this.author.getName(), 
-				this.conversation,
-				content.replace("\n", "\\n").replace("\"", "\\\""));
+		if (Boolean.TRUE.equals(verbose)) {
+			String str = "";
+			for (Label label : this.author.getLabels()) {
+				str += ",\"" + label.getName() + "\"";
+			}
+			if (!str.isEmpty()) {
+				str = str.substring(1);
+			}
+			return String.format("{\"date\":\"%s\",\"author\":\"%s\",\"conversation\":\"%s\",\"labels\":[%s],\n	\"content\":\"%s\"}", 
+					this.timestamp.format(formatter), 
+					this.author.getName(), 
+					this.conversation,
+					str,
+					content.replace("\n", "\\n").replace("\"", "\\\""));
+		} else {
+			return String.format("{\"date\":\"%s\",\"author\":\"%s\",\"conversation\":\"%s\",\n	\"content\":\"%s\"}", 
+					this.timestamp.format(formatter), 
+					this.author.getName(), 
+					this.conversation,
+					content.replace("\n", "\\n").replace("\"", "\\\""));
+		}
 	}
 	
 	/**

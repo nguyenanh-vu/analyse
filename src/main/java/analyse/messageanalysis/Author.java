@@ -37,30 +37,14 @@ public class Author {
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof Author) {
-			return this.equals((Author) other);
+			Author author = (Author) other;
+			return this.name.contentEquals(author.getName());
 		} else if (other instanceof String) {
-			return this.equals((String) other);
+			String name = (String) other;
+			return this.name.contentEquals(name);
 		} else {
 			return false;
 		}
-	}
-	
-	/**
-	 * comparator
-	 * @param name String
-	 * @return
-	 */
-	public boolean equals(String name) {
-		return this.name.contentEquals(name);
-	}
-	
-	/**
-	 * comparator
-	 * @param author analyse.messageanalysis.Author
-	 * @return
-	 */
-	public boolean equals(Author author) {
-		return this.name.contentEquals(author.getName());
 	}
 	
 	/**
@@ -96,6 +80,6 @@ public class Author {
 		if (!str.isEmpty()) {
 			str = str.substring(1);
 		}
-		return String.format("{\n	\"name\":\"%s\",\n	\"labels\":[%s] \n}", this.name, str);
+		return String.format("{\"name\":\"%s\",\"labels\":[%s]}", this.name, str);
 	}
 }

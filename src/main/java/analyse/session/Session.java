@@ -17,6 +17,7 @@ public class Session {
 	private List<Author> authorList = new ArrayList<>();
 	private List<Message> messageList = new ArrayList<>();
 	private List<Label> labels = new ArrayList<>();
+	private String adress = "";
 	
 	/**
 	 * getter
@@ -40,6 +41,22 @@ public class Session {
 	 */
 	public List<Label> getLabels() {
 		return this.labels;
+	}
+	
+	/**
+	 * getter
+	 * @return String this.adress
+	 */
+	public String getAdress() {
+		return this.adress;
+	}
+	
+	/**
+	 * setter
+	 * @param adr String save file address
+	 */
+	public void setAdress(String adr) {
+		this.adress = adr;
 	}
 	
 	/**
