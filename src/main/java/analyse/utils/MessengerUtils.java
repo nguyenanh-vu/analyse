@@ -17,8 +17,21 @@ import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
 
+/**
+ * Utils for handling Facebook Messenger backup file
+ */
 public class MessengerUtils {
-	public static List<Message> load(String path, List<Message> messageList, 
+	
+	/**
+	 * Load data from Facebook Messenger backup file
+	 * @param path String path to backup file
+	 * @param messageList List<analyse.messageanalysis.List> 
+	 * @param authorList List<analyse.messageanalysis.Author>
+	 * @param labels List<analyse.messageanalysis.Label>
+	 * @param conversation String
+	 * @return
+	 */
+	public static void load(String path, List<Message> messageList, 
 			List<Author> authorList, List<Label> labels,
 			String conversation) {
 		try {
@@ -44,11 +57,18 @@ public class MessengerUtils {
 			myReader.close();
 	    } catch (FileNotFoundException e) {
 	    	System.out.println("An error occurred.");
-	    	e.printStackTrace();
+	    	System.out.println(e.getMessage());
 	    }
-		return null;
 	}
 	
+	/**
+	 * <JSONObject,analyse.messageanalysis.Message> parser
+	 * @param o JSONObject
+	 * @param authorList List<analyse.messageanalysis.Author>
+	 * @param labels List<analyse.messageanalysis.Label>
+	 * @param conversation String
+	 * @return
+	 */
 	public static Message parse(JSONObject o, 
 			List<Author> authorList, 
 			List<Label> labels,

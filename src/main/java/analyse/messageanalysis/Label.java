@@ -1,5 +1,8 @@
 package analyse.messageanalysis;
 
+/**
+ * class representing data label
+ */
 public class Label {
 	private String name;
 	
@@ -7,6 +10,10 @@ public class Label {
 		this.name = name;
 	}
 	
+	/**
+	 * getter
+	 * @return String this.name
+	 */
 	public String getName() {
 		return this.name;
 	}
@@ -22,10 +29,20 @@ public class Label {
 		}
 	}
 	
+	/**
+	 * comparator
+	 * @param str String 
+	 * @return
+	 */
 	public boolean equals(String str) {
 		return this.name.contentEquals(str);
 	}
 	
+	/**
+	 * comparator
+	 * @param label analyse.messageanalysis.Label
+	 * @return
+	 */
 	public boolean equals(Label label) {
 		return this.name.contentEquals(label.getName());
 	}

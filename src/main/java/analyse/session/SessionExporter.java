@@ -10,7 +10,15 @@ import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
 import analyse.utils.JSONUtils;
 
+/**
+ * Util to export session data to JSON
+ */
 public class SessionExporter {
+	/**
+	 * Export List<analyse.messageanalysis.Author> to JSON
+	 * @param session analyse.session.Session
+	 * @return JSON data
+	 */
 	public static String exportAuthors(Session session) {
 		String str = "";
 		for (Author author : session.getAuthorList()) {
@@ -22,6 +30,11 @@ public class SessionExporter {
 		return "[\n" + JSONUtils.indent(str) + "\n]";
 	}
 	
+	/**
+	 * Export List<analyse.messageanalysis.Message> to JSON
+	 * @param session analyse.session.Session
+	 * @return JSON data
+	 */
 	public static String exportMessages(Session session) {
 		String str = "";
 		for (Message message : session.getMessageList()) {
@@ -33,6 +46,11 @@ public class SessionExporter {
 		return "[\n" + JSONUtils.indent(str) + "\n]";
 	}
 	
+	/**
+	 * Export List<analyse.messageanalysis.Label> to JSON
+	 * @param session analyse.session.Session
+	 * @return JSON data
+	 */
 	public static String exportLabels(Session session) {
 		String str = "";
 		for (Label label : session.getLabels()) {
@@ -44,6 +62,11 @@ public class SessionExporter {
 		return "[" + str + "]";
 	}
 	
+	/**
+	 * Export whole session data
+	 * @param session analyse.session.Session
+	 * @return JSON data
+	 */
 	public static String exportSession(Session session) {
 		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"messages\":%s\n}", 
 				JSONUtils.indent(SessionExporter.exportAuthors(session)),
@@ -51,6 +74,12 @@ public class SessionExporter {
 				JSONUtils.indent(SessionExporter.exportMessages(session)));
 	}
 	
+	/**
+	 * Command-line controller for data exporter
+	 * @param s String[] arguments
+	 * @param session analyse.session.Session
+	 * @throws NotEnoughArgumentException
+	 */
 	public static void export(String[] s, Session session) throws NotEnoughArgumentException {
 		if (s.length < 1) {
 			throw new NotEnoughArgumentException(String.join(" ", s), 1, s.length);
@@ -80,8 +109,9 @@ public class SessionExporter {
 			if (toFile) {
 				try (FileWriter fw = new FileWriter(file)){
 					fw.write(str);
+					System.out.println(String.format("%s data written to %s", s[0], s[1]));
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.out.println(e.getMessage());
 				}
 			} else {
 				System.out.println(str);

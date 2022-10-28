@@ -11,19 +11,36 @@ public class SessionController {
 	private Session session;
 	SessionActive active;
 	
+	/**
+	 * constructor
+	 * @param active analyse.session.SessionActive
+	 */
 	public SessionController(SessionActive active) {
 		this.active = active;
 	}
 	
+	/**
+	 * all args constructor
+	 * @param session analyse.session.Session
+	 * @param active analyse.session.SessionActive
+	 */
 	public SessionController(Session session, SessionActive active) {
 		this.session = session;
 		this.active = active;
 	}
 	
+	/**
+	 * getter
+	 * @return analyse.session.Session this.session
+	 */
 	public Session getSession() {
 		return this.session;
 	}
 	
+	/**
+	 * Command-line reader
+	 * @param str command line input to read
+	 */
 	public void decide(String str) {
 		String[] s = str.split(" ");
 		if (s.length == 0) {
@@ -53,19 +70,32 @@ public class SessionController {
 					System.out.println(String.format("Command \"%s\" unknown", s[0]));
 				}
 			} catch (NotEnoughArgumentException e) {
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 		} 
 	}
 	
+	/**
+	 * Start new session in controller
+	 */
 	private void startSession() {
 		this.session = new Session();
 	}
 	
+	/**
+	 * pre-treatment for text
+	 * @param str String to treat
+	 * @return String str with "__" replaced with " "
+	 */
 	private String replaceSpace(String str) {
 		return str.replace("__", " ");
 	}
 	
+	/**
+	 * Merge two authors with command line
+	 * @param s String[] arguments
+	 * @throws NotEnoughArgumentException
+	 */
 	private void merge(String[] s) throws NotEnoughArgumentException {
 		if (s.length < 2) {
 			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
@@ -74,6 +104,11 @@ public class SessionController {
 		}
 	}
 	
+	/**
+	 * Attach label with command line
+	 * @param s String[] arguments
+	 * @throws NotEnoughArgumentException
+	 */
 	private void label(String[] s) throws NotEnoughArgumentException {
 		if (s.length < 2) {
 			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
@@ -82,6 +117,11 @@ public class SessionController {
 		}
 	}
 	
+	/**
+	 * Run script
+	 * @param s String[] arguments
+	 * @throws NotEnoughArgumentException
+	 */
 	private void run(String[] s) throws NotEnoughArgumentException {
 		if (s.length < 1) {
 			System.out.println(Arrays.asList(s));
@@ -96,7 +136,7 @@ public class SessionController {
 				myReader.close();
 			} catch (FileNotFoundException e) {
 		    	System.out.println("An error occurred.");
-		    	e.printStackTrace();
+		    	System.out.println(e.getMessage());
 		    }
 			
 		}
