@@ -18,6 +18,8 @@ public class App
     	SessionActive active = new SessionActive();
     	active.on();
     	SessionController controller = new SessionController(active);
+    	controller.reset();
+    	controller.run(args);
     	while (Boolean.TRUE.equals(active.getActive())) {
         	controller.decide(input.nextLine());	
     	}

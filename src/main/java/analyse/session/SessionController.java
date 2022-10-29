@@ -41,10 +41,10 @@ public class SessionController extends SessionTools{
 		String[] s = str.split(" ");
 		if (s.length == 0) {
 			System.out.println("No command");
-		} else if (str.startsWith("//")) {
+		} else if (str.trim().startsWith("//")) {
 			
-		} else if (s[0].contentEquals("start")) {
-			this.startSession();
+		} else if (s[0].contentEquals("reset")) {
+			this.reset();
 		} else if (s[0].contentEquals("quit")) {
 			this.active.off();
 		} else if (s[0].contentEquals("save")) {
@@ -84,7 +84,7 @@ public class SessionController extends SessionTools{
 	/**
 	 * Start new session in controller
 	 */
-	private void startSession() {
+	public void reset() {
 		if (this.getSession() == null) {
 			this.setSession(new Session());
 			this.exporter.setSession(this.getSession());
@@ -102,28 +102,31 @@ public class SessionController extends SessionTools{
 	/**
 	 * Run script
 	 * @param s String[] arguments
-	 * @throws NotEnoughArgumentException
 	 */
-	private void run(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 1) {
-			System.out.println(Arrays.asList(s));
-			throw new NotEnoughArgumentException(String.join(" ", s), 1, s.length);
-		} else {
-			try {
-				System.out.println(String.format("Running script %s", s[0]));
-				File myObj = new File(s[0]);
-				Scanner myReader = new Scanner(myObj);
-				while (myReader.hasNextLine()) {
-					this.decide(myReader.nextLine());
-				}
-				myReader.close();
-				System.out.println(String.format("Finished running script %s", s[0]));
-			} catch (FileNotFoundException e) {
-		    	System.out.println("An error occurred.");
-		    	System.out.println(e.getMessage());
-		    }
-			
+	public void run(String[] s) {
+		for (int i = 0; i < s.length; i++ ) {
+			this.run(this.getSession().getWorkdir() + s[i]);
 		}
+	}
+	
+	/**
+	 * Run single script
+	 * @param s String name of scrupt to run
+	 */
+	private void run(String s) {
+		try {
+			System.out.println(String.format("Running script %s", s));
+			File myObj = new File(s);
+			Scanner myReader = new Scanner(myObj);
+			while (myReader.hasNextLine()) {
+				this.decide(myReader.nextLine());
+			}
+			myReader.close();
+			System.out.println(String.format("Finished running script %s", s));
+		} catch (FileNotFoundException e) {
+	    	System.out.println("An error occurred.");
+	    	System.out.println(e.getMessage());
+	    }
 	}
 	
 	/**
@@ -169,9 +172,9 @@ public class SessionController extends SessionTools{
 	 * @throws NotEnoughArgumentException
 	 */
 	private void echo(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 2) {
+		if (s.length < 1) {
 			System.out.println(Arrays.asList(s));
-			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
+			throw new NotEnoughArgumentException(String.join(" ", s), 1, s.length);
 		} else {
 			String str;
 			if (s[0].contentEquals("workdir")) {
