@@ -17,7 +17,8 @@ public class Session {
 	private List<Message> messageList = new ArrayList<>();
 	private List<Label> labels = new ArrayList<>();
 	private List<Conversation> conversations = new ArrayList<>();
-	private String adress = "";
+	private String address = "";
+	private String workdir = "";
 	private Long counter = 0L;
 	
 	public void restart() {
@@ -25,7 +26,7 @@ public class Session {
 		this.messageList = new ArrayList<>();
 		this.labels = new ArrayList<>();
 		this.conversations = new ArrayList<>();
-		this.adress = "";
+		this.address = "";
 	}
 	
 	/**
@@ -64,8 +65,8 @@ public class Session {
 	 * getter
 	 * @return String this.adress
 	 */
-	public String getAdress() {
-		return this.adress;
+	public String getAddress() {
+		return this.address;
 	}
 	
 	/**
@@ -74,6 +75,14 @@ public class Session {
 	 */
 	public Long getCounter() {
 		return this.counter;
+	}
+	
+	/**
+	 * getter
+	 * @return String this.workdir
+	 */
+	public String getWorkdir() {
+		return this.workdir;
 	}
 	
 	/**
@@ -87,8 +96,16 @@ public class Session {
 	 * setter
 	 * @param adr String save file address
 	 */
-	public void setAdress(String adr) {
-		this.adress = adr;
+	public void setAddress(String adr) {
+		this.address = adr;
+	}
+	
+	/**
+	 * setter
+	 * @param workdir String working directory
+	 */
+	public void setWorkdir(String workdir) {
+		this.workdir = workdir;
 	}
 	
 	/**

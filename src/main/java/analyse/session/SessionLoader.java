@@ -118,7 +118,7 @@ public class SessionLoader extends SessionTools {
 				
 				this.editor.addMessage(new Message(0l, date, author, content,conv));
 			}
-			this.getSession().setAdress(path);
+			this.getSession().setAddress(path);
 			System.out.println(String.format("Session data file %s finished parsing", path));
 			myReader.close();
 	    } catch (FileNotFoundException | JSONException | NotFoundException e) {

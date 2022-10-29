@@ -68,6 +68,10 @@ public class SessionController extends SessionTools{
 					this.editor.label(args);
 				} else if (s[0].contentEquals("run")) {
 					this.run(args);
+				} else if (s[0].contentEquals("set")) {
+					this.set(args);
+				} else if (s[0].contentEquals("echo")) {
+					this.echo(args);
 				} else {
 					System.out.println(String.format("Command \"%s\" unknown", s[0]));
 				}
@@ -126,7 +130,7 @@ public class SessionController extends SessionTools{
 	 * Save to file as defined by session.address
 	 */
 	private void save() {
-		String adr = this.getSession().getAdress();
+		String adr = this.getSession().getWorkdir() + this.getSession().getAddress();
 		if (adr.isEmpty()) {
 			System.out.println("No save file address. Use \"export session [file path]\" instead");
 		} else {
@@ -136,6 +140,48 @@ public class SessionController extends SessionTools{
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
+		}
+	}
+	
+	/**
+	 * Set working variables
+	 * @param s arguments
+	 * @throws NotEnoughArgumentException
+	 */
+	private void set(String[] s) throws NotEnoughArgumentException {
+		if (s.length < 2) {
+			System.out.println(Arrays.asList(s));
+			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
+		} else {
+			if (s[0].contentEquals("workdir")) {
+				this.getSession().setWorkdir(s[1]);
+			} else if (s[0].contentEquals("address")) {
+				this.getSession().setAddress(s[1]);
+			} else {
+				System.out.println(String.format("%s not a variable", s[0]));
+			}
+		}
+	}
+	
+	/**
+	 * Read working variables
+	 * @param s arguments
+	 * @throws NotEnoughArgumentException
+	 */
+	private void echo(String[] s) throws NotEnoughArgumentException {
+		if (s.length < 2) {
+			System.out.println(Arrays.asList(s));
+			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
+		} else {
+			String str;
+			if (s[0].contentEquals("workdir")) {
+				str = this.getSession().getWorkdir();
+			} else if (s[0].contentEquals("address")) {
+				str = this.getSession().getAddress();
+			} else {
+				str = String.format("%s not a variable", s[0]);
+			}
+			System.out.println(str);
 		}
 	}
 }
