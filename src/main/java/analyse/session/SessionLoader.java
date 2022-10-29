@@ -51,6 +51,7 @@ public class SessionLoader extends SessionTools {
 			if (s.length < 3) {
 				throw new NotEnoughArgumentException(String.join(" ", s), 3, s.length);
 			} else {
+				String address = this.getSession().getWorkdir() + s[1];
 				List<Label> labels = new ArrayList<>();
 				if (s.length > 3) {
 					List<String> l = Arrays.asList(Arrays.copyOfRange(s, 3, s.length));
@@ -59,9 +60,9 @@ public class SessionLoader extends SessionTools {
 					}
 				}
 				if (s[0].contentEquals("whatsapp")) {
-					WhatsappUtils.load(s[1], labels, s[2], this.editor);
+					WhatsappUtils.load(address, labels, s[2], this.editor);
 				} else if (s[0].contentEquals("fb")) {
-					MessengerUtils.load(s[1], labels, s[2], this.editor);
+					MessengerUtils.load(address, labels, s[2], this.editor);
 				} else if (s[0].contentEquals("session")) {
 					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
 						this.getSession().restart();
@@ -82,7 +83,7 @@ public class SessionLoader extends SessionTools {
 	 */
 	public void loadSession(String path) {
 		try {
-			File myObj = new File(path);
+			File myObj = new File(this.getSession().getWorkdir() + path);
 			Scanner myReader = new Scanner(myObj);
 			String str = "";
 			while (myReader.hasNextLine()) {
@@ -118,7 +119,7 @@ public class SessionLoader extends SessionTools {
 				
 				this.editor.addMessage(new Message(0l, date, author, content,conv));
 			}
-			this.getSession().setAdress(path);
+			this.getSession().setAddress(path);
 			System.out.println(String.format("Session data file %s finished parsing", path));
 			myReader.close();
 	    } catch (FileNotFoundException | JSONException | NotFoundException e) {

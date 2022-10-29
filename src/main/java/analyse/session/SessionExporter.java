@@ -117,7 +117,7 @@ public class SessionExporter extends SessionTools {
 			File file = null;
 			if (s.length > 1) {
 				toFile = true;
-				file = new File(s[1]);
+				file = new File(this.getSession().getWorkdir() + s[1]);
 			} else {
 				toFile = false;
 			}
@@ -132,7 +132,7 @@ public class SessionExporter extends SessionTools {
 				str = this.exportMessages(true);
 			} else if (s[0].contentEquals("session")) {
 				if (toFile) {
-					this.getSession().setAdress(s[1]);
+					this.getSession().setAddress(s[1]);
 				}
 				str = this.exportSession();
 			} else {
