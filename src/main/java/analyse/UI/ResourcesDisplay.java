@@ -1,9 +1,6 @@
 package analyse.UI;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -13,22 +10,13 @@ public class ResourcesDisplay {
 			"label");
 	
 	public static void display(String filename) {
-		URL resource = ResourcesDisplay.class.getClassLoader().getResource(filename);
-		if (resource == null) {
-			throw new IllegalArgumentException("file not found!");
-		} else {
-			try {
-				File file = new File(resource.toURI());
-				Scanner myReader = new Scanner(file);
-				while (myReader.hasNextLine()) {
-					String data = myReader.nextLine();
-					System.out.println(data);
-				}
-				myReader.close();
-			} catch (URISyntaxException | FileNotFoundException e) {
-				e.printStackTrace();
-			}
+		InputStream is = ResourcesDisplay.class.getClassLoader().getResourceAsStream(filename);
+		Scanner myReader = new Scanner(is);
+		while (myReader.hasNextLine()) {
+			String data = myReader.nextLine();
+			System.out.println(data);
 		}
+		myReader.close();
 	}
 	
 	public static boolean help(String str) {
