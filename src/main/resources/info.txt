@@ -1,0 +1,8 @@
+usage:  list [mode] [name]
+where arguments:
+    mode    type of element to display. values:
+                authors
+                conversations
+                labels
+                messages
+    name    name (or id for messages) of element to display

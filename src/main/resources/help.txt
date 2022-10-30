@@ -1,6 +1,8 @@
     echo workdir|address    read working variable
     export                  export session data to JSON file. See also "export help" for additionnal informations
+    info                    display informations about element.  See also "info help" for additionnal informations
     label                   label management for authors. See also "label help" for additionnal informations
+    list                    display list of elements in session. See also "list help" for additionnal informations
     load                    load data from file. See also "load help" for additionnal informations
     merge                   merge to elements together. See also "merge help" for additionnal informations
     quit                    quit application
