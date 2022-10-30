@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import analyse.messageanalysis.NamedObject;
 
-public class DTOComparator implements Comparator<NamedObject>{
+public class NamedObjectComparator implements Comparator<NamedObject>{
 
 	@Override
 	public int compare(NamedObject o1, NamedObject o2) {

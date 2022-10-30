@@ -87,6 +87,8 @@ public class SessionController extends SessionTools{
 					this.info.read(args);
 				} else if (s[0].contentEquals("search")) {
 					this.getSession().getSearchHandler().search(args);
+				} else if (s[0].contentEquals("params")) {
+					this.getSession().getSearchHandler().params(args);
 				} else {
 					System.out.println(String.format("Command \"%s\" unknown", s[0]));
 				}
@@ -149,8 +151,8 @@ public class SessionController extends SessionTools{
 	 * Save to file as defined by session.address
 	 */
 	private void save() {
-		String adr = this.getSession().getWorkdir() + this.getSession().getAddress();
-		if (this.getSession().getAddress().isEmpty()) {
+		String adr = this.getSession().getAddress();
+		if (adr.isEmpty()) {
 			System.out.println("No save file address. Use \"export session [file path]\" instead");
 		} else {
 			try (FileWriter fw = new FileWriter(adr)){

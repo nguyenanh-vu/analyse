@@ -1,18 +1,25 @@
 package analyse.search;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import analyse.exceptions.NotEnoughArgumentException;
+import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Message;
+import analyse.messageanalysis.Parameter;
 import analyse.session.Session;
 import analyse.session.SessionTools;
 
 public class SearchHandler extends SessionTools {
+	private static final DateTimeFormatter formatter = 
+			DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm");
 	Long counter = 0L;
 	List<Result> results = new ArrayList<>();
+	List<Parameter> params = new ArrayList<>();
 	
 	public SearchHandler(Session session) {
 		this.setSession(session);
@@ -43,6 +50,72 @@ public class SearchHandler extends SessionTools {
 	}
 	
 	/**
+	 * manage search parameters using command line
+	 * @param s
+	 * @throws NotEnoughArgumentException 
+	 */
+	public void params(String[] s) throws NotEnoughArgumentException {
+		if (s.length < 2) {
+			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
+		} else {
+			if (s[0].contentEquals("add")) {
+				this.addParams(new Parameter(s[1]));
+			} else {
+				try {
+					Parameter p = this.getSession().searchParameter(s[1]);
+					if (s[0].contentEquals("set")) {
+						if (s.length < 4) {
+							throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
+						}
+						String value = s[3];
+						if (s[2].contentEquals("author")) {
+							p.setAuthor(value);
+						} else if (s[2].contentEquals("authorLabels")) {
+							p.setAuthorLabels(value);
+						} else if (s[2].contentEquals("labels")) {
+							p.setLabels(value);
+						} else if (s[2].contentEquals("conversations")) {
+							p.setConversations(value);
+						} else if (s[2].contentEquals("minDate")) {
+							p.setMinDate(LocalDateTime.parse(value, formatter));
+						} else if (s[2].contentEquals("maxDate")) {
+							p.setMaxDate(LocalDateTime.parse(value, formatter));
+						} else {
+							System.out.println(String
+									.format("Parameter \"%s\" unknown, expected author|authorLabels|labels|conversations|minDate|maxDate", s[0]));
+						}
+					} else if (s[0].contentEquals("remove")) {
+						if (s.length < 3) {
+							throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
+						}
+						if (s[2].contentEquals("author")) {
+							p.setAuthor(null);
+						} else if (s[2].contentEquals("authorLabels")) {
+							p.setAuthorLabels(null);
+						} else if (s[2].contentEquals("labels")) {
+							p.setLabels(null);
+						} else if (s[2].contentEquals("conversations")) {
+							p.setConversations(null);
+						} else if (s[2].contentEquals("minDate")) {
+							p.setMinDate(null);
+						} else if (s[2].contentEquals("maxDate")) {
+							p.setMaxDate(null);
+						} else {
+							System.out.println(String
+									.format("Parameter \"%s\" unknown, expected author|authorLabels|labels|conversations|minDate|maxDate", s[0]));
+						}
+					} else {
+						System.out.println(String
+								.format("Mode \"%s\" unknown, expected add|set|remove", s[0]));
+					}
+				} catch (NotFoundException e) {
+					System.out.println(e.getMessage());
+				}
+			}
+		}
+	}
+	
+	/**
 	 * add a analyse.search.Result to this.results
 	 * @param r
 	 */
@@ -52,16 +125,28 @@ public class SearchHandler extends SessionTools {
 	}
 	
 	/**
+	 * add a analyse.messageanalysis.Parameter to this.params
+	 * @param p
+	 */
+	public void addParams(Parameter p) {
+		if (this.params.contains(p)) {
+			System.out.println(String.format("Parameter with name %s already exists", p.getName()));
+		} else {
+			this.params.add(p);
+		}
+	}
+	
+	/**
 	 * Search regex in all messages
 	 * @param str String regex to search
 	 * @return Map<Long,Integer> message.id : number of occurrences
 	 */
-	public Map<Long, Integer> simpleSearch(String str) {
-		Map<Long, Integer> res = new HashMap<>();
+	public Map<Message, Integer> simpleSearch(String str) {
+		Map<Message, Integer> res = new HashMap<>();
 		for (Message message : this.getSession().getMessageList()) {
 			int count = message.count(str);
 			if (count != 0) {
-				res.put(message.getId(), count);
+				res.put(message, count);
 			}
 		}
 		return res;
@@ -73,5 +158,13 @@ public class SearchHandler extends SessionTools {
 	 */
 	public List<Result> getResults() {
 		return this.results;
+	}
+	
+	/**
+	 * getter
+	 * @return List<Parameter> this.params
+	 */
+	public List<Parameter> getParams() {
+		return this.params;
 	}
 }

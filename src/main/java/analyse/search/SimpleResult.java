@@ -4,28 +4,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import analyse.exceptions.NotFoundException;
+import analyse.messageanalysis.Message;
+import analyse.session.Session;
 
 public class SimpleResult implements Result{
 	Long id;
-	Map<Long,Integer> resultSet;
+	Map<Message,Integer> resultSet;
 	Integer total;
 	Double avg;
 	Double var;
 	String regex;
 	
-	public SimpleResult(Map<Long,Integer> resultSet, Long id, String regex, int s) {
+	public SimpleResult(Map<Message,Integer> resultSet, Long id, String regex, int s) {
 		this.id = id;
 		this.regex = regex;
 		this.resultSet = resultSet;
 		int size = s;
 		this.total = 0;
 		double var = 0.0;
-		for (Map.Entry<Long,Integer> entry : resultSet.entrySet()) {
+		for (Map.Entry<Message,Integer> entry : resultSet.entrySet()) {
 			this.total += entry.getValue();
 		}
 		this.avg = ((double) this.total) / size;
-		for (Map.Entry<Long,Integer> entry : resultSet.entrySet()) {
+		for (Map.Entry<Message,Integer> entry : resultSet.entrySet()) {
 			var += Math.pow(entry.getValue() - this.avg, 2);
 		}
 		this.var = var / size;
@@ -40,7 +45,7 @@ public class SimpleResult implements Result{
 	 * @param avg
 	 * @param var
 	 */
-	public SimpleResult(Map<Long,Integer> resultSet, Long id, String regex, Integer total, Double avg, Double var) {
+	public SimpleResult(Map<Message,Integer> resultSet, Long id, String regex, Integer total, Double avg, Double var) {
 		this.id = id;
 		this.regex = regex;
 		this.resultSet = resultSet;
@@ -50,7 +55,7 @@ public class SimpleResult implements Result{
 	}
 	
 	@Override
-	public Map<Long, Integer> getResults() {
+	public Map<Message, Integer> getResults() {
 		return this.resultSet;
 	}
 
@@ -82,8 +87,8 @@ public class SimpleResult implements Result{
 	
 	public String toString() {
 		String str = "";
-		for (Map.Entry<Long,Integer> entry : resultSet.entrySet()) {
-			str += String.format(",{\"id\":%d,\"value\":%d}", entry.getKey(), entry.getValue());
+		for (Map.Entry<Message,Integer> entry : resultSet.entrySet()) {
+			str += String.format(",{\"id\":%d,\"value\":%d}", entry.getKey().getId(), entry.getValue());
 		}
 		if (!str.isEmpty()) {
 			str = str.substring(1);
@@ -104,17 +109,23 @@ public class SimpleResult implements Result{
 	 * @param o
 	 * @return
 	 */
-	public static SimpleResult parse(JSONObject jo) {
+	public static SimpleResult parse(JSONObject jo, Session session) {
 		Long id = jo.getLong("id");
 		String regex = jo.getString("regex");
 		Integer total = jo.getInt("total");
 		Double avg = jo.getDouble("average");
 		Double var = jo.getDouble("variance");
-		Map<Long,Integer> resultSet = new HashMap<>();
+		Map<Message,Integer> resultSet = new HashMap<>();
 		JSONArray results = jo.getJSONArray("results");
 		for (int i = 0; i < results.length(); i++) {
 			JSONObject o = results.getJSONObject(i);
-			resultSet.put(o.getLong("id"), o.getInt("value"));
+			Message message;
+			try {
+				message = session.searchMessage(o.getLong("id"));
+				resultSet.put(message, o.getInt("value"));
+			} catch (JSONException | NotFoundException e) {
+				System.out.println(e.getMessage());
+			}
 		}
 		return new SimpleResult(resultSet, id, regex, total, avg, var);
 	}

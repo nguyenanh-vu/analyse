@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class ResourcesDisplay {
 	private static final List<String> availableHelp = Arrays.asList("load","export","merge","rename",
-			"label", "info", "list");
+			"label", "info", "list", "search");
 	
 	public static void display(String filename) {
 		InputStream is = ResourcesDisplay.class.getClassLoader().getResourceAsStream(filename);

@@ -192,7 +192,7 @@ public class SessionLoader extends SessionTools {
 		for (int i = 0; i < results.length(); i++) {
 			JSONObject o = results.getJSONObject(i);
 			if (o.getString("type").contentEquals("SIMPLE")) {
-				this.getSession().getSearchHandler().addResult(SimpleResult.parse(o));
+				this.getSession().getSearchHandler().addResult(SimpleResult.parse(o, this.getSession()));
 			}
 		}
 	}

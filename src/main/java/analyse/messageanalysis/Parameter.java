@@ -1,10 +1,15 @@
 package analyse.messageanalysis;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import analyse.utils.OptionalToString;
+
 public class Parameter extends NamedObject {
+	private static final DateTimeFormatter formatter = 
+			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 	private String author;
 	private String authorLabels;
 	private String labels;
@@ -23,27 +28,27 @@ public class Parameter extends NamedObject {
 	 * @return Boolean
 	 */
 	public Boolean matches(Message message) {
-		if (!this.author.equals(null) 
+		if (this.author != null 
 				&& !message.getAuthor().getName().matches(this.author)) {
 			return false;
 		}
-		if (!this.authorLabels.equals(null) 
+		if (this.authorLabels != null 
 				&& !message.getAuthor().matchesLabels(this.authorLabels)) {
 			return false;
 		}
-		if (!this.labels.equals(null) 
+		if (this.labels != null  
 				&& !message.getConversation().matchesLabels(this.labels)) {
 			return false;
 		}
-		if (!this.conversations.equals(null) 
+		if (this.conversations != null  
 				&& !message.getConversation().getName().matches(this.conversations)) {
 			return false;
 		}
-		if (!this.minDate.equals(null) 
+		if (this.minDate != null 
 				&& message.getTimestamp().compareTo(minDate) < 0) {
 			return false;
 		}
-		if (!this.maxDate.equals(null) 
+		if (this.maxDate != null  
 				&& message.getTimestamp().compareTo(maxDate) > 0) {
 			return false;
 		}
@@ -56,25 +61,44 @@ public class Parameter extends NamedObject {
 	 * @return Boolean
 	 */
 	public Boolean matches(Author author) {
-		if (!this.author.equals(null) 
+		if (this.author != null 
 				&& author.getName().matches(this.author)) {
 			return false;
 		}
-		if (!this.authorLabels.equals(null) 
+		if (this.authorLabels != null 
 				&& author.matchesLabels(this.authorLabels)) {
 			return false;
 		}
-		if (!this.labels.equals(null) 
+		if (this.labels != null  
 				&& author.matchesConversationLabel(this.labels)) {
 			return false;
 		}
-		if (!this.conversations.equals(null) 
+		if (this.conversations != null 
 				&& author.matchesConversation(conversations)) {
 			return false;
 		}
 		return true;
 	}
-
+	
+	public String toString() {
+		String str = "";
+		for (Parameter p : this.subParameters) {
+			str += "," + p.getName();
+		}
+		if (!str.isEmpty()) {
+			str = str.substring(1);
+		}
+		return String.format("{\"name\":\"%s\",\"author\":%s,\"authorLabels\":%s,\"labels\":%s,\"conversations\":%s,\"minDate\":%s,\"maxDate\":%s,\n	\"subParameters\":[%s]}", 
+				this.getName(),
+				OptionalToString.toString(this.author),
+				OptionalToString.toString(this.authorLabels),
+				OptionalToString.toString(this.labels),
+				OptionalToString.toString(this.conversations),
+				OptionalToString.format(minDate, formatter),
+				OptionalToString.format(maxDate, formatter),
+				str);
+	}
+	
 	public String getAuthor() {
 		return author;
 	}
@@ -125,5 +149,18 @@ public class Parameter extends NamedObject {
 	
 	public List<Parameter> getSubParameters() {
 		return this.subParameters;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof Parameter) {
+			Parameter param = (Parameter) other;
+			return this.getName().contentEquals(param.getName());
+		} else if (other instanceof String) {
+			String str = (String) other;
+			return this.getName().contentEquals(str);
+		} else {
+			return false;
+		}
 	}
 }
