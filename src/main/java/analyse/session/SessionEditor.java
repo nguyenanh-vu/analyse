@@ -7,6 +7,7 @@ import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
+import analyse.messageanalysis.LabelledObject;
 import analyse.messageanalysis.Message;
 
 public class SessionEditor extends SessionTools {
@@ -22,12 +23,13 @@ public class SessionEditor extends SessionTools {
 		} catch (NotFoundException e) {
 			System.out.println(e.getMessage());
 		}
-		Conversation conv;
+		Conversation conv = message.getConversation();
+		this.addConversation(conv);
 		try {
 			conv = this.getSession()
 					.searchConversation(message.getConversation().getName());
 		} catch (NotFoundException e) {
-			conv = message.getConversation();
+			System.out.println(e.getMessage());
 		}
 		this.getSession().getMessageList()
 		.add(new Message(this.getSession().getCounter(), 
@@ -37,17 +39,26 @@ public class SessionEditor extends SessionTools {
 	
 	/**
 	 * Add a analyse.messageanalysis.Conversation to this.session if not already present
-	 * @param conv
+	 * @param conv Conversation to add
 	 */
 	public void addConversation(Conversation conv) {
-		if (!this.getSession().getConversations().contains(conv)) {
+		try {
+			Conversation c = this.getSession().searchConversation(conv.getName());
+			for (Label l : conv.getLabels()) {
+				c.addLabel(l);
+				this.addLabel(l);
+			}
+		} catch (NotFoundException e) {
 			this.getSession().getConversations().add(conv);
+			for (Label l : conv.getLabels()) {
+				this.addLabel(l);
+			}
 		}
 	}
 	
 	/**
 	 * Add a analyse.messageanalysis.Label to this.session if not already present
-	 * @param conv
+	 * @param label Label to add
 	 */
 	public void addLabel(Label label) {
 		if (!this.getSession().getLabels().contains(label)) {
@@ -162,6 +173,10 @@ public class SessionEditor extends SessionTools {
 			author.addLabel(label1);
 			author.removeLabel(label2);
 		}
+		for (Conversation conv: this.getSession().getConversations()){
+			conv.addLabel(label1);
+			conv.removeLabel(label2);
+		}
 		this.getSession().getLabels().remove(label2);
 	}
 	
@@ -180,6 +195,9 @@ public class SessionEditor extends SessionTools {
 			author.addConversation(conv1);
 			author.removeConversation(conv2);
 		}
+		for (Label l : conv2.getLabels()) {
+			conv1.addLabel(l);
+		}
 		this.getSession().getConversations().remove(conv2);
 	}
 	
@@ -189,29 +207,38 @@ public class SessionEditor extends SessionTools {
 	 * @throws NotEnoughArgumentException
 	 */
 	public void label(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 3) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 3, s.length);
+		if (s.length < 4) {
+			throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
 		} else {
-			Author a;
+			LabelledObject o;
 			Label l;
 			try {
-				a = this.getSession().searchAuthor(s[1]);
-				if (s[0].contentEquals("add")) {
-					l = new Label(s[2]);
-					if (this.getSession().getLabels().contains(l)) {
-						l = this.getSession().searchLabel(s[2]);
-					} else {
-						this.getSession().getLabels().add(l);
-					}
-					a.addLabel(l);
-					this.getSession().getLabels().add(l);
-				} else if (s[0].contentEquals("remove")) {
-					a.getLabels().remove(new Label(s[2]));
+				if (s[1].contentEquals("authors")) {
+					o = this.getSession().searchAuthor(s[2]);
+				} else if (s[1].contentEquals("conversations")) {
+					o = this.getSession().searchConversation(s[2]);
 				} else {
 					System.out.println(String
-							.format("Mode \"%s\" unknown, expected add|remove", s[0]));
+							.format("Mode \"%s\" unknown, expected authors|conversations", s[1]));
+					throw new Exception();
 				}
-			} catch (NotFoundException e) {
+				if (s[0].contentEquals("add")) {
+					l = new Label(s[3]);
+					if (this.getSession().getLabels().contains(l)) {
+						l = this.getSession().searchLabel(s[3]);
+					} else {
+						this.addLabel(l);
+					}
+					o.addLabel(l);
+				} else if (s[0].contentEquals("remove")) {
+					o.removeLabel(new Label(s[3]));
+				} else if (s[0].contentEquals("clear")) {
+					o.clearLabels();
+				} else {
+					System.out.println(String
+							.format("Mode \"%s\" unknown, expected add|remove|clear", s[0]));
+				}
+			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
 		}

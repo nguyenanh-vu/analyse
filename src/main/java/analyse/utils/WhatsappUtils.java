@@ -1,7 +1,8 @@
 package analyse.utils;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -36,8 +37,8 @@ public class WhatsappUtils{
 	public static void load(String path, List<Label> labels, 
 			String conversation, SessionEditor editor) {
 		try {
-			File myObj = new File(path);
-			Scanner myReader = new Scanner(myObj);
+			InputStream  is = new FileInputStream(path);
+			Scanner myReader = new Scanner(is);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
 				Pattern datePattern = Pattern
@@ -66,19 +67,17 @@ public class WhatsappUtils{
 	 * @param line String
 	 * @param labels List<analyse.messageanalysis.List> 
 	 * @param conversation String
-	 * @return
+	 * @return new Message
 	 */
 	public static Message parse(String line, 
 			List<Label> labels, String conversation) {
 		String[] s1 = line.split("- ", 2);
 		String[] s2 = s1[1].split(": ", 2);
 		Author author = new Author(s2[0].replace(" ", "_"));
-		for (Label label : labels) {
-			if (!author.getLabels().contains(label)) {
-				author.getLabels().add(label);
-			}
-		}
 		Conversation conv = new Conversation(conversation); 
+		for (Label l : labels) {
+			conv.addLabel(l);
+		}
 		author.addConversation(conv);
 		return new Message(0l, LocalDateTime.parse(s1[0], formatter), 
 				author, s2[1],conv);

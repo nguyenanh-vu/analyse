@@ -2,12 +2,12 @@ package analyse.messageanalysis.comparators;
 
 import java.util.Comparator;
 
-import analyse.messageanalysis.DTO;
+import analyse.messageanalysis.NamedObject;
 
-public class DTOComparator implements Comparator<DTO>{
+public class DTOComparator implements Comparator<NamedObject>{
 
 	@Override
-	public int compare(DTO o1, DTO o2) {
+	public int compare(NamedObject o1, NamedObject o2) {
 		return o1.getName().compareTo(o2.getName());
 	}
 }

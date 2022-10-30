@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Class representing message author
  */
-public class Author extends DTO{
+public class Author extends LabelledObject{
 	private List<Label> labels = new ArrayList<>();
 	private List<Conversation> conversations = new ArrayList<>();
 	
@@ -20,18 +20,19 @@ public class Author extends DTO{
 	
 	/**
 	 * getter
-	 * @return List<analyse.messageanalysis.Label> this.labels
-	 */
-	public List<Label> getLabels() {
-		return this.labels;
-	}
-	
-	/**
-	 * getter
 	 * @return List<analyse.messageanalysis.Conversation> this.conversations
 	 */
 	public List<Conversation> getConversations() {
 		return this.conversations;
+	}
+	
+	public List<Label> getAllLabels() {
+		List<Label> res = new ArrayList<>();
+		res.addAll(this.labels);
+		for (Conversation conv : this.conversations) {
+			res.addAll(conv.getLabels());
+		}
+		return res;
 	}
 	
 	@Override
@@ -45,24 +46,6 @@ public class Author extends DTO{
 		} else {
 			return false;
 		}
-	}
-	
-	/**
-	 * Attach label to author
-	 * @param label analyse.messageanalysis.Label to attach
-	 */
-	public void addLabel(Label label) {
-		if (!this.labels.contains(label)) {
-			this.labels.add(label);	
-		}
-	}
-	
-	/**
-	 * Remove single label
-	 * @param label analyse.messageanalysis.Label to remove
-	 */
-	public void removeLabel(Label label) {
-		this.labels.remove(label);
 	}
 	
 	/**
@@ -85,14 +68,7 @@ public class Author extends DTO{
 	
 	@Override
 	public String toString() {
-		String lab = "";
 		String conv = "";
-		for (Label label : this.labels) {
-			lab += ",\"" + label.getName() + "\"";
-		}
-		if (!lab.isEmpty()) {
-			lab = lab.substring(1);
-		}
 		for (Conversation conversation: this.conversations) {
 			conv += ",\"" + conversation.getName() + "\"";
 		}
@@ -100,6 +76,6 @@ public class Author extends DTO{
 			conv = conv.substring(1);
 		}
 		return String.format("{\"name\":\"%s\",\"labels\":[%s], \"conversations\":[%s]}", 
-				this.getName(), lab, conv);
+				this.getName(), this.labelsToString(), conv);
 	}
 }

@@ -1,7 +1,8 @@
 package analyse.utils;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import analyse.exceptions.JSONParsingException;
 import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
@@ -35,8 +37,8 @@ public class MessengerUtils {
 	public static void load(String path,  List<Label> labels,
 			String conversation, SessionEditor editor) {
 		try {
-			File myObj = new File(path);
-			Scanner myReader = new Scanner(myObj);
+			InputStream  is = new FileInputStream(path);
+			Scanner myReader = new Scanner(is);
 			String str = "";
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
@@ -54,7 +56,7 @@ public class MessengerUtils {
 			}
 			System.out.println(String.format("Facebook Messenger file %s finished parsing", path));
 			myReader.close();
-	    } catch (FileNotFoundException e) {
+	    } catch (FileNotFoundException | JSONException | JSONParsingException e) {
 	    	System.out.println("An error occurred.");
 	    	System.out.println(e.getMessage());
 	    }
@@ -66,27 +68,26 @@ public class MessengerUtils {
 	 * @param labels List<analyse.messageanalysis.Label> to attach
 	 * @param editor analyse.session.SessionEditor to use for edition
 	 * @param conversation String
-	 * @return
+	 * @return new Message
+	 * @throws JSONParsingException 
 	 */
 	public static Message parse(JSONObject o, 
 			List<Label> labels,
-			String conversation) {
+			String conversation) throws JSONParsingException {
 		LocalDateTime ts = LocalDateTime.ofInstant(
 				Instant.ofEpochMilli(o.getLong("timestamp_ms")), 
                 TimeZone.getDefault().toZoneId());
-		String content = "";
+		String content;
 		try {
 			content = new String(o.getString("content").getBytes("ISO-8859-1"), "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} catch (UnsupportedEncodingException | JSONException e) {
+			throw new JSONParsingException(o, e.getMessage());
 		}
 		Author author = new Author(o.getString("sender_name").replace(" ", "_"));
-		for (Label label : labels) {
-			author.addLabel(label);
-		}
 		Conversation conv = new Conversation(conversation);
+		for (Label label : labels) {
+			conv.addLabel(label);
+		}
 		author.addConversation(conv);
 		return new Message(0l, ts, author, content, conv);
 	}

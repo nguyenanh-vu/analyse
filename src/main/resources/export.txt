@@ -5,5 +5,5 @@ where arguments:
                 authors
                 messages
                 session
-                vmessages   =messages with attached labels
+                vmessages   =messages with attached author_labels
     path    if present, path to save file

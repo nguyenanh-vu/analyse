@@ -21,6 +21,7 @@ Command line use with commands:<br/>
 - reset : reset current session (erase all data)<br/>
 - run [script name] : run script<br/>
 - save : save current working session. If save path has not been defined, use "export session [file path]" instead<br/>
+- search : run a search. See also "search help" for additionnal informations
 - set workdir|address : set working variable <br/>
 <br/>
 Possibility to create scripts, with same commands as in command line. <br/>

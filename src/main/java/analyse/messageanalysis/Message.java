@@ -96,29 +96,17 @@ public class Message {
 	
 	public String toString(Boolean verbose) {
 		String content = this.content;
+		String author = String.format("\"author\":\"%s\"",this.getAuthor().getName());
 		if (Boolean.TRUE.equals(verbose)) {
-			String str = "";
-			for (Label label : this.author.getLabels()) {
-				str += ",\"" + label.getName() + "\"";
-			}
-			if (!str.isEmpty()) {
-				str = str.substring(1);
-			}
-			return String.format("{\"id\":%s,\"date\":\"%s\",\"author\":\"%s\",\"conversation\":\"%s\",\"labels\":[%s],\n	\"content\":\"%s\"}", 
-					this.id.toString(),
-					this.timestamp.format(formatter), 
-					this.author.getName(), 
-					this.conversation,
-					str,
-					content.replace("\n", "\\n").replace("\"", "\\\""));
-		} else {
-			return String.format("{\"id\":%s,\"date\":\"%s\",\"author\":\"%s\",\"conversation\":\"%s\",\n	\"content\":\"%s\"}", 
-					this.id.toString(),
-					this.timestamp.format(formatter), 
-					this.author.getName(), 
-					this.conversation,
-					content.replace("\n", "\\n").replace("\"", "\\\""));
+			author += String.format(",\"author_labels\":[%s]", this.getAuthor().labelsToString());
 		}
+		return String.format("{\"id\":%s,\"date\":\"%s\",%s,\"conversation\":\"%s\",\"labels\":[%s],\n	\"content\":\"%s\"}", 
+				this.id.toString(),
+				this.timestamp.format(formatter), 
+				author, 
+				this.conversation.getName(),
+				this.conversation.labelsToString(),
+				content.replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\""));
 	}
 	
 	/**

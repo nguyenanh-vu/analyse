@@ -1,0 +1,5 @@
+usage: search [mode] [regex]
+where arguments:
+    mode    mode of search. values:
+                simple
+    regex   regex to search
