@@ -93,12 +93,12 @@ public class SessionExporter extends SessionTools {
 	public String exportConversations() {
 		String str = "";
 		for (Conversation conv : this.getSession().getConversations()) {
-			str += ",\"" + conv.toString() + "\"";
+			str += ",\n" + conv.toString() + "";
 		}
 		if (!str.isEmpty()) {
-			str = str.substring(1);
+			str = str.substring(2);
 		}
-		return "[" + str + "]";
+		return "[\n" + JSONUtils.indent(str) + "\n]";
 	}
 	
 	/**

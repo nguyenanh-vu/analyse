@@ -1,9 +1,9 @@
 package analyse.messageanalysis;
 
 /**
- * Class for small data transfer object
+ * Class for named object
  */
-public class DTO {
+public class NamedObject {
 	private String name;
 	
 	/**

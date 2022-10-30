@@ -83,10 +83,10 @@ public class MessengerUtils {
 			throw new JSONParsingException(o, e.getMessage());
 		}
 		Author author = new Author(o.getString("sender_name").replace(" ", "_"));
-		for (Label label : labels) {
-			author.addLabel(label);
-		}
 		Conversation conv = new Conversation(conversation);
+		for (Label label : labels) {
+			conv.addLabel(label);
+		}
 		author.addConversation(conv);
 		return new Message(0l, ts, author, content, conv);
 	}

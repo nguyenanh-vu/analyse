@@ -73,12 +73,10 @@ public class WhatsappUtils{
 		String[] s1 = line.split("- ", 2);
 		String[] s2 = s1[1].split(": ", 2);
 		Author author = new Author(s2[0].replace(" ", "_"));
-		for (Label label : labels) {
-			if (!author.getLabels().contains(label)) {
-				author.getLabels().add(label);
-			}
-		}
 		Conversation conv = new Conversation(conversation); 
+		for (Label l : labels) {
+			conv.addLabel(l);
+		}
 		author.addConversation(conv);
 		return new Message(0l, LocalDateTime.parse(s1[0], formatter), 
 				author, s2[1],conv);

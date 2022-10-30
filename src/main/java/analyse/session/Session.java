@@ -7,6 +7,7 @@ import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
+import analyse.messageanalysis.LabelledObject;
 import analyse.messageanalysis.Message;
 import analyse.search.Result;
 import analyse.search.SearchHandler;
@@ -14,10 +15,9 @@ import analyse.search.SearchHandler;
 /**
  * class representing user session
  */
-public class Session {
+public class Session extends LabelledObject {
 	private List<Author> authorList = new ArrayList<>();
 	private List<Message> messageList = new ArrayList<>();
-	private List<Label> labels = new ArrayList<>();
 	private List<Conversation> conversations = new ArrayList<>();
 	private String address = "";
 	private String workdir = "";
@@ -27,7 +27,7 @@ public class Session {
 	public void restart() {
 		this.authorList =  new ArrayList<>();
 		this.messageList = new ArrayList<>();
-		this.labels = new ArrayList<>();
+		this.clearLabels();
 		this.conversations = new ArrayList<>();
 		this.address = "";
 		counter = 0L;
@@ -47,14 +47,6 @@ public class Session {
 	 */
 	public List<Message> getMessageList() {
 		return this.messageList;
-	}
-	
-	/**
-	 * getter
-	 * @return List<analyse.messageanalysis.Label> this.labels
-	 */
-	public List<Label> getLabels() {
-		return this.labels;
 	}
 	
 	/**
@@ -127,9 +119,9 @@ public class Session {
 	 * @throws NotFoundException label not found
 	 */
 	public Label searchLabel(String str) throws NotFoundException {
-		int index = this.labels.indexOf(new Label(str));
+		int index = this.getLabels().indexOf(new Label(str));
 		if (index != -1) {
-			return this.labels.get(index);
+			return this.getLabels().get(index);
 		} else {
 			throw new NotFoundException(String.format("label %s not found", str));
 		}
@@ -193,75 +185,5 @@ public class Session {
 			}
 		}
 		throw new NotFoundException(String.format("Result with id: %s not found", id));
-	}
-	
-	/**
-	 * Attach label to author in this.authorList
-	 * @param author analyse.messageanalysis.Author
-	 * @param label String
-	 */
-	public void labelAuthor(String author, String label) {
-		try {
-			Author a = this.searchAuthor(author);
-			this.labelAuthor(a, label);
-		} catch (NotFoundException e) {
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	/**
-	 * Attach label to analyse.messageanalysis.Author
-	 * @param author analyse.messageanalysis.Author
-	 * @param label String
-	 */
-	public void labelAuthor(Author author, String label) {
-		Label l;
-		try {
-			l = this.searchLabel(label);
-		} catch (NotFoundException e) {
-			l = new Label(label);
-			this.labels.add(l);
-		}
-		author.addLabel(l);
-	}
-	
-	/**
-	 * Remove single label from author
-	 * @param author analyse.messageanalysis.Author
-	 * @param label analyse.messageanalysis.Label
-	 */
-	public void removeLabelAuthor(String author, String label) {
-		try {
-			Author a = this.searchAuthor(author);
-			Label l = this.searchLabel(label);
-			a.removeLabel(l);
-		} catch (NotFoundException e) {
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	/**
-	 * Merge two authors
-	 * @param author1 analyse.messageanalysis.Author in which to merge
-	 * @param author2 analyse.messageanalysis.Author to merge and delete
-	 */
-	public void mergeAuthor(String author1, String author2) {
-		try {
-			Author a1 = this.searchAuthor(author1);
-			Author a2 = this.searchAuthor(author2);
-			for (Message message : this.messageList) {
-				if (message.getAuthor().equals(a2)) {
-					message.setAuthor(a1);
-				}
-			}
-			for (Label label : a2.getLabels()) {
-				if (!a1.getLabels().contains(label)) {
-					a1.getLabels().add(label);
-				}
-			}
-			this.authorList.remove(a2);
-		} catch (NotFoundException e) {
-			System.out.println(e.getMessage());
-		}
 	}
 }

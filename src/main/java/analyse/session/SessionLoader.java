@@ -15,7 +15,6 @@ import org.json.JSONObject;
 
 import analyse.exceptions.JSONParsingException;
 import analyse.exceptions.NotEnoughArgumentException;
-import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
@@ -70,6 +69,11 @@ public class SessionLoader extends SessionTools {
 						this.getSession().restart();
 					}
 					this.loadSession(s[1]);
+				} else if (s[0].contentEquals("messages")) {
+					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
+						this.getSession().restart();
+					}
+					this.loadMessages(s[1]);
 				} else {
 					System.out.println(String
 							.format("Mode \"%s\" unknown, expected whatsapp|fb|session", s[0]));
@@ -128,6 +132,29 @@ public class SessionLoader extends SessionTools {
 		}
 	}
 	
+	/**
+	 * Load session data from message save file
+	 * @param path to save file
+	 */
+	private void loadMessages(String path) {
+		File myObj = new File(this.getSession().getWorkdir() + path);
+		Scanner myReader;
+		try {
+			myReader = new Scanner(myObj);
+			String str = "";
+			while (myReader.hasNextLine()) {
+				String data = myReader.nextLine();
+				str += data;
+			}
+			System.out.println(String.format("Session data file %s finished loading", path));
+			JSONArray jo = new JSONArray(str);
+			this.parseMessages(jo);
+		} catch (FileNotFoundException | JSONParsingException | JSONException e) {
+			System.out.println(e.getMessage());;
+		}
+		
+	}
+	
 	/***
 	 * load messages from save file
 	 * @param messages JSONArray containing messages to parse
@@ -137,17 +164,21 @@ public class SessionLoader extends SessionTools {
 		for (int i = 0; i < messages.length(); i++) {
 			JSONObject o = messages.getJSONObject(i);
 			LocalDateTime date = LocalDateTime.parse(o.getString("date"),formatter);
-			Author author;
-			try {
-				author = this.getSession().searchAuthor(o.getString("author"));
-				Conversation conv = new Conversation(o.getString("conversation"));
-				author.addConversation(conv);
-				String content = o.getString("content");
-				
-				this.editor.addMessage(new Message(0l, date, author, content,conv));
-			} catch (JSONException | NotFoundException e) {
-				throw new JSONParsingException(o, e.getMessage());
+			Author author = new Author(o.getString("author"));
+			Conversation conv = new Conversation(o.getString("conversation"));
+			if (o.has("author_labels")) {
+				JSONArray authorLabels = o.getJSONArray("author_labels");
+				for (int j = 0; j < authorLabels.length(); j++) {
+					author.addLabel(new Label(authorLabels.getString(j)));
+				}
 			}
+			JSONArray labels = o.getJSONArray("labels");
+			for (int j = 0; j < labels.length(); j++) {
+				conv.addLabel(new Label(labels.getString(j)));
+			}
+			String content = o.getString("content");
+			author.addConversation(conv);
+			this.editor.addMessage(new Message(0l, date, author, content,conv));
 			
 		}
 	}

@@ -3,7 +3,7 @@ package analyse.messageanalysis;
 /**
  * class representing data label
  */
-public class Label extends DTO{
+public class Label extends NamedObject{
 	public Label(String name) {
 		this.setName(name);
 	}
