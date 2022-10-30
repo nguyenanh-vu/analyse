@@ -1,8 +1,7 @@
-usage:  list [mode] [name]
+usage:  info [mode] [name]
 where arguments:
     mode    type of element to display. values:
                 authors
-                conversations
-                labels
                 messages
+                results
     name    name (or id for messages) of element to display

@@ -1,7 +1,11 @@
-usage:  label [mode] [author] [label]
+usage:  label [action] [mode] [name] [label]
 where arguments:
-    mode    mode of operation. values:
-                add     attach a label to author
-                remove  remove a label from author
-    author  author to which add or remove label
+    action  operation to use. values
+                add     attach a label to element
+                remove  remove a label from element
+                clear   remove all labels from element
+    mode    type of element to label. values:
+                authors
+                conversations
+    name  author to which add or remove label
     label   label to attach or remove from author
