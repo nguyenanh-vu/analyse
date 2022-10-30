@@ -4,6 +4,10 @@ Current version 0.0.1
 
 Tool for analysis on words present in online conversations. Prior to use, user has to download archive files for conversations. Currently working with Whatsapp and Facebook Messenger.
 
+## launch arguments
+
+(Optional) path to scripts to execute can be added as launch arguments. Scripts will be first executed before command line usage.
+
 ## use
 
 Command line use with commands:
