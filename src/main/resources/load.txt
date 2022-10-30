@@ -1,0 +1,9 @@
+usage:  load [mode] [path] [name] [labels...]
+where arguments:
+    mode    mode of operation. values:
+                fb          load data from Facebook Messenger archive file
+                session     load previously saved session
+                whatsapp    load data from Whatsapp archive file
+    path    path to file
+    name    name of conversation as used in session
+    labels  (optional) list of labels to attach to authors present in conversation

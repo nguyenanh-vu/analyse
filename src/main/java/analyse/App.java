@@ -2,6 +2,7 @@ package analyse;
 
 import java.util.Scanner;
 
+import analyse.UI.ResourcesDisplay;
 import analyse.session.SessionActive;
 import analyse.session.SessionController;
 
@@ -15,6 +16,7 @@ public class App
 	
     public static void main( String[] args )
     {
+    	ResourcesDisplay.display("welcome.txt");
     	SessionActive active = new SessionActive();
     	active.on();
     	SessionController controller = new SessionController(active);

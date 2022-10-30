@@ -1,0 +1,7 @@
+usage:  label [mode] [author] [label]
+where arguments:
+    mode    mode of operation. values:
+                add     attach a label to author
+                remove  remove a label from author
+    author  author to which add or remove label
+    label   label to attach or remove from author

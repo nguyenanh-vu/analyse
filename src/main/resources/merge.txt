@@ -1,0 +1,8 @@
+usage: merge [mode] [element1] [element2]
+where arguments:
+    mode        mode of operation. values:
+                    authors
+                    conversations
+                    labels
+    element1    name of element in which to merge (is conserved after merge)
+    element2    name of element to merge (is deleted after merge)
