@@ -1,9 +1,11 @@
 usage:  load [mode] [path] [name] [labels...]
+or:     load [mode] [path] [reset]
 where arguments:
     mode    mode of operation. values:
                 fb          load data from Facebook Messenger archive file
                 session     load previously saved session
                 whatsapp    load data from Whatsapp archive file
     path    path to file
-    name    name of conversation as used in session
-    labels  (optional) list of labels to attach to authors present in conversation
+    name    name of conversation as used in session, not used if mode="session"
+    reset   boolean (true|false). If true, current session is first resseted before loading. If false, data added to current session
+    labels  (optional) list of labels to attach to authors present in conversation, not used if mode="session"
