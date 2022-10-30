@@ -1,0 +1,5 @@
+usage:  list [mode]
+where arguments:
+    mode    type of elements to display. values:
+                authors
+                messages
