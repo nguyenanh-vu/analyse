@@ -1,6 +1,8 @@
 package analyse.messageanalysis;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * class representing messages
@@ -125,5 +127,19 @@ public class Message {
 	 */
 	public void extend(String str) {
 		this.content = this.content + str;
+	}
+	
+	/**
+	 * count number of occurrences of regex in content
+	 * @param regex
+	 * @return
+	 */
+	public int count(String regex) {
+		int res = 0;
+		Matcher matcher = Pattern.compile(regex).matcher(this.content);
+		while (matcher.find()) {
+		    res++;
+		}
+		return res;
 	}
 }
