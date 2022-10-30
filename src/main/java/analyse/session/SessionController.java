@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import analyse.UI.ResourcesDisplay;
 import analyse.exceptions.NotEnoughArgumentException;
 
 public class SessionController extends SessionTools{
@@ -43,6 +44,10 @@ public class SessionController extends SessionTools{
 			System.out.println("No command");
 		} else if (str.trim().startsWith("//")) {
 			
+		} else if (s[0].contentEquals("help")) {
+			ResourcesDisplay.display("help.txt");
+		} else if (s.length > 1 && s[1].contentEquals("help")) {
+			ResourcesDisplay.help(s[0]);
 		} else if (s[0].contentEquals("reset")) {
 			this.reset();
 		} else if (s[0].contentEquals("quit")) {

@@ -1,0 +1,8 @@
+usage: merge [mode] [element] [new name]
+where arguments:
+    mode        mode of operation. values:
+                    authors
+                    conversations
+                    labels
+    element     name of element in which to rename
+    new name    new name of element
