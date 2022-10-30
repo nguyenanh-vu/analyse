@@ -1,7 +1,8 @@
 package analyse.session;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -68,12 +69,12 @@ public class SessionLoader extends SessionTools {
 					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
 						this.getSession().restart();
 					}
-					this.loadSession(s[1]);
+					this.loadSession(address);
 				} else if (s[0].contentEquals("messages")) {
 					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
 						this.getSession().restart();
 					}
-					this.loadMessages(s[1]);
+					this.loadMessages(address);
 				} else {
 					System.out.println(String
 							.format("Mode \"%s\" unknown, expected whatsapp|fb|session", s[0]));
@@ -89,8 +90,8 @@ public class SessionLoader extends SessionTools {
 	 */
 	public void loadSession(String path) {
 		try {
-			File myObj = new File(this.getSession().getWorkdir() + path);
-			Scanner myReader = new Scanner(myObj);
+			InputStream  is = new FileInputStream(path);
+			Scanner myReader = new Scanner(is);
 			String str = "";
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
@@ -137,10 +138,9 @@ public class SessionLoader extends SessionTools {
 	 * @param path to save file
 	 */
 	private void loadMessages(String path) {
-		File myObj = new File(this.getSession().getWorkdir() + path);
-		Scanner myReader;
 		try {
-			myReader = new Scanner(myObj);
+			InputStream  is = new FileInputStream(path);
+			Scanner myReader = new Scanner(is);
 			String str = "";
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
@@ -149,6 +149,7 @@ public class SessionLoader extends SessionTools {
 			System.out.println(String.format("Session data file %s finished loading", path));
 			JSONArray jo = new JSONArray(str);
 			this.parseMessages(jo);
+			myReader.close();
 		} catch (FileNotFoundException | JSONParsingException | JSONException e) {
 			System.out.println(e.getMessage());;
 		}

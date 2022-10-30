@@ -1,7 +1,8 @@
 package analyse.utils;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -36,8 +37,8 @@ public class MessengerUtils {
 	public static void load(String path,  List<Label> labels,
 			String conversation, SessionEditor editor) {
 		try {
-			File myObj = new File(path);
-			Scanner myReader = new Scanner(myObj);
+			InputStream  is = new FileInputStream(path);
+			Scanner myReader = new Scanner(is);
 			String str = "";
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
