@@ -1,0 +1,9 @@
+usage:  export [type]
+or      export [type] [path]
+where arguments:
+    type    type of data to export. values: 
+                authors
+                messages
+                session
+                vmessages   =messages with attached labels
+    path    if present, path to save file
