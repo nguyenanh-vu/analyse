@@ -154,6 +154,21 @@ public class Session {
 	}
 	
 	/**
+	 * search for message in this.messageList
+	 * @param id Long id of message to search
+	 * @return analyse.messageanalysis.Messagae
+	 * @throws NotFoundException message not found
+	 */
+	public Message searchMessage(Long id) throws NotFoundException {
+		for (Message message : this.messageList) {
+			if (message.getId().equals(id)) {
+				return message;
+			}
+		}
+		throw new NotFoundException(String.format("Message with id: %s not found", id));
+	}
+	
+	/**
 	 * Attach label to author in this.authorList
 	 * @param author analyse.messageanalysis.Author
 	 * @param label String

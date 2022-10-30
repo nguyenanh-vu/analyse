@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import analyse.UI.Info;
 import analyse.UI.ResourcesDisplay;
 import analyse.exceptions.NotEnoughArgumentException;
 
@@ -14,6 +15,7 @@ public class SessionController extends SessionTools{
 	private SessionExporter exporter = new SessionExporter();
 	private SessionLoader loader = new SessionLoader();
 	private SessionEditor editor = new SessionEditor();
+	private Info info = new Info();
 	SessionActive active;
 	
 	/**
@@ -77,6 +79,10 @@ public class SessionController extends SessionTools{
 					this.set(args);
 				} else if (s[0].contentEquals("echo")) {
 					this.echo(args);
+				} else if (s[0].contentEquals("list")) {
+					this.info.list(args);
+				} else if (s[0].contentEquals("info")) {
+					this.info.info(args);
 				} else {
 					System.out.println(String.format("Command \"%s\" unknown", s[0]));
 				}
@@ -96,6 +102,7 @@ public class SessionController extends SessionTools{
 			this.editor.setSession(this.getSession());
 			this.loader.setSession(this.getSession());
 			this.loader.setEditor(this.editor);
+			this.info.setSession(this.getSession());
 			System.out.println("New session successfully started");
 		} else {
 			this.getSession().restart();
