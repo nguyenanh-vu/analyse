@@ -1,6 +1,6 @@
 # analyse
 
-Current version 0.0.1
+Current version 0.0.2
 
 Tool for analysis on words present in online conversations. Prior to use, user has to download archive files for conversations. Currently working with Whatsapp and Facebook Messenger.
 
@@ -25,7 +25,3 @@ Command line use with commands:<br/>
 <br/>
 Possibility to create scripts, with same commands as in command line. <br/>
 Use "//" at the beginning to comment line.<br/>
-
-## future features
-
-Currently only data preparation features. Search and statistical analysis features to do.
