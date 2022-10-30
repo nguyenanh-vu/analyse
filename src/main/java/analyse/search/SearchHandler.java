@@ -25,6 +25,12 @@ public class SearchHandler extends SessionTools {
 		this.setSession(session);
 	}
 	
+	public void reset() {
+		results = new ArrayList<>();
+		params = new ArrayList<>();
+		counter = 0L;
+	}
+	
 	/**
 	 * use search engine from command line
 	 * @param s String[] arguments
@@ -35,13 +41,16 @@ public class SearchHandler extends SessionTools {
 			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
 		} else {
 			String regex = s[1];
+			Parameter p = null;
+			if (s.length > 2) {
+				try {
+					p = this.getSession().searchParameter(s[2]);
+				} catch (NotFoundException e) {
+					System.out.println(e.getMessage());
+				}
+			}
 			if (s[0].contentEquals("simple")) {
-				SimpleResult res = new SimpleResult(
-						this.simpleSearch(regex),
-						this.counter, regex, this.getSession().getMessageList().size());
-				this.results.add(res);
-				System.out.println(res.getInfo());
-				counter++;
+				this.simpleSearch(regex, p);
 			} else {
 				System.out.println(String
 						.format("Mode \"%s\" unknown, expected simple", s[0]));
@@ -149,15 +158,21 @@ public class SearchHandler extends SessionTools {
 	 * @param str String regex to search
 	 * @return Map<Long,Integer> message.id : number of occurrences
 	 */
-	public Map<Message, Integer> simpleSearch(String str) {
+	public void simpleSearch(String str, Parameter params) {
 		Map<Message, Integer> res = new HashMap<>();
 		for (Message message : this.getSession().getMessageList()) {
-			int count = message.count(str);
-			if (count != 0) {
-				res.put(message, count);
+			if (params == null || params.matches(message)) {
+				int count = message.count(str);
+				if (count != 0) {
+					res.put(message, count);
+				}
 			}
 		}
-		return res;
+		SimpleResult result = new SimpleResult(res, this.counter, 
+				str, this.getSession().getMessageList().size(), params);
+		this.results.add(result);
+		System.out.println(result.getInfo());
+		this.counter++;
 	}
 	
 	/**

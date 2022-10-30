@@ -31,6 +31,7 @@ public class Session extends LabelledObject {
 		this.clearLabels();
 		this.conversations = new ArrayList<>();
 		this.address = "";
+		this.searchHandler.reset();
 		counter = 0L;
 	}
 	
