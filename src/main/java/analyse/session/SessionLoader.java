@@ -20,6 +20,7 @@ import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.messageanalysis.Parameter;
 import analyse.search.SimpleResult;
 import analyse.utils.MessengerUtils;
 import analyse.utils.WhatsappUtils;
@@ -103,6 +104,7 @@ public class SessionLoader extends SessionTools {
 			this.parseAuthors(jo.getJSONArray("authors"));
 			this.parseMessages(jo.getJSONArray("messages"));
 			this.parseResults(jo.getJSONArray("results"));
+			this.parseParams(jo.getJSONArray("parameters"));
 			
 			this.getSession().setAddress(path);
 			System.out.println(String.format("Session data file %s finished parsing", path));
@@ -194,6 +196,17 @@ public class SessionLoader extends SessionTools {
 			if (o.getString("type").contentEquals("SIMPLE")) {
 				this.getSession().getSearchHandler().addResult(SimpleResult.parse(o, this.getSession()));
 			}
+		}
+	}
+	
+	/**
+	 * load search paramters from save file
+	 * @param params
+	 */
+	private void parseParams(JSONArray params) {
+		for (int i = 0; i < params.length(); i++) {
+			JSONObject o = params.getJSONObject(i);
+			this.getSession().getSearchHandler().addParams(Parameter.parse(o));
 		}
 	}
 }

@@ -63,7 +63,13 @@ public class SearchHandler extends SessionTools {
 			} else {
 				try {
 					Parameter p = this.getSession().searchParameter(s[1]);
-					if (s[0].contentEquals("set")) {
+					if (s[0].contentEquals("generate")) {
+						if (s.length < 6) {
+							throw new NotEnoughArgumentException(String.join(" ", s), 6, s.length);
+						}
+						p.generateSubParameters(Boolean.valueOf(s[2]), Boolean.valueOf(s[3]), 
+								Boolean.valueOf(s[4]), Boolean.valueOf(s[5]), this.getSession());
+					} else if (s[0].contentEquals("set")) {
 						if (s.length < 4) {
 							throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
 						}
@@ -82,7 +88,7 @@ public class SearchHandler extends SessionTools {
 							p.setMaxDate(LocalDateTime.parse(value, formatter));
 						} else {
 							System.out.println(String
-									.format("Parameter \"%s\" unknown, expected author|authorLabels|labels|conversations|minDate|maxDate", s[0]));
+									.format("Parameter \"%s\" unknown, expected author|authorLabels|labels|conversations|minDate|maxDate", s[2]));
 						}
 					} else if (s[0].contentEquals("remove")) {
 						if (s.length < 3) {
@@ -128,11 +134,13 @@ public class SearchHandler extends SessionTools {
 	 * add a analyse.messageanalysis.Parameter to this.params
 	 * @param p
 	 */
-	public void addParams(Parameter p) {
+	public boolean addParams(Parameter p) {
 		if (this.params.contains(p)) {
 			System.out.println(String.format("Parameter with name %s already exists", p.getName()));
+			return false;
 		} else {
 			this.params.add(p);
+			return true;
 		}
 	}
 	
