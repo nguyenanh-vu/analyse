@@ -13,12 +13,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import analyse.exceptions.JSONParsingException;
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.search.SimpleResult;
 import analyse.utils.MessengerUtils;
 import analyse.utils.WhatsappUtils;
 
@@ -92,39 +94,74 @@ public class SessionLoader extends SessionTools {
 			}
 			System.out.println(String.format("Session data file %s finished loading", path));
 			JSONObject jo = new JSONObject(str);
-			JSONArray authors = jo.getJSONArray("authors");
-			JSONArray messages = jo.getJSONArray("messages");
+			 
+			this.parseAuthors(jo.getJSONArray("authors"));
+			this.parseMessages(jo.getJSONArray("messages"));
+			this.parseResults(jo.getJSONArray("results"));
 			
-			for (int i = 0; i < authors.length() ; i++) {
-				JSONObject o = authors.getJSONObject(i);
-				Author author = new Author(o.getString("name"));
-				JSONArray labels = o.getJSONArray("labels");
-				JSONArray conversations = o.getJSONArray("conversations");
-				for (int j = 0; j < labels.length(); j++) {
-					author.addLabel(new Label(labels.getString(j)));
-				}
-				for (int j = 0; j <  conversations.length(); j++) {
-					author.addConversation(new Conversation(conversations.getString(j)));
-				}
-				editor.addAuthor(author);
+			this.getSession().setAddress(path);
+			System.out.println(String.format("Session data file %s finished parsing", path));
+			myReader.close();
+	    } catch (FileNotFoundException | JSONException | JSONParsingException e) {
+	    	System.out.println("An error occurred.");
+	    	System.out.println(e.getLocalizedMessage());
+	    }
+	}
+	
+	/**
+	 * load authors from save file
+	 * @param authors JSONArray containing authors to parse
+	 */
+	private void parseAuthors(JSONArray authors) {
+		for (int i = 0; i < authors.length() ; i++) {
+			JSONObject o = authors.getJSONObject(i);
+			Author author = new Author(o.getString("name"));
+			JSONArray labels = o.getJSONArray("labels");
+			JSONArray conversations = o.getJSONArray("conversations");
+			for (int j = 0; j < labels.length(); j++) {
+				author.addLabel(new Label(labels.getString(j)));
 			}
-			
-			for (int i = 0; i < messages.length(); i++) {
-				JSONObject o = messages.getJSONObject(i);
-				LocalDateTime date = LocalDateTime.parse(o.getString("date"),formatter);
-				Author author = this.getSession().searchAuthor(o.getString("author"));
+			for (int j = 0; j <  conversations.length(); j++) {
+				author.addConversation(new Conversation(conversations.getString(j)));
+			}
+			this.editor.addAuthor(author);
+		}
+	}
+	
+	/***
+	 * load messages from save file
+	 * @param messages JSONArray containing messages to parse
+	 * @throws JSONParsingException 
+	 */
+	private void parseMessages(JSONArray messages) throws JSONParsingException {
+		for (int i = 0; i < messages.length(); i++) {
+			JSONObject o = messages.getJSONObject(i);
+			LocalDateTime date = LocalDateTime.parse(o.getString("date"),formatter);
+			Author author;
+			try {
+				author = this.getSession().searchAuthor(o.getString("author"));
 				Conversation conv = new Conversation(o.getString("conversation"));
 				author.addConversation(conv);
 				String content = o.getString("content");
 				
 				this.editor.addMessage(new Message(0l, date, author, content,conv));
+			} catch (JSONException | NotFoundException e) {
+				throw new JSONParsingException(o, e.getMessage());
 			}
-			this.getSession().setAddress(path);
-			System.out.println(String.format("Session data file %s finished parsing", path));
-			myReader.close();
-	    } catch (FileNotFoundException | JSONException | NotFoundException e) {
-	    	System.out.println("An error occurred.");
-	    	System.out.println(e.getMessage());
-	    }
+			
+		}
+	}
+	
+	/**
+	 * load results from save file
+	 * @param results JSONArray containing results to parse
+	 */
+	private void parseResults(JSONArray results) {
+		for (int i = 0; i < results.length(); i++) {
+			JSONObject o = results.getJSONObject(i);
+			if (o.getString("type").contentEquals("SIMPLE")) {
+				this.getSession().getSearchHandler().addResult(SimpleResult.parse(o));
+			}
+		}
 	}
 }

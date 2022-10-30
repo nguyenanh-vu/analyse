@@ -66,7 +66,7 @@ public class WhatsappUtils{
 	 * @param line String
 	 * @param labels List<analyse.messageanalysis.List> 
 	 * @param conversation String
-	 * @return
+	 * @return new Message
 	 */
 	public static Message parse(String line, 
 			List<Label> labels, String conversation) {

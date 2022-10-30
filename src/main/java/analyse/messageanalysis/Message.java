@@ -110,14 +110,14 @@ public class Message {
 					this.author.getName(), 
 					this.conversation,
 					str,
-					content.replace("\n", "\\n").replace("\"", "\\\""));
+					content.replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\""));
 		} else {
 			return String.format("{\"id\":%s,\"date\":\"%s\",\"author\":\"%s\",\"conversation\":\"%s\",\n	\"content\":\"%s\"}", 
 					this.id.toString(),
 					this.timestamp.format(formatter), 
 					this.author.getName(), 
 					this.conversation,
-					content.replace("\n", "\\n").replace("\"", "\\\""));
+					content.replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\""));
 		}
 	}
 	

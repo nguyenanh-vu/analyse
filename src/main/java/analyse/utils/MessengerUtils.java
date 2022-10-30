@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import analyse.exceptions.JSONParsingException;
 import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
@@ -54,7 +55,7 @@ public class MessengerUtils {
 			}
 			System.out.println(String.format("Facebook Messenger file %s finished parsing", path));
 			myReader.close();
-	    } catch (FileNotFoundException e) {
+	    } catch (FileNotFoundException | JSONException | JSONParsingException e) {
 	    	System.out.println("An error occurred.");
 	    	System.out.println(e.getMessage());
 	    }
@@ -66,21 +67,20 @@ public class MessengerUtils {
 	 * @param labels List<analyse.messageanalysis.Label> to attach
 	 * @param editor analyse.session.SessionEditor to use for edition
 	 * @param conversation String
-	 * @return
+	 * @return new Message
+	 * @throws JSONParsingException 
 	 */
 	public static Message parse(JSONObject o, 
 			List<Label> labels,
-			String conversation) {
+			String conversation) throws JSONParsingException {
 		LocalDateTime ts = LocalDateTime.ofInstant(
 				Instant.ofEpochMilli(o.getLong("timestamp_ms")), 
                 TimeZone.getDefault().toZoneId());
-		String content = "";
+		String content;
 		try {
 			content = new String(o.getString("content").getBytes("ISO-8859-1"), "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} catch (UnsupportedEncodingException | JSONException e) {
+			throw new JSONParsingException(o, e.getMessage());
 		}
 		Author author = new Author(o.getString("sender_name").replace(" ", "_"));
 		for (Label label : labels) {

@@ -8,6 +8,8 @@ import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.search.Result;
+import analyse.search.SearchHandler;
 
 /**
  * class representing user session
@@ -20,6 +22,7 @@ public class Session {
 	private String address = "";
 	private String workdir = "";
 	private Long counter = 0L;
+	private SearchHandler searchHandler = new SearchHandler(this);
 	
 	public void restart() {
 		this.authorList =  new ArrayList<>();
@@ -27,6 +30,7 @@ public class Session {
 		this.labels = new ArrayList<>();
 		this.conversations = new ArrayList<>();
 		this.address = "";
+		counter = 0L;
 	}
 	
 	/**
@@ -86,10 +90,18 @@ public class Session {
 	}
 	
 	/**
+	 * getter
+	 * @return SearchHandler this.searchHandler
+	 */
+	public SearchHandler getSearchHandler() {
+		return this.searchHandler;
+	}
+	
+	/**
 	 * Incrementer for this.counter
 	 */
 	public void incr() {
-		this.counter += 1;
+		this.counter++;
 	}
 	
 	/**
@@ -166,6 +178,21 @@ public class Session {
 			}
 		}
 		throw new NotFoundException(String.format("Message with id: %s not found", id));
+	}
+	
+	/**
+	 * search for result in this.searchHandler.results
+	 * @param id Long id of result to search
+	 * @return analyse.search.Result
+	 * @throws NotFoundException result not found
+	 */
+	public Result searchResult(Long id) throws NotFoundException {
+		for (Result r : this.searchHandler.getResults()) {
+			if (r.getId().equals(id)) {
+				return r;
+			}
+		}
+		throw new NotFoundException(String.format("Result with id: %s not found", id));
 	}
 	
 	/**

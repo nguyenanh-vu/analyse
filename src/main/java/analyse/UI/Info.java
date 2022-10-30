@@ -11,7 +11,10 @@ import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
 import analyse.messageanalysis.comparators.DTOComparator;
+import analyse.messageanalysis.comparators.DatedMessageComparator;
 import analyse.messageanalysis.comparators.MessageComparator;
+import analyse.search.Result;
+import analyse.search.ResultComparator;
 import analyse.session.SessionTools;
 
 public class Info extends SessionTools {
@@ -33,9 +36,12 @@ public class Info extends SessionTools {
 				} else if (s[0].contentEquals("messages")) {
 					Message m = this.getSession().searchMessage(Long.valueOf(s[1]));
 					System.out.println(m.toString());
+				} else if (s[0].contentEquals("results")) {
+					Result r = this.getSession().searchResult(Long.valueOf(s[1]));
+					System.out.println(r.toString());
 				} else {
 					System.out.println(String
-							.format("Mode \"%s\" unknown, expected authors|messages", s[0]));
+							.format("Mode \"%s\" unknown, expected authors|messages|results", s[0]));
 				}
 			} catch (NotFoundException e) {
 				System.out.println(e.getMessage());
@@ -84,9 +90,43 @@ public class Info extends SessionTools {
 				for (Conversation c : conversations) {
 					System.out.println(c.toString());
 				}
+			} else if (s[0].contentEquals("results")) {
+				List<Result> results = new ArrayList<>();
+				results.addAll(this.getSession().getSearchHandler().getResults());
+				results.sort(new ResultComparator());
+				for (Result r : results) {
+					System.out.println(r.getInfo());
+				}
 			} else {
 				System.out.println(String
-						.format("Mode \"%s\" unknown, expected authors|messages|labels|conversations", s[0]));
+						.format("Mode \"%s\" unknown, expected authors|messages|labels|conversations|results", s[0]));
+			}
+		}
+	}
+	
+	/**
+	 * Read a conversation
+	 * @param s String[] arguments
+	 * @throws NotEnoughArgumentException
+	 */
+	public void read(String[] s) throws NotEnoughArgumentException {
+		if (s.length < 1) {
+			throw new NotEnoughArgumentException(String.join(" ", s), 1, s.length);
+		} else {
+			try {
+				Conversation conv = this.getSession().searchConversation(s[0]);
+				List<Message> messageList = new ArrayList<>();
+				messageList.addAll(this.getSession().getMessageList());
+				messageList.sort(new DatedMessageComparator());
+				for (Message m : messageList) {
+					if (m.getConversation().equals(conv)) {
+						System.out.println(String.format("%s %s: %s",
+								m.getTimestamp().format(formatter),
+								m.getAuthor().getName(), m.getContent()));
+					}
+				}
+			} catch (NotFoundException e) {
+				System.out.println(e.getMessage());
 			}
 		}
 	}

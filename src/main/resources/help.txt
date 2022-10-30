@@ -6,6 +6,7 @@
     load                    load data from file. See also "load help" for additionnal informations
     merge                   merge to elements together. See also "merge help" for additionnal informations
     quit                    quit application
+    read [name]             display conversation with [name]
     rename                  rename elements. See also "rename help" for additionnal informations
     reset                   reset current session (erase all data)
     run [script name]       run script. In script, use the same lines as in command line, and "//" to comment lines

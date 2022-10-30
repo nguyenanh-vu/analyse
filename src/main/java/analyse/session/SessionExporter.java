@@ -9,6 +9,7 @@ import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.search.Result;
 import analyse.utils.JSONUtils;
 
 /**
@@ -17,7 +18,6 @@ import analyse.utils.JSONUtils;
 public class SessionExporter extends SessionTools {
 	/**
 	 * Export List<analyse.messageanalysis.Author> to JSON
-	 * @param session analyse.session.Session
 	 * @return JSON data
 	 */
 	public String exportAuthors() {
@@ -42,7 +42,6 @@ public class SessionExporter extends SessionTools {
 	
 	/**
 	 * Export List<analyse.messageanalysis.Message> to JSON
-	 * @param session analyse.session.Session
 	 * @param verbose Boolean if true add labels to message
 	 * @return JSON data
 	 */
@@ -58,8 +57,22 @@ public class SessionExporter extends SessionTools {
 	}
 	
 	/**
+	 * Export List<analyse.search.Result> to JSON
+	 * @return JSON data
+	 */
+	public String exportResults() {
+		String str = "";
+		for (Result r: this.getSession().getSearchHandler().getResults()) {
+			str += ",\n" + r.toString();
+		}
+		if (!str.isEmpty()) {
+			str = str.substring(2);
+		}
+		return "[\n" + JSONUtils.indent(str) + "\n]";
+	}
+	
+	/**
 	 * Export List<analyse.messageanalysis.Label> to JSON
-	 * @param session analyse.session.Session
 	 * @return JSON data
 	 */
 	public String exportLabels() {
@@ -75,7 +88,6 @@ public class SessionExporter extends SessionTools {
 	
 	/**
 	 * Export List<analyse.messageanalysis.Conversation> to JSON
-	 * @param session analyse.session.Session
 	 * @return JSON data
 	 */
 	public String exportConversations() {
@@ -91,14 +103,14 @@ public class SessionExporter extends SessionTools {
 	
 	/**
 	 * Export whole session data
-	 * @param session analyse.session.Session
 	 * @return JSON data
 	 */
 	public String exportSession() {
-		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"conversations\":%s,\n	\"messages\":%s\n}", 
+		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"conversations\":%s,\n	\"results\":%s,\n	\"messages\":%s\n}", 
 				JSONUtils.indent(this.exportAuthors()),
 				JSONUtils.indent(this.exportLabels()),
 				JSONUtils.indent(this.exportConversations()),
+				JSONUtils.indent(this.exportResults()),
 				JSONUtils.indent(this.exportMessages()));
 	}
 	
@@ -106,7 +118,6 @@ public class SessionExporter extends SessionTools {
 	 * Command-line controller for data exporter
 	 * set save file address if export session to file
 	 * @param s String[] arguments
-	 * @param session analyse.session.Session
 	 * @throws NotEnoughArgumentException
 	 */
 	public void export(String[] s) throws NotEnoughArgumentException {
@@ -130,6 +141,8 @@ public class SessionExporter extends SessionTools {
 				str = this.exportMessages();
 			} else if (s[0].contentEquals("vmessages")) {
 				str = this.exportMessages(true);
+			} else if (s[0].contentEquals("results")) {
+				str = this.exportResults();
 			} else if (s[0].contentEquals("session")) {
 				if (toFile) {
 					this.getSession().setAddress(s[1]);
