@@ -19,6 +19,7 @@ import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.messageanalysis.Reactions;
 import analyse.session.SessionEditor;
 
 /**
@@ -83,12 +84,20 @@ public class MessengerUtils {
 		} catch (UnsupportedEncodingException | JSONException e) {
 			throw new JSONParsingException(o, e.getMessage());
 		}
+		
 		Author author = new Author(o.getString("sender_name").replace(" ", "_"));
 		Conversation conv = new Conversation(conversation);
 		for (Label label : labels) {
 			conv.addLabel(label);
 		}
 		author.addConversation(conv);
-		return new Message(0l, ts, author, content, conv);
+		Reactions reactions = new Reactions();
+		if (!o.isNull("reactions")) {
+			JSONArray r = o.getJSONArray("reactions");
+			for (int i = 0; i < r.length(); i++) {
+				reactions.addFbReactions(r.getJSONObject(i).getString("reaction"));
+			}
+		}
+		return new Message(0l, ts, author, content, conv, reactions);
 	}
 }

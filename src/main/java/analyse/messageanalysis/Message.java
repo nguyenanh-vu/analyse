@@ -13,11 +13,12 @@ public class Message {
 	private Author author;
 	private String content;
 	private Conversation conversation;
+	private Reactions reactions = new Reactions();
 	private static final DateTimeFormatter formatter = 
 			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 	
 	/**
-	 * all args constructor
+	 * all args constructor without reactions
 	 * @param id Long
 	 * @param timestamp LocalDateTime
 	 * @param author analyse.messageanalysis.Author
@@ -32,6 +33,26 @@ public class Message {
 		this.author = author;
 		this.content = content;
 		this.conversation = conversation;
+	}
+	
+	/**
+	 * all args constructor with reactions
+	 * @param id Long
+	 * @param timestamp LocalDateTime
+	 * @param author analyse.messageanalysis.Author
+	 * @param content String
+	 * @param conversation String
+	 * @param reactions Reactions
+	 */
+	public Message(Long id, LocalDateTime timestamp, 
+			Author author, String content,
+			Conversation conversation, Reactions reactions) {
+		this.id = id;
+		this.timestamp = timestamp;
+		this.author = author;
+		this.content = content;
+		this.conversation = conversation;
+		this.reactions = reactions;
 	}
 	
 	/**
@@ -100,12 +121,13 @@ public class Message {
 		if (Boolean.TRUE.equals(verbose)) {
 			author += String.format(",\"author_labels\":[%s]", this.getAuthor().labelsToString());
 		}
-		return String.format("{\"id\":%s,\"date\":\"%s\",%s,\"conversation\":\"%s\",\"labels\":[%s],\n	\"content\":\"%s\"}", 
+		return String.format("{\"id\":%s,\"date\":\"%s\",%s,\"conversation\":\"%s\",\"labels\":[%s],\n	\"reactions\":%s,\n	\"content\":\"%s\"}", 
 				this.id.toString(),
 				this.timestamp.format(formatter), 
 				author, 
 				this.conversation.getName(),
 				this.conversation.labelsToString(),
+				this.reactions.toString(),
 				content.replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\""));
 	}
 	
@@ -129,5 +151,9 @@ public class Message {
 		    res++;
 		}
 		return res;
+	}
+	
+	public Reactions getReactions() {
+		return this.reactions;
 	}
 }
