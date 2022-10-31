@@ -68,6 +68,9 @@ public class SearchHandler extends SessionTools {
 			this.addParams(new Parameter(s[1]));
 		} else {
 			try {
+				List<String> possibleParams = Arrays.asList("minDate", "maxDate");
+				possibleParams.addAll(Parameter.possibleKeys);
+				possibleParams.addAll(Reactions.possibleKeys);
 				Parameter p = this.getSession().searchParameter(s[1]);
 				switch (s[0]) {
 					case "generate":
@@ -87,8 +90,7 @@ public class SearchHandler extends SessionTools {
 						} else if (Reactions.possibleKeys.contains(s[2])) {
 							p.setReactions(s[2], Integer.valueOf(value));
 						} else {
-							UIUtils.parameterUnknown(s[2], Arrays.asList("author", "authorLabels", 
-									"labels", "conversations","minDate", "maxDate"));
+							UIUtils.parameterUnknown(s[2], possibleParams);
 						}
 						break;
 					case "remove":
@@ -102,8 +104,7 @@ public class SearchHandler extends SessionTools {
 						} else if (Reactions.possibleKeys.contains(s[2])) {
 							p.setReactions(s[2], 0);
 						} else {
-							UIUtils.parameterUnknown(s[2], Arrays.asList("author", "authorLabels", 
-									"labels", "conversations","minDate", "maxDate"));
+							UIUtils.parameterUnknown(s[2], possibleParams);
 						}
 						break;
 					default:
