@@ -3,6 +3,8 @@ package analyse.session;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.messageanalysis.Author;
@@ -22,14 +24,11 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportAuthors() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Author author : this.getSession().getAuthorList()) {
-			str += ",\n" + author.toString();
+			str.add(author.toJSON());
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
 	}
 	
 	/**
@@ -47,14 +46,11 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportMessages(Boolean verbose) {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Message message : this.getSession().getMessageList()) {
-			str += ",\n" + message.toString(verbose);
+			str.add(message.toJSON(verbose));
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
 	}
 	
 	/**
@@ -62,14 +58,11 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportResults() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Result r: this.getSession().getSearchHandler().getResults()) {
-			str += ",\n" + r.toString();
+			str.add(r.toJSON());
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
 	}
 	
 	/**
@@ -77,14 +70,11 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportLabels() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Label label : this.getSession().getLabels()) {
-			str += ",\"" + label.toString() + "\"";
+			str.add("\"" + label.getName() + "\"");
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(1);
-		}
-		return "[" + str + "]";
+		return "[" + String.join(",", str) + "]";
 	}
 	
 	/**
@@ -92,25 +82,19 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportConversations() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Conversation conv : this.getSession().getConversations()) {
-			str += ",\n" + conv.toString() + "";
+			str.add(conv.toJSON());
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",", str)) + "\n]";
 	}
 	
 	public String exportParams() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Parameter p : this.getSession().getSearchHandler().getParams()) {
-			str += ",\n" + p.toString();
+			str.add(p.toJSON());
 		} 
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",", str)) + "\n]";
 	}
 	
 	/**
@@ -118,13 +102,14 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportSession() {
-		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"conversations\":%s,\n	\"parameters\":%s,\n	\"results\":%s,\n	\"messages\":%s\n}", 
-				JSONUtils.indent(this.exportAuthors()),
-				JSONUtils.indent(this.exportLabels()),
-				JSONUtils.indent(this.exportConversations()),
-				JSONUtils.indent(this.exportParams()),
-				JSONUtils.indent(this.exportResults()),
-				JSONUtils.indent(this.exportMessages()));
+		StringBuilder str = new StringBuilder();
+		str.append(String.format("\n\"authors\":%s,",this.exportAuthors()));
+		str.append(String.format("\n\"labels\":%s,",this.exportLabels()));
+		str.append(String.format("\n\"conversations\":%s,",this.exportConversations()));
+		str.append(String.format("\n\"parameters\":%s,",this.exportParams()));
+		str.append(String.format("\n\"results\":%s,",this.exportResults()));
+		str.append(String.format("\n\"messages\":%s",this.exportMessages()));
+		return "{" + JSONUtils.indent(str.toString()) + "}";
 	}
 	
 	/**

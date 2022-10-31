@@ -84,14 +84,8 @@ public class SearchHandler extends SessionTools {
 							throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
 						}
 						String value = s[3];
-						if (s[2].contentEquals("author")) {
-							p.setAuthor(value);
-						} else if (s[2].contentEquals("authorLabels")) {
-							p.setAuthorLabels(value);
-						} else if (s[2].contentEquals("labels")) {
-							p.setLabels(value);
-						} else if (s[2].contentEquals("conversations")) {
-							p.setConversations(value);
+						if (Parameter.possibleKeys.contains(s[2])) {
+							p.set(s[2], value);
 						} else if (s[2].contentEquals("minDate")) {
 							p.setMinDate(LocalDateTime.parse(value, formatter));
 						} else if (s[2].contentEquals("maxDate")) {
@@ -106,14 +100,8 @@ public class SearchHandler extends SessionTools {
 						if (s.length < 3) {
 							throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
 						}
-						if (s[2].contentEquals("author")) {
-							p.setAuthor(null);
-						} else if (s[2].contentEquals("authorLabels")) {
-							p.setAuthorLabels(null);
-						} else if (s[2].contentEquals("labels")) {
-							p.setLabels(null);
-						} else if (s[2].contentEquals("conversations")) {
-							p.setConversations(null);
+						if (Parameter.possibleKeys.contains(s[2])) {
+							p.set(s[2], null);
 						} else if (s[2].contentEquals("minDate")) {
 							p.setMinDate(null);
 						} else if (s[2].contentEquals("maxDate")) {
@@ -176,7 +164,7 @@ public class SearchHandler extends SessionTools {
 		SimpleResult result = new SimpleResult(res, this.counter, 
 				str, this.getSession().getMessageList().size(), params);
 		this.results.add(result);
-		System.out.println(result.getInfo());
+		System.out.println(result.toString());
 		this.counter++;
 	}
 	

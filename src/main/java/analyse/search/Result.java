@@ -40,7 +40,13 @@ public interface Result {
 	 * get String representation of search informations
 	 * @return String
 	 */
-	public String getInfo();
+	public String toString();
+	
+	/**
+	 * get JSON representation of search informations
+	 * @return String
+	 */
+	public String toJSON();
 	
 	/**
 	 * getter

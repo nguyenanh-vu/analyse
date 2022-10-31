@@ -33,16 +33,16 @@ public class Info extends SessionTools {
 			try {
 				if (s[0].contentEquals("authors")) {
 					Author a = this.getSession().searchAuthor(s[1]);
-					System.out.println(a.toString());
+					System.out.println(a.toJSON());
 				} else if (s[0].contentEquals("messages")) {
 					Message m = this.getSession().searchMessage(Long.valueOf(s[1]));
-					System.out.println(m.toString());
+					System.out.println(m.toJSON());
 				} else if (s[0].contentEquals("results")) {
 					Result r = this.getSession().searchResult(Long.valueOf(s[1]));
-					System.out.println(r.toString());
+					System.out.println(r.toJSON());
 				} else if (s[0].contentEquals("params")) {
 					Parameter p = this.getSession().searchParameter(s[1]);
-					System.out.println(p.toString());
+					System.out.println(p.toJSON());
 				} else {
 					System.out.println(String
 							.format("Mode \"%s\" unknown, expected authors|messages|results|params", s[0]));
@@ -67,25 +67,21 @@ public class Info extends SessionTools {
 				authorList.addAll(this.getSession().getAuthorList());
 				authorList.sort(new NamedObjectComparator());
 				for (Author a : authorList) {
-					System.out.println(a.getName());
+					System.out.println(a.toString());
 				}
 			} else if (s[0].contentEquals("messages")) {
 				List<Message> messageList = new ArrayList<>();
 				messageList.addAll(this.getSession().getMessageList());
 				messageList.sort(new MessageComparator());
 				for (Message m : this.getSession().getMessageList()) {
-					System.out.println(String.format("id: %s, author: %s, date: %s, conversation: %s", 
-							m.getId().toString(),
-							m.getAuthor().getName(),
-							m.getTimestamp().format(formatter),
-							m.getConversation().toString()));
+					System.out.println(m.toString());
 				}
 			} else if (s[0].contentEquals("labels")) {
 				List<Label> labels = new ArrayList<>();
 				labels.addAll(this.getSession().getLabels());
 				labels.sort(new NamedObjectComparator());
 				for (Label l : labels) {
-					System.out.println(l.toString());
+					System.out.println(l.getName());
 				}
 			} else if (s[0].contentEquals("conversations")) {
 				List<Conversation> conversations = new ArrayList<>();
@@ -99,7 +95,7 @@ public class Info extends SessionTools {
 				results.addAll(this.getSession().getSearchHandler().getResults());
 				results.sort(new ResultComparator());
 				for (Result r : results) {
-					System.out.println(r.getInfo());
+					System.out.println(r.toString());
 				}
 			} else if (s[0].contentEquals("params")) {
 				List<Parameter> params = new ArrayList<>();
