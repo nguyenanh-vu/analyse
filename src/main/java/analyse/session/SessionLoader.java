@@ -22,6 +22,7 @@ import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
 import analyse.messageanalysis.Parameter;
+import analyse.messageanalysis.Reactions;
 import analyse.search.SimpleResult;
 import analyse.utils.MessengerUtils;
 import analyse.utils.WhatsappUtils;
@@ -182,8 +183,8 @@ public class SessionLoader extends SessionTools {
 			}
 			String content = o.getString("content");
 			author.addConversation(conv);
-			this.editor.addMessage(new Message(0l, date, author, content,conv));
-			
+			Reactions reactions = Reactions.parse(o);
+			this.editor.addMessage(new Message(0l, date, author, content,conv, reactions));
 		}
 	}
 	

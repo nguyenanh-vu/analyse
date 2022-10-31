@@ -22,6 +22,7 @@ public class Parameter extends NamedObject {
 	private String conversations;
 	private LocalDateTime minDate;
 	private LocalDateTime maxDate;
+	private Reactions reactions = new Reactions();
 	List<String> subParameters = new ArrayList<>();
 	
 	public Parameter(String name) {
@@ -56,6 +57,9 @@ public class Parameter extends NamedObject {
 		}
 		if (this.maxDate != null  
 				&& message.getTimestamp().compareTo(maxDate) > 0) {
+			return false;
+		}
+		if (!this.reactions.matches(message.getReactions())) {
 			return false;
 		}
 		return true;
@@ -94,7 +98,7 @@ public class Parameter extends NamedObject {
 		if (!str.isEmpty()) {
 			str = str.substring(1);
 		}
-		return String.format("{\"name\":\"%s\",\"author\":%s,\"authorLabels\":%s,\"labels\":%s,\"conversations\":%s,\"minDate\":%s,\"maxDate\":%s,\n	\"subParameters\":[%s]}", 
+		return String.format("{\"name\":\"%s\",\"author\":%s,\"authorLabels\":%s,\"labels\":%s,\"conversations\":%s,\"minDate\":%s,\"maxDate\":%s,\n	%s,	\n	\"subParameters\":[%s]}", 
 				this.getName(),
 				OptionalToString.toString(this.author),
 				OptionalToString.toString(this.authorLabels),
@@ -102,6 +106,7 @@ public class Parameter extends NamedObject {
 				OptionalToString.toString(this.conversations),
 				OptionalToString.format(minDate, formatter),
 				OptionalToString.format(maxDate, formatter),
+				this.reactions.toString(),
 				str);
 	}
 	
@@ -151,6 +156,18 @@ public class Parameter extends NamedObject {
 
 	public void setMinDate(LocalDateTime minDate) {
 		this.minDate = minDate;
+	}
+	
+	public Reactions getReactions() {
+		return this.reactions;
+	}
+	
+	public void setReactions(String key, Integer value) {
+		this.reactions.set(key, value);
+	}
+	
+	public void setReaction(Reactions reactions) {
+		this.reactions = reactions;
 	}
 	
 	/**
@@ -204,6 +221,7 @@ public class Parameter extends NamedObject {
 		this.conversations = p.getConversations();
 		this.maxDate = p.getMaxDate();
 		this.minDate = p.getMinDate();
+		this.reactions = p.getReactions();
 	}
 	
 	/**
@@ -309,6 +327,9 @@ public class Parameter extends NamedObject {
 		}
 		if (!o.isNull("maxDate")) {
 			res.setMaxDate(LocalDateTime.parse(o.getString("maxDate"), formatter));
+		}
+		if (!o.isNull("reactions")) {
+			res.setReaction(Reactions.parse(o.getJSONObject("reactions")));
 		}
 		JSONArray subParameters = o.getJSONArray("subParameters");
 		for (int i = 0; i < subParameters.length(); i++) {

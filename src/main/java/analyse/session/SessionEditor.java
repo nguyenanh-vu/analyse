@@ -32,8 +32,8 @@ public class SessionEditor extends SessionTools {
 			System.out.println(e.getMessage());
 		}
 		this.getSession().getMessageList()
-		.add(new Message(this.getSession().getCounter(), 
-				message.getTimestamp(), a, message.getContent(), conv));
+		.add(new Message(this.getSession().getCounter(), message.getTimestamp(), 
+				a, message.getContent(), conv, message.getReactions()));
 		this.getSession().incr();
 	}
 	

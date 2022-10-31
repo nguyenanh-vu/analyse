@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.TimeZone;
 
@@ -19,12 +21,25 @@ import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.messageanalysis.Reactions;
 import analyse.session.SessionEditor;
 
 /**
  * Utils for handling Facebook Messenger backup file
  */
 public class MessengerUtils {
+	public static Map<String,String> reactions = new HashMap<String, String>() {
+		private static final long serialVersionUID = -1875872005610564502L;
+	{
+		put("\u00f0\u009f\u0098\u0086", "laugh");
+		put("\u00f0\u009f\u0098\u0082", "laughTears");
+		put("\u00e2\u009d\u00a4", "love");
+		put("\u00f0\u009f\u0091\u008d", "thumbs");
+		put("\u00f0\u009f\u0099\u0082", "smile");
+		put("\u00f0\u009f\u0098\u00ae", "surprise");
+		put("\u00f0\u009f\u0098\u00a2", "tears");
+		put("\u00f0\u009f\u0098\u00a0", "angry");
+	}};
 	
 	/**
 	 * Load data from Facebook Messenger backup file
@@ -83,12 +98,26 @@ public class MessengerUtils {
 		} catch (UnsupportedEncodingException | JSONException e) {
 			throw new JSONParsingException(o, e.getMessage());
 		}
+		
 		Author author = new Author(o.getString("sender_name").replace(" ", "_"));
 		Conversation conv = new Conversation(conversation);
 		for (Label label : labels) {
 			conv.addLabel(label);
 		}
 		author.addConversation(conv);
-		return new Message(0l, ts, author, content, conv);
+		Reactions reactions = new Reactions();
+		if (!o.isNull("reactions")) {
+			JSONArray r = o.getJSONArray("reactions");
+			for (int i = 0; i < r.length(); i++) {
+				MessengerUtils.addReactions(reactions, r.getJSONObject(i).getString("reaction"));
+			}
+		}
+		return new Message(0l, ts, author, content, conv, reactions);
+	}
+	
+	public static void addReactions(Reactions r, String str) {
+		if (MessengerUtils.reactions.containsKey(str)) {
+			r.incr(MessengerUtils.reactions.get(str));
+		}
 	}
 }
