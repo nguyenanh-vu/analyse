@@ -207,8 +207,8 @@ public class SessionEditor extends SessionTools {
 	 * @throws NotEnoughArgumentException
 	 */
 	public void label(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 4) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
+		if (s.length < 3) {
+			throw new NotEnoughArgumentException(String.join(" ", s), 3, s.length);
 		} else {
 			LabelledObject o;
 			Label l;
@@ -223,6 +223,9 @@ public class SessionEditor extends SessionTools {
 					throw new Exception();
 				}
 				if (s[0].contentEquals("add")) {
+					if (s.length < 4) {
+						throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
+					}
 					l = new Label(s[3]);
 					if (this.getSession().getLabels().contains(l)) {
 						l = this.getSession().searchLabel(s[3]);
@@ -231,6 +234,9 @@ public class SessionEditor extends SessionTools {
 					}
 					o.addLabel(l);
 				} else if (s[0].contentEquals("remove")) {
+					if (s.length < 4) {
+						throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
+					}
 					o.removeLabel(new Label(s[3]));
 				} else if (s[0].contentEquals("clear")) {
 					o.clearLabels();

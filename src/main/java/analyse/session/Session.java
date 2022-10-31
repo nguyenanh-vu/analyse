@@ -9,6 +9,7 @@ import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.LabelledObject;
 import analyse.messageanalysis.Message;
+import analyse.messageanalysis.Parameter;
 import analyse.search.Result;
 import analyse.search.SearchHandler;
 
@@ -30,6 +31,7 @@ public class Session extends LabelledObject {
 		this.clearLabels();
 		this.conversations = new ArrayList<>();
 		this.address = "";
+		this.searchHandler.reset();
 		counter = 0L;
 	}
 	
@@ -184,6 +186,21 @@ public class Session extends LabelledObject {
 				return r;
 			}
 		}
-		throw new NotFoundException(String.format("Result with id: %s not found", id));
+		throw new NotFoundException(String.format("Result with id: %d not found", id));
+	}
+	
+	/**
+	 * search for parameter in this.searchHandler.params
+	 * @param name String name of parameter to search
+	 * @return analysis.messageanalysis.Parameter
+	 * @throws NotFoundException 
+	 */
+	public Parameter searchParameter(String name) throws NotFoundException {
+		for (Parameter p : this.searchHandler.getParams()) {
+			if (p.getName().contentEquals(name)) {
+				return p;
+			}
+		}
+		throw new NotFoundException(String.format("Search parameter with name: %s not found", name));
 	}
 }

@@ -9,6 +9,7 @@ import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.messageanalysis.Parameter;
 import analyse.search.Result;
 import analyse.utils.JSONUtils;
 
@@ -101,15 +102,27 @@ public class SessionExporter extends SessionTools {
 		return "[\n" + JSONUtils.indent(str) + "\n]";
 	}
 	
+	public String exportParams() {
+		String str = "";
+		for (Parameter p : this.getSession().getSearchHandler().getParams()) {
+			str += ",\n" + p.toString();
+		} 
+		if (!str.isEmpty()) {
+			str = str.substring(2);
+		}
+		return "[\n" + JSONUtils.indent(str) + "\n]";
+	}
+	
 	/**
 	 * Export whole session data
 	 * @return JSON data
 	 */
 	public String exportSession() {
-		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"conversations\":%s,\n	\"results\":%s,\n	\"messages\":%s\n}", 
+		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"conversations\":%s,\n	\"parameters\":%s,\n	\"results\":%s,\n	\"messages\":%s\n}", 
 				JSONUtils.indent(this.exportAuthors()),
 				JSONUtils.indent(this.exportLabels()),
 				JSONUtils.indent(this.exportConversations()),
+				JSONUtils.indent(this.exportParams()),
 				JSONUtils.indent(this.exportResults()),
 				JSONUtils.indent(this.exportMessages()));
 	}
@@ -145,7 +158,7 @@ public class SessionExporter extends SessionTools {
 				str = this.exportResults();
 			} else if (s[0].contentEquals("session")) {
 				if (toFile) {
-					this.getSession().setAddress(s[1]);
+					this.getSession().setAddress(this.getSession().getWorkdir() + s[1]);
 				}
 				str = this.exportSession();
 			} else {

@@ -53,4 +53,18 @@ public class LabelledObject extends NamedObject{
 	public void clearLabels() {
 		this.labels = new ArrayList<>();
 	}
+	
+	/**
+	 * Return true if at least one label matches regex
+	 * @param regex String regex to match
+	 * @return
+	 */
+	public Boolean matchesLabels(String regex) {
+		for (Label l : this.labels) {
+			if (l.getName().matches(regex)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

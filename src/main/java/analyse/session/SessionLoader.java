@@ -16,10 +16,12 @@ import org.json.JSONObject;
 
 import analyse.exceptions.JSONParsingException;
 import analyse.exceptions.NotEnoughArgumentException;
+import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
 import analyse.messageanalysis.Label;
 import analyse.messageanalysis.Message;
+import analyse.messageanalysis.Parameter;
 import analyse.search.SimpleResult;
 import analyse.utils.MessengerUtils;
 import analyse.utils.WhatsappUtils;
@@ -102,6 +104,7 @@ public class SessionLoader extends SessionTools {
 			 
 			this.parseAuthors(jo.getJSONArray("authors"));
 			this.parseMessages(jo.getJSONArray("messages"));
+			this.parseParams(jo.getJSONArray("parameters"));
 			this.parseResults(jo.getJSONArray("results"));
 			
 			this.getSession().setAddress(path);
@@ -192,8 +195,23 @@ public class SessionLoader extends SessionTools {
 		for (int i = 0; i < results.length(); i++) {
 			JSONObject o = results.getJSONObject(i);
 			if (o.getString("type").contentEquals("SIMPLE")) {
-				this.getSession().getSearchHandler().addResult(SimpleResult.parse(o));
+				try {
+					this.getSession().getSearchHandler().addResult(SimpleResult.parse(o, this.getSession()));
+				} catch (JSONException | NotFoundException e) {
+					System.out.println(e.getMessage());
+				}
 			}
+		}
+	}
+	
+	/**
+	 * load search parameters from save file
+	 * @param params
+	 */
+	private void parseParams(JSONArray params) {
+		for (int i = 0; i < params.length(); i++) {
+			JSONObject o = params.getJSONObject(i);
+			this.getSession().getSearchHandler().addParams(Parameter.parse(o));
 		}
 	}
 }

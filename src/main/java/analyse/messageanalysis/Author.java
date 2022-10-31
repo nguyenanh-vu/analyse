@@ -78,4 +78,32 @@ public class Author extends LabelledObject{
 		return String.format("{\"name\":\"%s\",\"labels\":[%s], \"conversations\":[%s]}", 
 				this.getName(), this.labelsToString(), conv);
 	}
+	
+	/**
+	 * Return true if at least one conversation matches regex
+	 * @param regex String regex to match
+	 * @return Boolean
+	 */
+	public Boolean matchesConversation(String regex) {
+		for (Conversation c : this.conversations) {
+			if (c.getName().matches(regex)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Return true if at least one conversation has on label matching regex
+	 * @param regex String regex to match
+	 * @return Boolean
+	 */
+	public Boolean matchesConversationLabel(String regex) {
+		for (Conversation c : this.conversations) {
+			if (c.matchesLabels(regex)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

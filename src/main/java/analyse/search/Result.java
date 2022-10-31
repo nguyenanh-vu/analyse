@@ -2,6 +2,8 @@ package analyse.search;
 
 import java.util.Map;
 
+import analyse.messageanalysis.Parameter;
+
 public interface Result {
 	/**
 	 * getter
@@ -50,5 +52,5 @@ public interface Result {
 	 * get search parameters
 	 * @return
 	 */
-	public Map<?,?> getFilters();
+	public Parameter getParams();
 }
