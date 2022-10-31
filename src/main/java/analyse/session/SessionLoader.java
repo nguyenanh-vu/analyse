@@ -183,10 +183,7 @@ public class SessionLoader extends SessionTools {
 			}
 			String content = o.getString("content");
 			author.addConversation(conv);
-			Reactions reactions = new Reactions();
-			if (!o.isNull("reactions")) {
-				reactions = Reactions.parse(o.getJSONObject("reactions"));
-			}
+			Reactions reactions = Reactions.parse(o);
 			this.editor.addMessage(new Message(0l, date, author, content,conv, reactions));
 		}
 	}

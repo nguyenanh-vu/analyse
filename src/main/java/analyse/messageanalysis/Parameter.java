@@ -98,7 +98,7 @@ public class Parameter extends NamedObject {
 		if (!str.isEmpty()) {
 			str = str.substring(1);
 		}
-		return String.format("{\"name\":\"%s\",\"author\":%s,\"authorLabels\":%s,\"labels\":%s,\"conversations\":%s,\"minDate\":%s,\"maxDate\":%s,\n	\"reactions\":%s,	\n	\"subParameters\":[%s]}", 
+		return String.format("{\"name\":\"%s\",\"author\":%s,\"authorLabels\":%s,\"labels\":%s,\"conversations\":%s,\"minDate\":%s,\"maxDate\":%s,\n	%s,	\n	\"subParameters\":[%s]}", 
 				this.getName(),
 				OptionalToString.toString(this.author),
 				OptionalToString.toString(this.authorLabels),

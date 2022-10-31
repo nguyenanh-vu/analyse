@@ -1,19 +1,15 @@
 package analyse.messageanalysis;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONObject;
 
 public class Reactions {
-	Integer laugh = 0;
-	Integer laughTears = 0;
-	Integer love = 0;
-	Integer thumbs = 0;
-	Integer smile = 0;
-	Integer surprise = 0;
-	Integer tears = 0;
-	Integer angry = 0;
+	Map<String, Integer> map;
 	public static List<String> possibleKeys = Arrays.asList("laugh",
 			"laughTears", "love", "thumbs", "smile", "surprise", "tears", "angry");
 	
@@ -21,6 +17,10 @@ public class Reactions {
 	 * no args constructor
 	 */
 	public Reactions() {
+		this.map = new HashMap<>();
+		for (String s : Reactions.possibleKeys) {
+			this.map.put(s, 0);
+		}
 	}
 	
 	/**
@@ -36,140 +36,53 @@ public class Reactions {
 	public Reactions(Integer laugh, Integer laughTears,
 			Integer love, Integer thumbs, Integer smile,
 			Integer surprise, Integer tears, Integer angry) {
-		this.laugh = laugh;
-		this.laughTears = laughTears;
-		this.love = love;
-		this.thumbs = thumbs;
-		this.smile = smile;
-		this.surprise = surprise;
-		this.tears = tears;
-		this.angry = angry;
+		this.map = new HashMap<>();
+		this.map.put("laugh", laugh);
+		this.map.put("laughTears", laughTears);
+		this.map.put("love", love);
+		this.map.put("thumbs", thumbs);
+		this.map.put("smile", smile);
+		this.map.put("surprise", surprise);
+		this.map.put("tears", tears);
+		this.map.put("angry", angry);
 	}
 	
-	/**
-	 * add a reaction from Facebook Messenger message
-	 * @param str
-	 */
-	public void addFbReactions(String str) {
-		switch (str) {
-		case "\u00f0\u009f\u0098\u0086":
-			this.laugh++;
-			break;
-		case "\u00f0\u009f\u0098\u0082":
-			this.laughTears++;
-			break;
-		case "\u00e2\u009d\u00a4":
-			this.love++;
-			break;
-		case "\u00f0\u009f\u0091\u008d":
-			this.thumbs++;
-			break;
-		case "\u00f0\u009f\u0099\u0082":
-			this.smile++;
-			break;
-		case "\u00f0\u009f\u0098\u00ae":
-			this.surprise++;
-			break;
-		case "\u00f0\u009f\u0098\u00a2":
-			this.tears++;
-			break;
-		case "\u00f0\u009f\u0098\u00a0":
-			this.angry++;
-			break;
-		default:
-			break;
-		}
-	}
-	
-	public Integer getLaugh() {
-		return this.laugh;
-	}
-	
-	public Integer getLaughTears() {
-		return this.laughTears;
-	}
-	
-	public Integer getLove() {
-		return this.love;
-	}
-	
-	public Integer getThumbs() {
-		return this.thumbs;
-	}
-	
-	public Integer getSmile() {
-		return this.smile;
-	}
-	
-	public Integer getSurprise() {
-		return this.surprise;
-	}
-	
-	public Integer getTears() {
-		return this.tears;
-	}
-	
-	public Integer getAngry() {
-		return this.angry;
+	public Integer get(String key) {
+		return this.map.get(key);
 	}
 	
 	public void set(String key, Integer value) {
-		switch (key) {
-		case "laugh":
-			this.laugh = value;
-			break;
-		case "laughTears":
-			this.laughTears = value;
-			break;
-		case "love":
-			this.love = value;
-			break;
-		case "thumbs":
-			this.thumbs = value;
-			break;
-		case "smile":
-			this.smile = value;
-			break;
-		case "surprise":
-			this.surprise = value;
-			break;
-		case "tears":
-			this.tears = value;
-			break;
-		case "angry":
-			this.angry = value;
-			break;
-		default:
-			break;
-		}
+		this.map.put(key, value);
+	}
+	
+	public void incr(String key) {
+		this.map.put(key, this.map.get(key) + 1);
 	}
 	
 	public String toString() {
-		return String.format("{\"laugh\":%d,\"laughTears\":%d,\"love\":%d,\"thumbs\":%d,\"smile\":%d,\"surprise\":%d,\"tears\":%d,\"angry\":%d}", 
-				this.laugh,
-				this.laughTears,
-				this.love,
-				this.thumbs,
-				this.smile,
-				this.surprise,
-				this.tears,
-				this.angry);
+		List<String> str = new ArrayList<>();
+		for (Map.Entry<String, Integer> entry : this.map.entrySet()) {
+			str.add(String.format("\"%s\":%d", entry.getKey(), entry.getValue()));
+		}
+		return String.join(",", str);
 	}
 	
 	public static Reactions parse(JSONObject o) {
-		return new Reactions(o.getInt("laugh"), o.getInt("laughTears"),
-				o.getInt("love"), o.getInt("thumbs"), o.getInt("smile"),
-				o.getInt("surprise"), o.getInt("tears"), o.getInt("angry"));
+		Reactions r = new Reactions();
+		for (String s : Reactions.possibleKeys) {
+			if (o.has(s)) {
+				r.set(s, o.getInt(s));
+			}
+		}
+		return r;
 	}
 	
 	public Boolean matches(Reactions other) {
-		return this.laugh <= other.getLaugh()
-				&& this.laughTears <= other.getLaughTears()
-				&& this.love <= other.getLove()
-				&& this.thumbs <= other.getThumbs()
-				&& this.smile <= other.getSmile()
-				&& this.surprise <= other.getSurprise()
-				&& this.tears <= other.getTears()
-				&& this.angry <= other.getAngry();
+		for (String s : Reactions.possibleKeys) {
+			if (this.map.get(s) > other.get(s)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

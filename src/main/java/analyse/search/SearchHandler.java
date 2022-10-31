@@ -119,7 +119,7 @@ public class SearchHandler extends SessionTools {
 						} else if (s[2].contentEquals("maxDate")) {
 							p.setMaxDate(null);
 						} else if (Reactions.possibleKeys.contains(s[2])) {
-							p.setReactions(s[2], Integer.valueOf(0));
+							p.setReactions(s[2], 0);
 						} else {
 							System.out.println(String
 									.format("Parameter \"%s\" unknown, expected author|authorLabels|labels|conversations|minDate|maxDate", s[0]));

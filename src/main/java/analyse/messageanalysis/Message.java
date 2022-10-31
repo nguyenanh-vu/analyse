@@ -121,7 +121,7 @@ public class Message {
 		if (Boolean.TRUE.equals(verbose)) {
 			author += String.format(",\"author_labels\":[%s]", this.getAuthor().labelsToString());
 		}
-		return String.format("{\"id\":%s,\"date\":\"%s\",%s,\"conversation\":\"%s\",\"labels\":[%s],\n	\"reactions\":%s,\n	\"content\":\"%s\"}", 
+		return String.format("{\"id\":%s,\"date\":\"%s\",%s,\"conversation\":\"%s\",\"labels\":[%s],\n	%s,\n	\"content\":\"%s\"}", 
 				this.id.toString(),
 				this.timestamp.format(formatter), 
 				author, 
