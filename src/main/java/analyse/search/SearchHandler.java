@@ -3,10 +3,12 @@ package analyse.search;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import analyse.UI.UIUtils;
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Message;
@@ -38,24 +40,20 @@ public class SearchHandler extends SessionTools {
 	 * @throws NotEnoughArgumentException
 	 */
 	public void search(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 2) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
+		UIUtils.notEnoughArguments(s, 2);
+		String regex = s[1];
+		Parameter p = null;
+		if (s.length > 2) {
+			try {
+				p = this.getSession().searchParameter(s[2]);
+			} catch (NotFoundException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		if (s[0].contentEquals("simple")) {
+			this.simpleSearch(regex, p);
 		} else {
-			String regex = s[1];
-			Parameter p = null;
-			if (s.length > 2) {
-				try {
-					p = this.getSession().searchParameter(s[2]);
-				} catch (NotFoundException e) {
-					System.out.println(e.getMessage());
-				}
-			}
-			if (s[0].contentEquals("simple")) {
-				this.simpleSearch(regex, p);
-			} else {
-				System.out.println(String
-						.format("Mode \"%s\" unknown, expected simple", s[0]));
-			}
+			UIUtils.modeUnknown(s[0], Arrays.asList("simple"));
 		}
 	}
 	
@@ -65,24 +63,20 @@ public class SearchHandler extends SessionTools {
 	 * @throws NotEnoughArgumentException 
 	 */
 	public void params(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 2) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
+		UIUtils.notEnoughArguments(s, 2);
+		if (s[0].contentEquals("add")) {
+			this.addParams(new Parameter(s[1]));
 		} else {
-			if (s[0].contentEquals("add")) {
-				this.addParams(new Parameter(s[1]));
-			} else {
-				try {
-					Parameter p = this.getSession().searchParameter(s[1]);
-					if (s[0].contentEquals("generate")) {
-						if (s.length < 6) {
-							throw new NotEnoughArgumentException(String.join(" ", s), 6, s.length);
-						}
+			try {
+				Parameter p = this.getSession().searchParameter(s[1]);
+				switch (s[0]) {
+					case "generate":
+						UIUtils.notEnoughArguments(s, 6);
 						p.generateSubParameters(Boolean.valueOf(s[2]), Boolean.valueOf(s[3]), 
 								Boolean.valueOf(s[4]), Boolean.valueOf(s[5]), this.getSession());
-					} else if (s[0].contentEquals("set")) {
-						if (s.length < 4) {
-							throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
-						}
+						break;
+					case "set":
+						UIUtils.notEnoughArguments(s, 4);
 						String value = s[3];
 						if (Parameter.possibleKeys.contains(s[2])) {
 							p.set(s[2], value);
@@ -93,13 +87,12 @@ public class SearchHandler extends SessionTools {
 						} else if (Reactions.possibleKeys.contains(s[2])) {
 							p.setReactions(s[2], Integer.valueOf(value));
 						} else {
-							System.out.println(String
-									.format("Parameter \"%s\" unknown, expected author|authorLabels|labels|conversations|minDate|maxDate", s[2]));
+							UIUtils.parameterUnknown(s[2], Arrays.asList("author", "authorLabels", 
+									"labels", "conversations","minDate", "maxDate"));
 						}
-					} else if (s[0].contentEquals("remove")) {
-						if (s.length < 3) {
-							throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
-						}
+						break;
+					case "remove":
+						UIUtils.notEnoughArguments(s, 3);
 						if (Parameter.possibleKeys.contains(s[2])) {
 							p.set(s[2], null);
 						} else if (s[2].contentEquals("minDate")) {
@@ -109,16 +102,16 @@ public class SearchHandler extends SessionTools {
 						} else if (Reactions.possibleKeys.contains(s[2])) {
 							p.setReactions(s[2], 0);
 						} else {
-							System.out.println(String
-									.format("Parameter \"%s\" unknown, expected author|authorLabels|labels|conversations|minDate|maxDate", s[0]));
+							UIUtils.parameterUnknown(s[2], Arrays.asList("author", "authorLabels", 
+									"labels", "conversations","minDate", "maxDate"));
 						}
-					} else {
-						System.out.println(String
-								.format("Mode \"%s\" unknown, expected add|set|remove", s[0]));
-					}
-				} catch (NotFoundException e) {
-					System.out.println(e.getMessage());
+						break;
+					default:
+						UIUtils.modeUnknown(s[0], Arrays.asList("add","set","remove", "generate"));
+						break;
 				}
+			} catch (NotFoundException e) {
+				System.out.println(e.getMessage());
 			}
 		}
 	}
@@ -153,7 +146,9 @@ public class SearchHandler extends SessionTools {
 	 */
 	public void simpleSearch(String str, Parameter params) {
 		Map<Message, Integer> res = new HashMap<>();
+		Integer total = 0;
 		for (Message message : this.getSession().getMessageList()) {
+			total ++;
 			if (params == null || params.matches(message)) {
 				int count = message.count(str);
 				if (count != 0) {
@@ -162,7 +157,7 @@ public class SearchHandler extends SessionTools {
 			}
 		}
 		SimpleResult result = new SimpleResult(res, this.counter, 
-				str, this.getSession().getMessageList().size(), params);
+				str, total, params);
 		this.results.add(result);
 		System.out.println(result.toString());
 		this.counter++;

@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import analyse.UI.Info;
 import analyse.UI.ResourcesDisplay;
+import analyse.UI.UIUtils;
 import analyse.exceptions.NotEnoughArgumentException;
 
 public class SessionController extends SessionTools{
@@ -50,52 +51,72 @@ public class SessionController extends SessionTools{
 			ResourcesDisplay.display("help.txt");
 		} else if (s.length > 1 && s[1].contentEquals("help")) {
 			ResourcesDisplay.help(s[0]);
-		} else if (s[0].contentEquals("reset")) {
-			this.reset();
-		} else if (s[0].contentEquals("quit")) {
-			this.active.off();
-		} else if (s[0].contentEquals("save")) {
-			this.save();
 		} else {
 			String[] args = {};
 			if (s.length > 1) {
 				args = Arrays.copyOfRange(s, 1, s.length);
 			}
-			
 			try {
-				if (s[0].contentEquals("load")) {
-					this.loader.load(args);
-				} else if (s[0].contentEquals("export")) {
-					this.exporter.export(args);
-				} else if (s[0].contentEquals("merge")) {
-					this.editor.merge(args);
-				} else if (s[0].contentEquals("rename")) {
-					this.editor.rename(args);
-				} else if (s[0].contentEquals("label")) {
-					this.editor.label(args);
-				} else if (s[0].contentEquals("run")) {
-					this.run(args);
-				} else if (s[0].contentEquals("set")) {
-					this.set(args);
-				} else if (s[0].contentEquals("echo")) {
-					this.echo(args);
-				} else if (s[0].contentEquals("list")) {
-					this.info.list(args);
-				} else if (s[0].contentEquals("info")) {
-					this.info.info(args);
-				} else if (s[0].contentEquals("read")) {
-					this.info.read(args);
-				} else if (s[0].contentEquals("search")) {
-					this.getSession().getSearchHandler().search(args);
-				} else if (s[0].contentEquals("params")) {
-					this.getSession().getSearchHandler().params(args);
-				} else {
-					System.out.println(String.format("Command \"%s\" unknown", s[0]));
+				switch (s[0]) {
+					case "reset":
+						this.reset();
+						break;
+					case "quit":
+						this.active.off();
+						break;
+					case "save":
+						this.save();
+						break;
+					case "print":
+						this.print(args);
+						break;
+					case "load":
+						this.loader.load(args);
+						break;
+					case "export":
+						this.exporter.export(args);
+						break;
+					case "merge":
+						this.editor.merge(args);
+						break;
+					case "rename":
+						this.editor.rename(args);
+						break;
+					case "label":
+						this.editor.label(args);
+						break;
+					case "run":
+						this.run(args);
+						break;
+					case "set":
+						this.set(args);
+						break;
+					case "echo":
+						this.echo(args);
+						break;
+					case "list":
+						this.info.list(args);
+						break;
+					case "info":
+						this.info.info(args);
+						break;
+					case "read":
+						this.info.read(args);
+						break;
+					case "search":
+						this.getSession().getSearchHandler().search(args);
+						break;
+					case "params":
+						this.getSession().getSearchHandler().params(args);
+						break;
+					default:
+						System.out.println(String.format("Command \"%s\" unknown", s[0]));
+						break;
 				}
 			} catch (NotEnoughArgumentException e) {
 				System.out.println(e.getMessage());
 			}
-		} 
+		}
 	}
 	
 	/**
@@ -170,17 +191,13 @@ public class SessionController extends SessionTools{
 	 * @throws NotEnoughArgumentException
 	 */
 	private void set(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 2) {
-			System.out.println(Arrays.asList(s));
-			throw new NotEnoughArgumentException(String.join(" ", s), 2, s.length);
+		UIUtils.notEnoughArguments(s, 2);
+		if (s[0].contentEquals("workdir")) {
+			this.getSession().setWorkdir(s[1]);
+		} else if (s[0].contentEquals("address")) {
+			this.getSession().setAddress(s[1]);
 		} else {
-			if (s[0].contentEquals("workdir")) {
-				this.getSession().setWorkdir(s[1]);
-			} else if (s[0].contentEquals("address")) {
-				this.getSession().setAddress(s[1]);
-			} else {
-				System.out.println(String.format("%s not a variable", s[0]));
-			}
+			System.out.println(String.format("%s not a variable", s[0]));
 		}
 	}
 	
@@ -190,19 +207,23 @@ public class SessionController extends SessionTools{
 	 * @throws NotEnoughArgumentException
 	 */
 	private void echo(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 1) {
-			System.out.println(Arrays.asList(s));
-			throw new NotEnoughArgumentException(String.join(" ", s), 1, s.length);
+		UIUtils.notEnoughArguments(s, 1);
+		String str;
+		if (s[0].contentEquals("workdir")) {
+			str = this.getSession().getWorkdir();
+		} else if (s[0].contentEquals("address")) {
+			str = this.getSession().getAddress();
 		} else {
-			String str;
-			if (s[0].contentEquals("workdir")) {
-				str = this.getSession().getWorkdir();
-			} else if (s[0].contentEquals("address")) {
-				str = this.getSession().getAddress();
-			} else {
-				str = String.format("%s not a variable", s[0]);
-			}
-			System.out.println(str);
+			str = String.format("%s not a variable", s[0]);
 		}
+		System.out.println(str);
+	}
+	
+	/**
+	 * print a line
+	 * @param s
+	 */
+	private void print(String[] s) {
+		System.out.println(String.join(" ", Arrays.asList(s)));
 	}
 }

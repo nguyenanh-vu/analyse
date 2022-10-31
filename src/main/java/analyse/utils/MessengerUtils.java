@@ -30,16 +30,16 @@ import analyse.session.SessionEditor;
 public class MessengerUtils {
 	public static Map<String,String> reactions = new HashMap<String, String>() {
 		private static final long serialVersionUID = -1875872005610564502L;
-	{
-		put("\u00f0\u009f\u0098\u0086", "laugh");
-		put("\u00f0\u009f\u0098\u0082", "laughTears");
-		put("\u00e2\u009d\u00a4", "love");
-		put("\u00f0\u009f\u0091\u008d", "thumbs");
-		put("\u00f0\u009f\u0099\u0082", "smile");
-		put("\u00f0\u009f\u0098\u00ae", "surprise");
-		put("\u00f0\u009f\u0098\u00a2", "tears");
-		put("\u00f0\u009f\u0098\u00a0", "angry");
-	}};
+		{
+			put("\u00f0\u009f\u0098\u0086", "laugh");
+			put("\u00f0\u009f\u0098\u0082", "laughTears");
+			put("\u00e2\u009d\u00a4", "love");
+			put("\u00f0\u009f\u0091\u008d", "thumbs");
+			put("\u00f0\u009f\u0099\u0082", "smile");
+			put("\u00f0\u009f\u0098\u00ae", "surprise");
+			put("\u00f0\u009f\u0098\u00a2", "tears");
+			put("\u00f0\u009f\u0098\u00a0", "angry");
+		}};
 	
 	/**
 	 * Load data from Facebook Messenger backup file

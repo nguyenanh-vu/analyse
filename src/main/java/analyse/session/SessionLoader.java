@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import analyse.UI.UIUtils;
 import analyse.exceptions.JSONParsingException;
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.exceptions.NotFoundException;
@@ -53,35 +54,37 @@ public class SessionLoader extends SessionTools {
 		if (this.getSession() == null) {
 			System.out.println("No session started");
 		} else {
-			if (s.length < 3) {
-				throw new NotEnoughArgumentException(String.join(" ", s), 3, s.length);
-			} else {
-				String address = this.getSession().getWorkdir() + s[1];
-				List<Label> labels = new ArrayList<>();
-				if (s.length > 3) {
-					List<String> l = Arrays.asList(Arrays.copyOfRange(s, 3, s.length));
-					for (String str : l) {
-						labels.add(new Label(str));
-					}
+			UIUtils.notEnoughArguments(s, 3);
+			String address = this.getSession().getWorkdir() + s[1];
+			List<Label> labels = new ArrayList<>();
+			if (s.length > 3) {
+				List<String> l = Arrays.asList(Arrays.copyOfRange(s, 3, s.length));
+				for (String str : l) {
+					labels.add(new Label(str));
 				}
-				if (s[0].contentEquals("whatsapp")) {
+			}
+			switch (s[0]) {
+				case "whatsapp":
 					WhatsappUtils.load(address, labels, s[2], this.editor);
-				} else if (s[0].contentEquals("fb")) {
+					break;
+				case "fb":
 					MessengerUtils.load(address, labels, s[2], this.editor);
-				} else if (s[0].contentEquals("session")) {
+					break;
+				case "session":
 					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
 						this.getSession().restart();
 					}
 					this.loadSession(address);
-				} else if (s[0].contentEquals("messages")) {
+					break;
+				case "messages":
 					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
 						this.getSession().restart();
 					}
 					this.loadMessages(address);
-				} else {
-					System.out.println(String
-							.format("Mode \"%s\" unknown, expected whatsapp|fb|session", s[0]));
-				}
+					break;
+				default:
+					UIUtils.modeUnknown(s[0], Arrays.asList("whatsapp",
+							"fb","session","messages"));
 			}
 		}
 	}

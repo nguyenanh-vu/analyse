@@ -11,7 +11,6 @@ import org.json.JSONObject;
 
 import analyse.exceptions.NotFoundException;
 import analyse.session.Session;
-import analyse.utils.OptionalToString;
 
 public class Parameter extends NamedObject {
 	private static final DateTimeFormatter formatter = 

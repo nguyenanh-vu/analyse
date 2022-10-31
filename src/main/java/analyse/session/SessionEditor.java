@@ -1,7 +1,9 @@
 package analyse.session;
 
+import java.util.Arrays;
 import java.util.List;
 
+import analyse.UI.UIUtils;
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Author;
@@ -103,43 +105,31 @@ public class SessionEditor extends SessionTools {
 	 * @throws NotEnoughArgumentException
 	 */
 	public void merge(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 3) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 3, s.length);
-		} else {
-			if (s[0].contentEquals("authors")) {
-				Author a1;
-				Author a2;
-				try {
-					a1 = this.getSession().searchAuthor(s[1]);
-					a2 = this.getSession().searchAuthor(s[2]);
+		UIUtils.notEnoughArguments(s, 3);
+		try {
+			switch (s[0]) {
+				case "authors":
+					Author a1 = this.getSession().searchAuthor(s[1]);
+					Author a2 = this.getSession().searchAuthor(s[2]);
 					this.mergeAuthor(a1, a2);
-				} catch (NotFoundException e) {
-					System.out.println(e.getMessage());
-				}
-			} else if (s[0].contentEquals("labels")) {
-				Label a1;
-				Label a2;
-				try {
-					a1 = this.getSession().searchLabel(s[1]);
-					a2 = this.getSession().searchLabel(s[2]);
-					this.mergeLabels(a1, a2);
-				} catch (NotFoundException e) {
-					System.out.println(e.getMessage());
-				}
-			} else if (s[0].contentEquals("conversations")) {
-				Conversation a1;
-				Conversation a2;
-				try {
-					a1 = this.getSession().searchConversation(s[1]);
-					a2 = this.getSession().searchConversation(s[2]);
-					this.mergeConversation(a1, a2);
-				} catch (NotFoundException e) {
-					System.out.println(e.getMessage());
-				}
-			} else {
-				System.out.println(String
-						.format("Mode \"%s\" unknown, expected authors|labels|conversations", s[0]));
+					break;
+				case "labels":
+					Label l1 = this.getSession().searchLabel(s[1]);
+					Label l2 = this.getSession().searchLabel(s[2]);
+					this.mergeLabels(l1, l2);
+					break;
+				case "conversations":
+					Conversation c1 = this.getSession().searchConversation(s[1]);
+					Conversation c2 = this.getSession().searchConversation(s[2]);
+					this.mergeConversation(c1, c2);
+					break;
+				default:
+					UIUtils.modeUnknown(s[0], Arrays.asList("authors",
+							"labels","conversation"));
+					break;
 			}
+		}catch (NotFoundException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -207,25 +197,24 @@ public class SessionEditor extends SessionTools {
 	 * @throws NotEnoughArgumentException
 	 */
 	public void label(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 3) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 3, s.length);
-		} else {
+		UIUtils.notEnoughArguments(s, 3);
+		try {
 			LabelledObject o;
 			Label l;
-			try {
-				if (s[1].contentEquals("authors")) {
+			switch (s[1]) {
+				case "authors":
 					o = this.getSession().searchAuthor(s[2]);
-				} else if (s[1].contentEquals("conversations")) {
+					break;
+				case "conversations":
 					o = this.getSession().searchConversation(s[2]);
-				} else {
-					System.out.println(String
-							.format("Mode \"%s\" unknown, expected authors|conversations", s[1]));
+					break;
+				default:
+					UIUtils.modeUnknown(s[1], Arrays.asList("authors", "conversations"));
 					throw new Exception();
-				}
-				if (s[0].contentEquals("add")) {
-					if (s.length < 4) {
-						throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
-					}
+			}
+			switch (s[0]) {
+				case "add":
+					UIUtils.notEnoughArguments(s, 4);
 					l = new Label(s[3]);
 					if (this.getSession().getLabels().contains(l)) {
 						l = this.getSession().searchLabel(s[3]);
@@ -233,20 +222,21 @@ public class SessionEditor extends SessionTools {
 						this.addLabel(l);
 					}
 					o.addLabel(l);
-				} else if (s[0].contentEquals("remove")) {
-					if (s.length < 4) {
-						throw new NotEnoughArgumentException(String.join(" ", s), 4, s.length);
-					}
+					break;
+				case "remove":
+					UIUtils.notEnoughArguments(s, 4);
 					o.removeLabel(new Label(s[3]));
-				} else if (s[0].contentEquals("clear")) {
+					break;
+				case "clear":
+					UIUtils.notEnoughArguments(s, 4);
 					o.clearLabels();
-				} else {
-					System.out.println(String
-							.format("Mode \"%s\" unknown, expected add|remove|clear", s[0]));
-				}
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
+					break;
+				default:
+					UIUtils.modeUnknown(s[0], Arrays.asList("add", "remove", "clear"));
+					break;
 			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -256,26 +246,28 @@ public class SessionEditor extends SessionTools {
 	 * @throws NotEnoughArgumentException
 	 */
 	public void rename(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 3) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 3, s.length);
-		} else {
-			try {
-				if (s[0].contentEquals("authors")) {
+		UIUtils.notEnoughArguments(s, 3);
+		try {
+			switch (s[0]) {
+				case "authors":
 					Author a = this.getSession().searchAuthor(s[1]);
 					a.setName(s[2]);
-				} else if (s[0].contentEquals("labels")) {
+					break;
+				case "labels":
 					Label l = this.getSession().searchLabel(s[1]);
 					l.setName(s[2]);
-				} else if (s[0].contentEquals("conversations")) {
+					break;
+				case "conversations":
 					Conversation c = this.getSession().searchConversation(s[1]);
 					c.setName(s[2]);
-				} else {
-					System.out.println(String
-							.format("Mode \"%s\" unknown, expected authors|labels|conversations", s[0]));
-				}
-			} catch (NotFoundException e) {
-				System.out.println(e.getMessage());
+					break;
+				default:
+					UIUtils.modeUnknown(s[0], Arrays.asList("authors",
+							"labels","conversation"));
+					break;
 			}
+		} catch (NotFoundException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 }

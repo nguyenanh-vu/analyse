@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import analyse.UI.UIUtils;
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
@@ -119,48 +121,50 @@ public class SessionExporter extends SessionTools {
 	 * @throws NotEnoughArgumentException
 	 */
 	public void export(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 1) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 1, s.length);
-		} else {
-			boolean toFile;
-			File file = null;
-			if (s.length > 1) {
-				toFile = true;
-				file = new File(this.getSession().getWorkdir() + s[1]);
-			} else {
-				toFile = false;
-			}
-			String str = "";
-			if (s[0].contentEquals("authors")) {
+		UIUtils.notEnoughArguments(s, 1);
+		boolean toFile = false;
+		File file = null;
+		if (s.length > 1) {
+			toFile = true;
+			file = new File(this.getSession().getWorkdir() + s[1]);
+		} 
+		String str = "";
+		switch (s[0]) {
+			case "authors":
 				str = this.exportAuthors();
-			} else if (s[0].contentEquals("labels")) {
+				break;
+			case "labels":
 				str = this.exportLabels();
-			} else if (s[0].contentEquals("messages")) {
+				break;
+			case "messages":
 				str = this.exportMessages();
-			} else if (s[0].contentEquals("vmessages")) {
+				break;
+			case "vmessages":
 				str = this.exportMessages(true);
-			} else if (s[0].contentEquals("results")) {
+				break;
+			case "results":
 				str = this.exportResults();
-			} else if (s[0].contentEquals("session")) {
+				break;
+			case "session":
 				if (toFile) {
 					this.getSession().setAddress(this.getSession().getWorkdir() + s[1]);
 				}
 				str = this.exportSession();
-			} else {
-				System.out.println(String
-						.format("Mode \"%s\" unknown, expected authors|labels|messages|session", s[0]));
+				break;
+			default:
+				UIUtils.modeUnknown(s[0], Arrays.asList("authors",
+						"labels", "messages", "vmessages", "results", "session"));
+				break;
+		}
+		if (toFile) {
+			try (FileWriter fw = new FileWriter(file)){
+				fw.write(str);
+				System.out.println(String.format("%s data written to %s", s[0], s[1]));
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
 			}
-			
-			if (toFile) {
-				try (FileWriter fw = new FileWriter(file)){
-					fw.write(str);
-					System.out.println(String.format("%s data written to %s", s[0], s[1]));
-				} catch (IOException e) {
-					System.out.println(e.getMessage());
-				}
-			} else {
-				System.out.println(str);
-			}
+		} else {
+			System.out.println(str);
 		}
 	}
 }
