@@ -153,7 +153,7 @@ public class SessionController extends SessionTools{
 	
 	/**
 	 * Run single script
-	 * @param s String name of scrupt to run
+	 * @param s String name of script to run
 	 */
 	private void run(String s) {
 		try {

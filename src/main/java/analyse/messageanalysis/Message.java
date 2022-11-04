@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 /**
  * class representing messages
  */
-public class Message {
+public class Message implements Comparable<Message> {
 	private Long id;
 	private LocalDateTime timestamp;
 	private Author author;
@@ -167,5 +167,10 @@ public class Message {
 	
 	public Reactions getReactions() {
 		return this.reactions;
+	}
+
+	@Override
+	public int compareTo(Message o) {
+		return this.id.compareTo(o.getId());
 	}
 }
