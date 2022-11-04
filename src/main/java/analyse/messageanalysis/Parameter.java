@@ -73,19 +73,19 @@ public class Parameter extends NamedObject {
 	 */
 	public Boolean matches(Author author) {
 		if (this.author != null 
-				&& author.getName().matches(this.author)) {
+				&& !author.getName().matches(this.author)) {
 			return false;
 		}
 		if (this.authorLabels != null 
-				&& author.matchesLabels(this.authorLabels)) {
+				&& !author.matchesLabels(this.authorLabels)) {
 			return false;
 		}
 		if (this.labels != null  
-				&& author.matchesConversationLabel(this.labels)) {
+				&& !author.matchesConversationLabel(this.labels)) {
 			return false;
 		}
 		if (this.conversations != null 
-				&& author.matchesConversation(conversations)) {
+				&& !author.matchesConversation(conversations)) {
 			return false;
 		}
 		return true;

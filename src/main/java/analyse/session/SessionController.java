@@ -106,7 +106,7 @@ public class SessionController extends SessionTools{
 					case "search":
 						this.getSession().getSearchHandler().search(args);
 						break;
-					case "params":
+					case "parameters":
 						this.getSession().getSearchHandler().params(args);
 						break;
 					default:

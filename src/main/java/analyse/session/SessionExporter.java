@@ -88,7 +88,7 @@ public class SessionExporter extends SessionTools {
 		for (Conversation conv : this.getSession().getConversations()) {
 			str.add(conv.toJSON());
 		}
-		return "[\n" + JSONUtils.indent(String.join(",", str)) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
 	}
 	
 	public String exportParams() {
