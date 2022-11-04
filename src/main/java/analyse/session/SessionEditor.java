@@ -270,4 +270,21 @@ public class SessionEditor extends SessionTools {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	/**
+	 * anonymise data, replacing authors and conversation names by counter
+	 * @param s String[] arguments
+	 */
+	public void anonymise(String[] s) {
+		int authors = 0;
+		int conv = 0;
+		for (Author a : this.getSession().getAuthorList()) {
+			a.setName(String.valueOf(authors));
+			authors++;
+		}
+		for (Conversation c : this.getSession().getConversations()) {
+			c.setName(String.valueOf(conv));
+			conv++;
+		}
+	}
 }

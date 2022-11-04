@@ -85,6 +85,9 @@ public class SessionController extends SessionTools{
 					case "label":
 						this.editor.label(args);
 						break;
+					case "anonymise":
+						this.editor.anonymise(args);
+						break;
 					case "run":
 						this.run(args);
 						break;
