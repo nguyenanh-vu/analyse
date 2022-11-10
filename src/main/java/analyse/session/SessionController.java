@@ -81,7 +81,7 @@ public class SessionController extends SessionTools{
 						this.getSession().getFileSystem().move(args);
 						break;
 					case "ls":
-						this.getSession().getFileSystem().ls();
+						this.getSession().getFileSystem().ls(args);
 						break;
 					case "set":
 						this.getSession().getFileSystem().set(args);

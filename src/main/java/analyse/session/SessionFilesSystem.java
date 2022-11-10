@@ -61,9 +61,15 @@ public class SessionFilesSystem {
 		}
 	}
 	
-	public void ls() {
-		for (String s : Arrays.asList(this.currentDir.list())) {
-			System.out.println(s);
+	public void ls(String[] s) {
+		String[] list = {};
+		if (s.length > 0) {
+			list = this.getPath(s[0]).toFile().list();
+		} else {
+			list = this.currentDir.list();
+		}
+		for (String str : list) {
+			System.out.println(str);
 		}
 	}
 	

@@ -43,6 +43,26 @@ public class MessengerUtils {
 		}};
 	
 	/**
+	 * load whole folder as Facebook Messenger file
+	 * @param file File folder to parse
+	 * @param labels
+	 * @param conversation
+	 * @param editor
+	 */
+	public static void loadFolder(File file, List<Label> labels, SessionEditor editor) {
+		if (!file.isDirectory()) {
+			System.out.println(String.format("%s not a directory", file.toString()));
+		} else {
+			for (File f : file.listFiles()) {
+				String[] fileName = f.toPath().getFileName().toString().split("\\."); 
+				if (fileName.length > 1 && fileName[1].contentEquals("json")) {
+					MessengerUtils.load(f, labels, FileNameUtils.check(fileName[0]), editor);
+				}
+			}
+		}
+	}
+		
+	/**
 	 * Load data from Facebook Messenger backup file
 	 * @param file File to backup file
 	 * @param labels List<analyse.messageanalysis.Label>
@@ -55,13 +75,13 @@ public class MessengerUtils {
 		try {
 			InputStream  is = new FileInputStream(file);
 			Scanner myReader = new Scanner(is);
-			String str = "";
+			StringBuilder str = new StringBuilder();
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
-				str += data;
+				str.append(data);
 			}
 			System.out.println(String.format("Facebook Messenger file %s finished loading", file.toString()));
-			JSONObject jo = new JSONObject(str);
+			JSONObject jo = new JSONObject(str.toString());
 			JSONArray messages = jo.getJSONArray("messages");
 			for (int i = 0; i < messages.length(); i++) {
 				JSONObject o = messages.getJSONObject(i);
