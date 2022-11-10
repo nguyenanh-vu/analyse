@@ -33,9 +33,11 @@ public class SessionEditor extends SessionTools {
 		} catch (NotFoundException e) {
 			System.out.println(e.getMessage());
 		}
-		this.getSession().getMessageList()
-		.add(new Message(this.getSession().getCounter(), message.getTimestamp(), 
-				a, message.getContent(), conv, message.getReactions()));
+		Message newMessage = new Message(this.getSession().getCounter(), message.getTimestamp(), 
+				a, message.getContent(), conv, message.getReactions());
+		if (!this.getSession().getMessageList().contains(newMessage)) {
+			this.getSession().getMessageList().add(newMessage);
+		}
 		this.getSession().incr();
 	}
 	

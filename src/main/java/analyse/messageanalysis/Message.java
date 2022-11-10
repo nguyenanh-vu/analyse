@@ -173,4 +173,16 @@ public class Message implements Comparable<Message> {
 	public int compareTo(Message o) {
 		return this.id.compareTo(o.getId());
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof Message) {
+			Message m = (Message) other;
+			return this.content.contentEquals(m.getContent())
+					&& this.author.equals(m.author)
+					&& this.timestamp.isEqual(m.getTimestamp());
+		} else {
+			return false;
+		}
+	}
 }
