@@ -5,7 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import analyse.UI.UIUtils;
 import analyse.exceptions.NotEnoughArgumentException;
@@ -21,6 +23,14 @@ import analyse.utils.JSONUtils;
  * Util to export session data to JSON
  */
 public class SessionExporter extends SessionTools {
+	public static Map<String,String> exportable = new HashMap<String, String>() {
+		private static final long serialVersionUID = -7044555477985107836L;
+		{
+			put("messages", "messagesFile");
+			put("vmessages", "messagesFile");
+			put("results", "resultsFile");
+			put("session", "sessionFile");
+		}};
 	/**
 	 * Export List<analyse.messageanalysis.Author> to JSON
 	 * @return JSON data
@@ -126,7 +136,7 @@ public class SessionExporter extends SessionTools {
 		File file = null;
 		if (s.length > 1) {
 			toFile = true;
-			file = new File(this.getSession().getWorkdir() + s[1]);
+			file = this.getSession().getFileSystem().getPath(s[1]).toFile();
 		} 
 		String str = "";
 		switch (s[0]) {
@@ -146,9 +156,6 @@ public class SessionExporter extends SessionTools {
 				str = this.exportResults();
 				break;
 			case "session":
-				if (toFile) {
-					this.getSession().setAddress(this.getSession().getWorkdir() + s[1]);
-				}
 				str = this.exportSession();
 				break;
 			default:
@@ -157,6 +164,10 @@ public class SessionExporter extends SessionTools {
 				break;
 		}
 		if (toFile) {
+			if (SessionExporter.exportable.containsKey(s[0])) {
+				this.getSession().getFileSystem()
+				.set(SessionExporter.exportable.get(s[0]), file);
+			}
 			try (FileWriter fw = new FileWriter(file)){
 				fw.write(str);
 				System.out.println(String.format("%s data written to %s", s[0], s[1]));

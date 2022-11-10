@@ -23,6 +23,8 @@ public class App
     	controller.reset();
     	controller.run(args);
     	while (Boolean.TRUE.equals(active.getActive())) {
+    		System.out.print(controller.getSession()
+    				.getFileSystem().getCurrentDir().toString() + " : ");
         	controller.decide(input.nextLine());	
     	}
     }

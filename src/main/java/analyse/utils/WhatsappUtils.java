@@ -1,5 +1,6 @@
 package analyse.utils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -28,16 +29,16 @@ public class WhatsappUtils{
 	
 	/**
 	 * Load data from Whatsapp backup file
-	 * @param path String path to backup file
+	 * @param file File to backup file
 	 * @param labels List<analyse.messageanalysis.Label>
 	 * @param editor analyse.session.SessionEditor to use for edition
 	 * @param conversation String
 	 * @return
 	 */
-	public static void load(String path, List<Label> labels, 
+	public static void load(File file, List<Label> labels, 
 			String conversation, SessionEditor editor) {
 		try {
-			InputStream  is = new FileInputStream(path);
+			InputStream  is = new FileInputStream(file);
 			Scanner myReader = new Scanner(is);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
@@ -54,7 +55,7 @@ public class WhatsappUtils{
 				}
 				
 			}
-			System.out.println(String.format("Whatsapp file %s finished loading and parsing", path));
+			System.out.println(String.format("Whatsapp file %s finished loading and parsing", file.toString()));
 			myReader.close();
 	    } catch (FileNotFoundException e) {
 	    	System.out.println("An error occurred.");

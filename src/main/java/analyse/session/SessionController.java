@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -43,6 +44,7 @@ public class SessionController extends SessionTools{
 	 */
 	public void decide(String str) {
 		String[] s = str.split(" ");
+		//special cases
 		if (s.length == 0) {
 			System.out.println("No command");
 		} else if (str.trim().startsWith("//")) {
@@ -58,6 +60,7 @@ public class SessionController extends SessionTools{
 			}
 			try {
 				switch (s[0]) {
+					//session controls
 					case "reset":
 						this.reset();
 						break;
@@ -65,17 +68,35 @@ public class SessionController extends SessionTools{
 						this.active.off();
 						break;
 					case "save":
-						this.save();
+						this.save(args);
 						break;
-					case "print":
-						this.print(args);
+					//file system
+					case "cd":
+						this.getSession().getFileSystem().cd(args);
 						break;
+					case "mkdir":
+						this.getSession().getFileSystem().mkdir(args);
+						break;
+					case "move":
+						this.getSession().getFileSystem().move(args);
+						break;
+					case "ls":
+						this.getSession().getFileSystem().ls();
+						break;
+					case "set":
+						this.getSession().getFileSystem().set(args);
+						break;
+					case "echo":
+						this.getSession().getFileSystem().echo(args);
+						break;
+					//loading and exporting
 					case "load":
 						this.loader.load(args);
 						break;
 					case "export":
 						this.exporter.export(args);
 						break;
+					//data editor
 					case "merge":
 						this.editor.merge(args);
 						break;
@@ -88,15 +109,14 @@ public class SessionController extends SessionTools{
 					case "anonymise":
 						this.editor.anonymise(args);
 						break;
+					//script
 					case "run":
 						this.run(args);
 						break;
-					case "set":
-						this.set(args);
+					case "print":
+						this.print(args);
 						break;
-					case "echo":
-						this.echo(args);
-						break;
+					//ui
 					case "list":
 						this.info.list(args);
 						break;
@@ -147,24 +167,24 @@ public class SessionController extends SessionTools{
 	 */
 	public void run(String[] s) {
 		for (int i = 0; i < s.length; i++ ) {
-			this.run(this.getSession().getWorkdir() + s[i]);
+			this.run(this.getSession()
+					.getFileSystem().getPath(s[i]).toFile());
 		}
 	}
 	
 	/**
 	 * Run single script
-	 * @param s String name of script to run
+	 * @param file File name of script to run
 	 */
-	private void run(String s) {
+	private void run(File file) {
 		try {
-			System.out.println(String.format("Running script %s", s));
-			File myObj = new File(s);
-			Scanner myReader = new Scanner(myObj);
+			System.out.println(String.format("Running script %s", file.toString()));
+			Scanner myReader = new Scanner(file);
 			while (myReader.hasNextLine()) {
 				this.decide(myReader.nextLine());
 			}
 			myReader.close();
-			System.out.println(String.format("Finished running script %s", s));
+			System.out.println(String.format("Finished running script %s", file.toString()));
 		} catch (FileNotFoundException e) {
 	    	System.out.println("An error occurred.");
 	    	System.out.println(e.getMessage());
@@ -172,54 +192,47 @@ public class SessionController extends SessionTools{
 	}
 	
 	/**
-	 * Save to file as defined by session.address
+	 * Save to file as defined by SessionFileSystem.files
 	 */
-	private void save() {
-		String adr = this.getSession().getAddress();
-		if (adr.isEmpty()) {
-			System.out.println("No save file address. Use \"export session [file path]\" instead");
+	private void save(String[] s) {
+		File file = null;
+		String str = "";
+		if (s.length == 0) {
+			file = this.getSession().getFileSystem().get("sessionFile");
+			str = this.exporter.exportSession();
+		} else if (SessionExporter.exportable.containsKey(s[0])) {
+			file = this.getSession().getFileSystem()
+					.get(SessionExporter.exportable.get(s[0]));
+			switch (s[0]) {
+				case "messages":
+					str = this.exporter.exportMessages();
+					break;
+				case "vmessages":
+					str = this.exporter.exportMessages(true);
+					break;
+				case "session":
+					str = this.exporter.exportSession();
+					break;
+				case "results":
+					str = this.exporter.exportResults();
+					break;
+				default:
+					UIUtils.modeUnknown(s[0], new ArrayList<String>(
+							SessionExporter.exportable.keySet()));
+					break;
+			}
+		}
+		if (file == null) {
+			System.out.println("No save file address. Use \"export [mode] [file path]\" instead or set fileSession [file path]");
 		} else {
-			try (FileWriter fw = new FileWriter(adr)){
-				fw.write(this.exporter.exportSession());
-				System.out.println(String.format("%s data written to %s", "session", adr));
+			try (FileWriter fw = new FileWriter(file)){
+				fw.write(str);
+				System.out.println(String.format("%s data written to %s", (s.length == 0) ? "session" : s[0], 
+						file.toString()));
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
 		}
-	}
-	
-	/**
-	 * Set working variables
-	 * @param s arguments
-	 * @throws NotEnoughArgumentException
-	 */
-	private void set(String[] s) throws NotEnoughArgumentException {
-		UIUtils.notEnoughArguments(s, 2);
-		if (s[0].contentEquals("workdir")) {
-			this.getSession().setWorkdir(s[1]);
-		} else if (s[0].contentEquals("address")) {
-			this.getSession().setAddress(s[1]);
-		} else {
-			System.out.println(String.format("%s not a variable", s[0]));
-		}
-	}
-	
-	/**
-	 * Read working variables
-	 * @param s arguments
-	 * @throws NotEnoughArgumentException
-	 */
-	private void echo(String[] s) throws NotEnoughArgumentException {
-		UIUtils.notEnoughArguments(s, 1);
-		String str;
-		if (s[0].contentEquals("workdir")) {
-			str = this.getSession().getWorkdir();
-		} else if (s[0].contentEquals("address")) {
-			str = this.getSession().getAddress();
-		} else {
-			str = String.format("%s not a variable", s[0]);
-		}
-		System.out.println(str);
 	}
 	
 	/**

@@ -1,5 +1,6 @@
 package analyse.utils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -43,23 +44,23 @@ public class MessengerUtils {
 	
 	/**
 	 * Load data from Facebook Messenger backup file
-	 * @param path String path to backup file
+	 * @param file File to backup file
 	 * @param labels List<analyse.messageanalysis.Label>
 	 * @param editor analyse.session.SessionEditor to use for edition
 	 * @param conversation String
 	 * @return
 	 */
-	public static void load(String path,  List<Label> labels,
+	public static void load(File file,  List<Label> labels,
 			String conversation, SessionEditor editor) {
 		try {
-			InputStream  is = new FileInputStream(path);
+			InputStream  is = new FileInputStream(file);
 			Scanner myReader = new Scanner(is);
 			String str = "";
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
 				str += data;
 			}
-			System.out.println(String.format("Facebook Messenger file %s finished loading", path));
+			System.out.println(String.format("Facebook Messenger file %s finished loading", file.toString()));
 			JSONObject jo = new JSONObject(str);
 			JSONArray messages = jo.getJSONArray("messages");
 			for (int i = 0; i < messages.length(); i++) {
@@ -69,7 +70,7 @@ public class MessengerUtils {
 					editor.addMessage(MessengerUtils.parse(o, labels, conversation));
 				}
 			}
-			System.out.println(String.format("Facebook Messenger file %s finished parsing", path));
+			System.out.println(String.format("Facebook Messenger file %s finished parsing", file.toString()));
 			myReader.close();
 	    } catch (FileNotFoundException | JSONException | JSONParsingException e) {
 	    	System.out.println("An error occurred.");

@@ -20,8 +20,7 @@ public class Session extends LabelledObject {
 	private List<Author> authorList = new ArrayList<>();
 	private List<Message> messageList = new ArrayList<>();
 	private List<Conversation> conversations = new ArrayList<>();
-	private String address = "";
-	private String workdir = "";
+	private SessionFilesSystem fileSystem = new SessionFilesSystem();
 	private Long counter = 0L;
 	private SearchHandler searchHandler = new SearchHandler(this);
 	
@@ -29,8 +28,8 @@ public class Session extends LabelledObject {
 		this.authorList =  new ArrayList<>();
 		this.messageList = new ArrayList<>();
 		this.clearLabels();
+		this.fileSystem.reset();
 		this.conversations = new ArrayList<>();
-		this.address = "";
 		this.searchHandler.reset();
 		counter = 0L;
 	}
@@ -61,26 +60,10 @@ public class Session extends LabelledObject {
 	
 	/**
 	 * getter
-	 * @return String this.adress
-	 */
-	public String getAddress() {
-		return this.address;
-	}
-	
-	/**
-	 * getter
 	 * @return Long this.counter
 	 */
 	public Long getCounter() {
 		return this.counter;
-	}
-	
-	/**
-	 * getter
-	 * @return String this.workdir
-	 */
-	public String getWorkdir() {
-		return this.workdir;
 	}
 	
 	/**
@@ -91,27 +74,15 @@ public class Session extends LabelledObject {
 		return this.searchHandler;
 	}
 	
+	public SessionFilesSystem getFileSystem() {
+		return this.fileSystem;
+	}
+	
 	/**
 	 * Incrementer for this.counter
 	 */
 	public void incr() {
 		this.counter++;
-	}
-	
-	/**
-	 * setter
-	 * @param adr String save file address
-	 */
-	public void setAddress(String adr) {
-		this.address = adr;
-	}
-	
-	/**
-	 * setter
-	 * @param workdir String working directory
-	 */
-	public void setWorkdir(String workdir) {
-		this.workdir = workdir;
 	}
 	
 	/**
