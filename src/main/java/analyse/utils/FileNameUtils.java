@@ -8,7 +8,7 @@ public class FileNameUtils {
 	        return false;
 	    }
 	    try {
-	        double d = Double.parseDouble(s);
+	        Double.parseDouble(s);
 	    } catch (NumberFormatException nfe) {
 	        return false;
 	    }
