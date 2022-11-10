@@ -138,7 +138,7 @@ public class SessionExporter extends SessionTools {
 			toFile = true;
 			file = this.getSession().getFileSystem().getPath(s[1]).toFile();
 		} 
-		String str = "";
+		String str = null;
 		switch (s[0]) {
 			case "authors":
 				str = this.exportAuthors();
@@ -163,7 +163,7 @@ public class SessionExporter extends SessionTools {
 						"labels", "messages", "vmessages", "results", "session"));
 				break;
 		}
-		if (toFile) {
+		if (toFile && str != null) {
 			if (SessionExporter.exportable.containsKey(s[0])) {
 				this.getSession().getFileSystem()
 				.set(SessionExporter.exportable.get(s[0]), file);

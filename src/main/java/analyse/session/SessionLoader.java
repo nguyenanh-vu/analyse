@@ -112,13 +112,13 @@ public class SessionLoader extends SessionTools {
 		try {
 			InputStream  is = new FileInputStream(file);
 			Scanner myReader = new Scanner(is);
-			String str = "";
+			StringBuilder str = new StringBuilder();
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
-				str += data;
+				str.append(data);
 			}
 			System.out.println(String.format("Session data file %s finished loading", file.toString()));
-			JSONObject jo = new JSONObject(str);
+			JSONObject jo = new JSONObject(str.toString());
 			 
 			this.parseAuthors(jo.getJSONArray("authors"));
 			this.parseMessages(jo.getJSONArray("messages"));
@@ -162,13 +162,13 @@ public class SessionLoader extends SessionTools {
 		try {
 			InputStream  is = new FileInputStream(file);
 			Scanner myReader = new Scanner(is);
-			String str = "";
+			StringBuilder str = new StringBuilder();
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
-				str += data;
+				str.append(data);
 			}
 			System.out.println(String.format("Session data file %s finished loading", file.toString()));
-			JSONArray jo = new JSONArray(str);
+			JSONArray jo = new JSONArray(str.toString());
 			this.parseMessages(jo);
 			myReader.close();
 		} catch (FileNotFoundException | JSONParsingException | JSONException e) {
