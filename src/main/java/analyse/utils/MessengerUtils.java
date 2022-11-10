@@ -43,26 +43,6 @@ public class MessengerUtils {
 		}};
 	
 	/**
-	 * load whole folder as Facebook Messenger file
-	 * @param file File folder to parse
-	 * @param labels
-	 * @param conversation
-	 * @param editor
-	 */
-	public static void loadFolder(File file, List<Label> labels, SessionEditor editor) {
-		if (!file.isDirectory()) {
-			System.out.println(String.format("%s not a directory", file.toString()));
-		} else {
-			for (File f : file.listFiles()) {
-				String[] fileName = f.toPath().getFileName().toString().split("\\."); 
-				if (fileName.length > 1 && fileName[1].contentEquals("json")) {
-					MessengerUtils.load(f, labels, FileNameUtils.check(fileName[0]), editor);
-				}
-			}
-		}
-	}
-		
-	/**
 	 * Load data from Facebook Messenger backup file
 	 * @param file File to backup file
 	 * @param labels List<analyse.messageanalysis.Label>

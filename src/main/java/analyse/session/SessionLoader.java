@@ -26,6 +26,7 @@ import analyse.messageanalysis.Message;
 import analyse.messageanalysis.Parameter;
 import analyse.messageanalysis.Reactions;
 import analyse.search.SimpleResult;
+import analyse.utils.FileNameUtils;
 import analyse.utils.MessengerUtils;
 import analyse.utils.WhatsappUtils;
 
@@ -66,16 +67,11 @@ public class SessionLoader extends SessionTools {
 			}
 			switch (s[0]) {
 				case "folder":
-					switch (s[2]) {
-						case "fb":
-							MessengerUtils.loadFolder(file, labels, editor);
-							break;
-						case "whatsapp":
-							WhatsappUtils.loadFolder(file, labels, editor);
-							break;
-						default:
-							UIUtils.modeUnknown(s[2], Arrays.asList("fb", "whatsapp"));
-							break;
+					List<String> possibleModes = Arrays.asList("fb", "whatsapp, messages");
+					if (possibleModes.contains(s[2])) {
+						this.loadFolder(file, labels, s[2]);
+					} else {
+						UIUtils.modeUnknown(s[2], possibleModes);
 					}
 					break;
 				case "whatsapp":
@@ -230,6 +226,32 @@ public class SessionLoader extends SessionTools {
 		for (int i = 0; i < params.length(); i++) {
 			JSONObject o = params.getJSONObject(i);
 			this.getSession().getSearchHandler().addParams(Parameter.parse(o));
+		}
+	}
+	
+	/**
+	 * load whole folder 
+	 * @param file File folder to parse
+	 * @param labels
+	 * @param editor
+	 */
+	private void loadFolder(File file, List<Label> labels, String mode) {
+		if (!file.isDirectory()) {
+			System.out.println(String.format("%s not a directory", file.toString()));
+		} else {
+			for (File f : file.listFiles()) {
+				String[] fileName = f.toPath().getFileName().toString().split("\\."); 
+				if (fileName.length > 1 && fileName[1]
+						.contentEquals("json") && mode.contentEquals("fb")) {
+					MessengerUtils.load(f, labels, FileNameUtils.check(fileName[0]), this.editor);
+				} else if (fileName.length > 1 && fileName[1]
+						.contentEquals("txt") && mode.contentEquals("whatsapp")) {
+					WhatsappUtils.load(f, labels, FileNameUtils.check(fileName[0]), this.editor);
+				} else if (fileName.length > 1 && fileName[1]
+						.contentEquals("json") && mode.contentEquals("messages")) {
+					this.loadMessages(file);
+				} 
+			}
 		}
 	}
 }
