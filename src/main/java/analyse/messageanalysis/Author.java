@@ -66,17 +66,41 @@ public class Author extends LabelledObject{
 		this.conversations.remove(conversation);
 	}
 	
+	private String convToString() {
+		List<String> conv = new ArrayList<>();
+		for (Conversation c : this.conversations) {
+			conv.add(c.getName());
+		}
+		return String.join(",", conv);
+	}
+	
+	/**
+	 * get JSONArray list of conversations
+	 * @return
+	 */
+	private String convToJSON() {
+		List<String> conv = new ArrayList<>();
+		for (Conversation c : this.conversations) {
+			conv.add("\"" + c.getName() + "\"");
+		}
+		return "[" + String.join(",", conv) + "]";
+	}
+	
 	@Override
-	public String toString() {
-		String conv = "";
-		for (Conversation conversation: this.conversations) {
-			conv += ",\"" + conversation.getName() + "\"";
-		}
-		if (!conv.isEmpty()) {
-			conv = conv.substring(1);
-		}
-		return String.format("{\"name\":\"%s\",\"labels\":[%s], \"conversations\":[%s]}", 
-				this.getName(), this.labelsToString(), conv);
+	public String toString(){
+		StringBuilder str = new StringBuilder();
+		str.append(String.format("name: %s,", this.getName()));
+		str.append(String.format("labels: [%s],", this.labelsToString()));
+		str.append(String.format("conversations: [%s]", this.convToString()));
+		return str.toString();
+	}
+	
+	public String toJSON() {
+		StringBuilder str = new StringBuilder();
+		str.append(String.format("\"name\": \"%s\",", this.getName()));
+		str.append(String.format("\"labels\": %s,", this.labelsToJSON()));
+		str.append(String.format("\"conversations\": %s", this.convToJSON()));
+		return "{" + str.toString() + "}";
 	}
 	
 	/**

@@ -3,7 +3,13 @@ package analyse.session;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import analyse.UI.UIUtils;
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.messageanalysis.Author;
 import analyse.messageanalysis.Conversation;
@@ -17,19 +23,24 @@ import analyse.utils.JSONUtils;
  * Util to export session data to JSON
  */
 public class SessionExporter extends SessionTools {
+	public static Map<String,String> exportable = new HashMap<String, String>() {
+		private static final long serialVersionUID = -7044555477985107836L;
+		{
+			put("messages", "messagesFile");
+			put("vmessages", "messagesFile");
+			put("results", "resultsFile");
+			put("session", "sessionFile");
+		}};
 	/**
 	 * Export List<analyse.messageanalysis.Author> to JSON
 	 * @return JSON data
 	 */
 	public String exportAuthors() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Author author : this.getSession().getAuthorList()) {
-			str += ",\n" + author.toString();
+			str.add(author.toJSON());
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
 	}
 	
 	/**
@@ -47,14 +58,11 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportMessages(Boolean verbose) {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Message message : this.getSession().getMessageList()) {
-			str += ",\n" + message.toString(verbose);
+			str.add(message.toJSON(verbose));
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
 	}
 	
 	/**
@@ -62,14 +70,11 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportResults() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Result r: this.getSession().getSearchHandler().getResults()) {
-			str += ",\n" + r.toString();
+			str.add(r.toJSON());
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
 	}
 	
 	/**
@@ -77,14 +82,11 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportLabels() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Label label : this.getSession().getLabels()) {
-			str += ",\"" + label.toString() + "\"";
+			str.add("\"" + label.getName() + "\"");
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(1);
-		}
-		return "[" + str + "]";
+		return "[" + String.join(",", str) + "]";
 	}
 	
 	/**
@@ -92,25 +94,19 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportConversations() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Conversation conv : this.getSession().getConversations()) {
-			str += ",\n" + conv.toString() + "";
+			str.add(conv.toJSON());
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
 	}
 	
 	public String exportParams() {
-		String str = "";
+		List<String> str = new ArrayList<>();
 		for (Parameter p : this.getSession().getSearchHandler().getParams()) {
-			str += ",\n" + p.toString();
+			str.add(p.toJSON());
 		} 
-		if (!str.isEmpty()) {
-			str = str.substring(2);
-		}
-		return "[\n" + JSONUtils.indent(str) + "\n]";
+		return "[\n" + JSONUtils.indent(String.join(",", str)) + "\n]";
 	}
 	
 	/**
@@ -118,13 +114,14 @@ public class SessionExporter extends SessionTools {
 	 * @return JSON data
 	 */
 	public String exportSession() {
-		return String.format("{\n	\"authors\":%s,\n	\"labels\":%s,\n	\"conversations\":%s,\n	\"parameters\":%s,\n	\"results\":%s,\n	\"messages\":%s\n}", 
-				JSONUtils.indent(this.exportAuthors()),
-				JSONUtils.indent(this.exportLabels()),
-				JSONUtils.indent(this.exportConversations()),
-				JSONUtils.indent(this.exportParams()),
-				JSONUtils.indent(this.exportResults()),
-				JSONUtils.indent(this.exportMessages()));
+		StringBuilder str = new StringBuilder();
+		str.append(String.format("\n\"authors\":%s,",this.exportAuthors()));
+		str.append(String.format("\n\"labels\":%s,",this.exportLabels()));
+		str.append(String.format("\n\"conversations\":%s,",this.exportConversations()));
+		str.append(String.format("\n\"parameters\":%s,",this.exportParams()));
+		str.append(String.format("\n\"results\":%s,",this.exportResults()));
+		str.append(String.format("\n\"messages\":%s",this.exportMessages()));
+		return "{" + JSONUtils.indent(str.toString()) + "}";
 	}
 	
 	/**
@@ -134,48 +131,51 @@ public class SessionExporter extends SessionTools {
 	 * @throws NotEnoughArgumentException
 	 */
 	public void export(String[] s) throws NotEnoughArgumentException {
-		if (s.length < 1) {
-			throw new NotEnoughArgumentException(String.join(" ", s), 1, s.length);
-		} else {
-			boolean toFile;
-			File file = null;
-			if (s.length > 1) {
-				toFile = true;
-				file = new File(this.getSession().getWorkdir() + s[1]);
-			} else {
-				toFile = false;
-			}
-			String str = "";
-			if (s[0].contentEquals("authors")) {
+		UIUtils.notEnoughArguments(s, 1);
+		boolean toFile = false;
+		File file = null;
+		if (s.length > 1) {
+			toFile = true;
+			file = this.getSession().getFileSystem().getPath(s[1]).toFile();
+		} 
+		String str = "";
+		switch (s[0]) {
+			case "authors":
 				str = this.exportAuthors();
-			} else if (s[0].contentEquals("labels")) {
+				break;
+			case "labels":
 				str = this.exportLabels();
-			} else if (s[0].contentEquals("messages")) {
+				break;
+			case "messages":
 				str = this.exportMessages();
-			} else if (s[0].contentEquals("vmessages")) {
+				break;
+			case "vmessages":
 				str = this.exportMessages(true);
-			} else if (s[0].contentEquals("results")) {
+				break;
+			case "results":
 				str = this.exportResults();
-			} else if (s[0].contentEquals("session")) {
-				if (toFile) {
-					this.getSession().setAddress(this.getSession().getWorkdir() + s[1]);
-				}
+				break;
+			case "session":
 				str = this.exportSession();
-			} else {
-				System.out.println(String
-						.format("Mode \"%s\" unknown, expected authors|labels|messages|session", s[0]));
+				break;
+			default:
+				UIUtils.modeUnknown(s[0], Arrays.asList("authors",
+						"labels", "messages", "vmessages", "results", "session"));
+				break;
+		}
+		if (toFile) {
+			if (SessionExporter.exportable.containsKey(s[0])) {
+				this.getSession().getFileSystem()
+				.set(SessionExporter.exportable.get(s[0]), file);
 			}
-			
-			if (toFile) {
-				try (FileWriter fw = new FileWriter(file)){
-					fw.write(str);
-					System.out.println(String.format("%s data written to %s", s[0], s[1]));
-				} catch (IOException e) {
-					System.out.println(e.getMessage());
-				}
-			} else {
-				System.out.println(str);
+			try (FileWriter fw = new FileWriter(file)){
+				fw.write(str);
+				System.out.println(String.format("%s data written to %s", s[0], s[1]));
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
 			}
+		} else {
+			System.out.println(str);
 		}
 	}
 }

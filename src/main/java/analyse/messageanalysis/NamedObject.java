@@ -3,7 +3,7 @@ package analyse.messageanalysis;
 /**
  * Class for named object
  */
-public class NamedObject {
+public class NamedObject implements Comparable<NamedObject> {
 	private String name;
 	
 	/**
@@ -24,5 +24,11 @@ public class NamedObject {
 	
 	public String toString() {
 		return this.name;
+	}
+
+	@Override
+	public int compareTo(NamedObject o) {
+		
+		return 0;
 	}
 }

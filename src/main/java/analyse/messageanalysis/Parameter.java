@@ -11,11 +11,12 @@ import org.json.JSONObject;
 
 import analyse.exceptions.NotFoundException;
 import analyse.session.Session;
-import analyse.utils.OptionalToString;
 
 public class Parameter extends NamedObject {
 	private static final DateTimeFormatter formatter = 
 			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+	public static final List<String> possibleKeys = Arrays
+			.asList("author", "authorLabels", "labels", "conversations");
 	private String author;
 	private String authorLabels;
 	private String labels;
@@ -72,76 +73,108 @@ public class Parameter extends NamedObject {
 	 */
 	public Boolean matches(Author author) {
 		if (this.author != null 
-				&& author.getName().matches(this.author)) {
+				&& !author.getName().matches(this.author)) {
 			return false;
 		}
 		if (this.authorLabels != null 
-				&& author.matchesLabels(this.authorLabels)) {
+				&& !author.matchesLabels(this.authorLabels)) {
 			return false;
 		}
 		if (this.labels != null  
-				&& author.matchesConversationLabel(this.labels)) {
+				&& !author.matchesConversationLabel(this.labels)) {
 			return false;
 		}
 		if (this.conversations != null 
-				&& author.matchesConversation(conversations)) {
+				&& !author.matchesConversation(conversations)) {
 			return false;
 		}
 		return true;
 	}
 	
 	public String toString() {
-		String str = "";
-		for (String p : this.subParameters) {
-			str += ",\"" + p + "\"";
+		StringBuilder str = new StringBuilder();
+		str.append(String.format("name:%s,", this.getName()));
+		for (String s : Parameter.possibleKeys) {
+			str.append(String.format("%s:%s,", s, 
+					this.get(s) == null ? "null" : "\"" + this.get(s) + "\""));
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(1);
-		}
-		return String.format("{\"name\":\"%s\",\"author\":%s,\"authorLabels\":%s,\"labels\":%s,\"conversations\":%s,\"minDate\":%s,\"maxDate\":%s,\n	%s,	\n	\"subParameters\":[%s]}", 
-				this.getName(),
-				OptionalToString.toString(this.author),
-				OptionalToString.toString(this.authorLabels),
-				OptionalToString.toString(this.labels),
-				OptionalToString.toString(this.conversations),
-				OptionalToString.format(minDate, formatter),
-				OptionalToString.format(maxDate, formatter),
-				this.reactions.toString(),
-				str);
+		str.append(String.format("minDate:%s,", 
+				this.minDate == null ? "null" : this.minDate.format(formatter)));
+
+		str.append(String.format("maxDate:%s,\n	", 
+				this.maxDate == null ? "null" : this.maxDate.format(formatter)));
+		str.append(this.reactions.toString());
+		str.append(String.format(",\n	subParameters:[%s]", 
+				String.join(",", this.subParameters)));
+		return str.toString();
 	}
 	
-	public String getAuthor() {
-		return author;
-	}
+	public String toJSON() {
+		List<String> subParams = new ArrayList<>();
+		for (String s : this.subParameters) {
+			subParams.add("\"" + s + "\"");
+		}
+		StringBuilder str = new StringBuilder();
+		str.append(String.format("\"name\":\"%s\",", this.getName()));
+		for (String s : Parameter.possibleKeys) {
+			str.append(String.format("\"%s\":%s,", s, 
+					this.get(s) == null ? "null" : "\"" + this.get(s) + "\""));
+		}
+		str.append(String.format("\"minDate\":%s,", 
+				this.minDate == null ? "null" : "\"" + this.minDate.format(formatter) + "\""));
 
-	public void setAuthor(String author) {
-		this.author = author;
+		str.append(String.format("\"maxDate\":%s,\n	", 
+				this.maxDate == null ? "null" : "\"" + this.maxDate.format(formatter) + "\""));
+		str.append(this.reactions.toString());
+		str.append(String.format(",\n	\"subParameters\":[%s]", 
+				String.join(",", subParams)));
+		return "{" + str.toString() + "}";	
 	}
-
-	public String getAuthorLabels() {
-		return authorLabels;
+	
+	/**
+	 * getter
+	 * @param key String name of variable to get
+	 * @return
+	 */
+	public String get(String key) {
+		switch (key) {
+			case "author":
+				return this.author;
+			case "authorLabels":
+				return this.authorLabels;
+			case "labels":
+				return this.labels;
+			case "conversations":
+				return this.conversations;
+			default:
+				return null;
+		}	
 	}
-
-	public void setAuthorLabels(String authorLabels) {
-		this.authorLabels = authorLabels;
+	
+	/**
+	 * setter
+	 * @param key Name of variable to set
+	 * @param value String to set
+	 */
+	public void set(String key, String value) {
+		switch (key) {
+			case "author":
+				this.author = value;
+				break;
+			case "authorLabels":
+				this.authorLabels = value;
+				break;
+			case "labels":
+				this.labels = value;
+				break;
+			case "conversations":
+				this.conversations = value;
+				break;
+			default:
+				break;
+		}	
 	}
-
-	public String getLabels() {
-		return labels;
-	}
-
-	public void setLabels(String labels) {
-		this.labels = labels;
-	}
-
-	public String getConversations() {
-		return conversations;
-	}
-
-	public void setConversations(String conversations) {
-		this.conversations = conversations;
-	}
-
+	
 	public LocalDateTime getMaxDate() {
 		return maxDate;
 	}
@@ -215,10 +248,10 @@ public class Parameter extends NamedObject {
 	 * @param p
 	 */
 	private void copy(Parameter p) {
-		this.author = p.getAuthor();
-		this.authorLabels = p.getAuthorLabels();
-		this.labels = p.getLabels();
-		this.conversations = p.getConversations();
+		this.author = p.get("author");
+		this.authorLabels = p.get("authorLabels");
+		this.labels = p.get("labels");
+		this.conversations = p.get("conversations");
 		this.maxDate = p.getMaxDate();
 		this.minDate = p.getMinDate();
 		this.reactions = p.getReactions();
@@ -243,7 +276,7 @@ public class Parameter extends NamedObject {
 				for (String s : a) {
 					Parameter p = new Parameter(this.getName() + "_" + s);
 					p.copy(this);
-					p.setAuthor(s);
+					p.set("author", s);
 					if (session.getSearchHandler().addParams(p)) {
 						this.getSubParameters().add(p.getName());
 						p.generateSubParameters(false, authorLabels, labels, conversations, session);
@@ -257,7 +290,7 @@ public class Parameter extends NamedObject {
 				for (String s : a) {
 					Parameter p = new Parameter(this.getName() + "_" + s);
 					p.copy(this);
-					p.setAuthorLabels(s);
+					p.set("authorLabels",s);
 					if (session.getSearchHandler().addParams(p)) {
 						this.getSubParameters().add(p.getName());
 						p.generateSubParameters(author, false, labels, conversations, session);
@@ -271,7 +304,7 @@ public class Parameter extends NamedObject {
 				for (String s : a) {
 					Parameter p = new Parameter(this.getName() + "_" + s);
 					p.copy(this);
-					p.setLabels(s);
+					p.set("labels", s);
 					if (session.getSearchHandler().addParams(p)) {
 						this.getSubParameters().add(p.getName());
 						p.generateSubParameters(author, authorLabels, false, conversations, session);
@@ -285,7 +318,7 @@ public class Parameter extends NamedObject {
 				for (String s : a) {
 					Parameter p = new Parameter(this.getName() + "_" + s);
 					p.copy(this);
-					p.setConversations(s);
+					p.set("conversations", s);
 					if (session.getSearchHandler().addParams(p)) {
 						this.getSubParameters().add(p.getName());
 						p.generateSubParameters(author, authorLabels, labels, false, session);
@@ -310,17 +343,10 @@ public class Parameter extends NamedObject {
 	
 	public static Parameter parse(JSONObject o) {
 		Parameter res = new Parameter(o.getString("name"));
-		if (!o.isNull("author")) {
-			res.setAuthor(o.getString("author"));
-		}
-		if (!o.isNull("authorLabels")) {
-			res.setAuthorLabels(o.getString("authorLabels"));
-		}
-		if (!o.isNull("labels")) {
-			res.setLabels(o.getString("labels"));
-		}
-		if (!o.isNull("conversations")) {
-			res.setConversations(o.getString("conversations"));
+		for (String s : Parameter.possibleKeys) {
+			if (!o.isNull(s)) {
+				res.set(s, o.getString(s));
+			}
 		}
 		if (!o.isNull("minDate")) {
 			res.setMinDate(LocalDateTime.parse(o.getString("minDate"), formatter));

@@ -1,6 +1,8 @@
 package analyse.search;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -11,6 +13,7 @@ import analyse.exceptions.NotFoundException;
 import analyse.messageanalysis.Message;
 import analyse.messageanalysis.Parameter;
 import analyse.session.Session;
+import analyse.utils.JSONUtils;
 
 public class SimpleResult implements Result{
 	Long id;
@@ -87,24 +90,28 @@ public class SimpleResult implements Result{
 	}
 
 	@Override
-	public String getInfo() {
+	public String toString() {
 		return String.format("id: %d, type: SIMPLE, regex: \"%s\",total: %d, average: %f, variance: %f", 
 				this.id, this.regex, this.total, this.avg, this.var);
 	}
 	
-	public String toString() {
-		String str = "";
+	public String toJSON() {
+		List<String> res = new ArrayList<>();
 		for (Map.Entry<Message,Integer> entry : resultSet.entrySet()) {
-			str += String.format(",{\"id\":%d,\"value\":%d}", entry.getKey().getId(), entry.getValue());
+			res.add(String.format("{\"id\":%d,\"value\":%d}"
+					,entry.getKey().getId(), entry.getValue()));
 		}
-		if (!str.isEmpty()) {
-			str = str.substring(1);
-		}
-		String info = String.format("\"id\":%d,\"type\":\"SIMPLE\",\"regex\":\"%s\",\"total\":%d,\"average\":%f,\"variance\":%f,\"params\":%s,", 
-				this.id, this.regex, this.total, this.avg, this.var, 
-				this.params == null ? "null" : "\"" + this.params.getName() +"\"") ;
-		return String.format("{%s\n	\"results\":[%s]}", 
-				info, str);
+		StringBuilder str = new StringBuilder();
+		str.append(String.format("\"id\":%d,\"type\":\"SIMPLE\",", this.id));
+		str.append(String.format("\"regex\":\"%s\",", this.regex));
+		str.append(String.format("\"total\":%d,", this.total));
+		str.append(String.format("\"average\":%f,", this.avg));
+		str.append(String.format("\"variance\":%f,", this.var));
+		str.append(String.format("\"params\":%s,", 
+				this.params == null ? "null" : "\"" + this.params.getName() +"\""));
+		str.append(String.format("\n\"results\":[\n%s\n]", 
+				JSONUtils.indent(String.join(",\n", res))));
+		return "{" + str.toString() + "}";
 	}
 
 	@Override
@@ -142,5 +149,10 @@ public class SimpleResult implements Result{
 	@Override
 	public Integer getTotal() {
 		return this.total;
+	}
+
+	@Override
+	public int compareTo(Result o) {
+		return this.getId().compareTo(o.getId());
 	}
 }

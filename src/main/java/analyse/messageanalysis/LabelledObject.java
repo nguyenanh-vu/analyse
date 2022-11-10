@@ -37,14 +37,23 @@ public class LabelledObject extends NamedObject{
 	 * @return
 	 */
 	public String labelsToString() {
-		String lab = "";
+		List<String> labels = new ArrayList<>();
 		for (Label label : this.labels) {
-			lab += ",\"" + label.getName() + "\"";
+			labels.add(label.getName());
 		}
-		if (!lab.isEmpty()) {
-			lab = lab.substring(1);
+		return String.join(",", labels);
+	}
+	
+	/**
+	 * Get JSONArray list of labels
+	 * @return
+	 */
+	public String labelsToJSON() {
+		List<String> labels = new ArrayList<>();
+		for (Label label : this.labels) {
+			labels.add("\"" + label.getName() + "\"");
 		}
-		return lab;
+		return "[" + String.join(",", labels) + "]";
 	}
 	
 	/**

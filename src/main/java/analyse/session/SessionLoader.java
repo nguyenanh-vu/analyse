@@ -1,5 +1,6 @@
 package analyse.session;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import analyse.UI.UIUtils;
 import analyse.exceptions.JSONParsingException;
 import analyse.exceptions.NotEnoughArgumentException;
 import analyse.exceptions.NotFoundException;
@@ -53,54 +55,56 @@ public class SessionLoader extends SessionTools {
 		if (this.getSession() == null) {
 			System.out.println("No session started");
 		} else {
-			if (s.length < 3) {
-				throw new NotEnoughArgumentException(String.join(" ", s), 3, s.length);
-			} else {
-				String address = this.getSession().getWorkdir() + s[1];
-				List<Label> labels = new ArrayList<>();
-				if (s.length > 3) {
-					List<String> l = Arrays.asList(Arrays.copyOfRange(s, 3, s.length));
-					for (String str : l) {
-						labels.add(new Label(str));
-					}
+			UIUtils.notEnoughArguments(s, 3);
+			File file = this.getSession().getFileSystem().getPath(s[1]).toFile();
+			List<Label> labels = new ArrayList<>();
+			if (s.length > 3) {
+				List<String> l = Arrays.asList(Arrays.copyOfRange(s, 3, s.length));
+				for (String str : l) {
+					labels.add(new Label(str));
 				}
-				if (s[0].contentEquals("whatsapp")) {
-					WhatsappUtils.load(address, labels, s[2], this.editor);
-				} else if (s[0].contentEquals("fb")) {
-					MessengerUtils.load(address, labels, s[2], this.editor);
-				} else if (s[0].contentEquals("session")) {
+			}
+			switch (s[0]) {
+				case "whatsapp":
+					WhatsappUtils.load(file, labels, s[2], this.editor);
+					break;
+				case "fb":
+					MessengerUtils.load(file, labels, s[2], this.editor);
+					break;
+				case "session":
 					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
 						this.getSession().restart();
 					}
-					this.loadSession(address);
-				} else if (s[0].contentEquals("messages")) {
+					this.loadSession(file);
+					break;
+				case "messages":
 					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
 						this.getSession().restart();
 					}
-					this.loadMessages(address);
-				} else {
-					System.out.println(String
-							.format("Mode \"%s\" unknown, expected whatsapp|fb|session", s[0]));
-				}
+					this.loadMessages(file);
+					break;
+				default:
+					UIUtils.modeUnknown(s[0], Arrays.asList("whatsapp",
+							"fb","session","messages"));
 			}
 		}
 	}
 	
 	/**
 	 * Load saved session
-	 * @param path String path to session save file
+	 * @param file File to session save file
 	 * @param session analyse.session.Session
 	 */
-	public void loadSession(String path) {
+	public void loadSession(File file) {
 		try {
-			InputStream  is = new FileInputStream(path);
+			InputStream  is = new FileInputStream(file);
 			Scanner myReader = new Scanner(is);
 			String str = "";
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
 				str += data;
 			}
-			System.out.println(String.format("Session data file %s finished loading", path));
+			System.out.println(String.format("Session data file %s finished loading", file.toString()));
 			JSONObject jo = new JSONObject(str);
 			 
 			this.parseAuthors(jo.getJSONArray("authors"));
@@ -108,8 +112,8 @@ public class SessionLoader extends SessionTools {
 			this.parseParams(jo.getJSONArray("parameters"));
 			this.parseResults(jo.getJSONArray("results"));
 			
-			this.getSession().setAddress(path);
-			System.out.println(String.format("Session data file %s finished parsing", path));
+			this.getSession().getFileSystem().set("sessionFile", file);
+			System.out.println(String.format("Session data file %s finished parsing", file.toString()));
 			myReader.close();
 	    } catch (FileNotFoundException | JSONException | JSONParsingException e) {
 	    	System.out.println("An error occurred.");
@@ -139,18 +143,18 @@ public class SessionLoader extends SessionTools {
 	
 	/**
 	 * Load session data from message save file
-	 * @param path to save file
+	 * @param file File to save file
 	 */
-	private void loadMessages(String path) {
+	private void loadMessages(File file) {
 		try {
-			InputStream  is = new FileInputStream(path);
+			InputStream  is = new FileInputStream(file);
 			Scanner myReader = new Scanner(is);
 			String str = "";
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
 				str += data;
 			}
-			System.out.println(String.format("Session data file %s finished loading", path));
+			System.out.println(String.format("Session data file %s finished loading", file.toString()));
 			JSONArray jo = new JSONArray(str);
 			this.parseMessages(jo);
 			myReader.close();

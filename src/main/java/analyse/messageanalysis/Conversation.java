@@ -19,7 +19,12 @@ public class Conversation extends LabelledObject {
 	}
 	
 	public String toString() {
-		return String.format("{\"name\":\"%s\",\"labels\":[%s]}", 
+		return String.format("name:%s,labels:[%s]", 
 				this.getName(), this.labelsToString());
+	}
+	
+	public String toJSON() {
+		return String.format("{\"name\":\"%s\",\"labels\":%s}", 
+				this.getName(), this.labelsToJSON());
 	}
 }

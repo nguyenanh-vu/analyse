@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 /**
  * class representing messages
  */
-public class Message {
+public class Message implements Comparable<Message> {
 	private Long id;
 	private LocalDateTime timestamp;
 	private Author author;
@@ -111,24 +111,36 @@ public class Message {
 		this.conversation = conv;
 	}
 	
+	@Override
 	public String toString() {
-		return toString(false);
+		StringBuilder str = new StringBuilder();
+		str.append(String.format("id:%d,", this.id));
+		str.append(String.format("date:%s,", this.timestamp.format(formatter)));
+		str.append(String.format("author:%s,", this.author.getName()));
+		str.append(String.format("conversation:%s,", this.conversation.getName()));
+		str.append(String.format("labels:%s,\n	", this.conversation.labelsToString()));
+		str.append(this.reactions.toString());
+		return str.toString();
 	}
 	
-	public String toString(Boolean verbose) {
-		String content = this.content;
-		String author = String.format("\"author\":\"%s\"",this.getAuthor().getName());
-		if (Boolean.TRUE.equals(verbose)) {
-			author += String.format(",\"author_labels\":[%s]", this.getAuthor().labelsToString());
+	public String toJSON() {
+		return toJSON(false);
+	}
+	
+	public String toJSON(Boolean verbose) {
+		StringBuilder str = new StringBuilder();
+		str.append(String.format("\"id\":%d,", this.id));
+		str.append(String.format("\"date\":\"%s\",", this.timestamp.format(formatter)));
+		str.append(String.format("\"author\":\"%s\",", this.author.getName()));
+		if (verbose) {
+			str.append(String.format("\"author_labels\":%s,", this.author.labelsToJSON()));
 		}
-		return String.format("{\"id\":%s,\"date\":\"%s\",%s,\"conversation\":\"%s\",\"labels\":[%s],\n	%s,\n	\"content\":\"%s\"}", 
-				this.id.toString(),
-				this.timestamp.format(formatter), 
-				author, 
-				this.conversation.getName(),
-				this.conversation.labelsToString(),
-				this.reactions.toString(),
-				content.replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\""));
+		str.append(String.format("\"conversation\":\"%s\",", this.conversation.getName()));
+		str.append(String.format("\"labels\":%s,\n	", this.conversation.labelsToJSON()));
+		str.append(this.reactions.toString() + ",\n	");
+		str.append(String.format("\"content\":\"%s\"", this.content
+				.replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\"")));
+		return "{" + str.toString() + "}";
 	}
 	
 	/**
@@ -155,5 +167,10 @@ public class Message {
 	
 	public Reactions getReactions() {
 		return this.reactions;
+	}
+
+	@Override
+	public int compareTo(Message o) {
+		return this.id.compareTo(o.getId());
 	}
 }

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import analyse.messageanalysis.Parameter;
 
-public interface Result {
+public interface Result extends Comparable<Result> {
 	/**
 	 * getter
 	 * @return Map<?,?> this.results
@@ -40,7 +40,13 @@ public interface Result {
 	 * get String representation of search informations
 	 * @return String
 	 */
-	public String getInfo();
+	public String toString();
+	
+	/**
+	 * get JSON representation of search informations
+	 * @return String
+	 */
+	public String toJSON();
 	
 	/**
 	 * getter
