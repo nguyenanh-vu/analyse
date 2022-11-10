@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import analyse.exceptions.NotFoundException;
 import analyse.session.Session;
+import analyse.session.SessionPrinter;
 
 public class Parameter extends NamedObject {
 	private static final DateTimeFormatter formatter = 
@@ -210,10 +211,10 @@ public class Parameter extends NamedObject {
 	public boolean addSubParameters(String str) {
 		for (String s : this.subParameters) {
 			if (s.contentEquals(str)) {
-				System.out.println(String.format("Sub Parameter %s already present for %s", 
-						str, this.getName()));
+				return false;
 			}
 		}
+		this.subParameters.add(str);
 		return true;
 	}
 	
@@ -237,7 +238,7 @@ public class Parameter extends NamedObject {
 				Parameter p = session.searchParameter(s);
 				res.add(p);
 			} catch (NotFoundException e) {
-				System.out.println(e.getMessage());
+				SessionPrinter.printException(e);
 			}
 		}
 		return res;

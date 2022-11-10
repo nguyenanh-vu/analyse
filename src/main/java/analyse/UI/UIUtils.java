@@ -25,4 +25,17 @@ public class UIUtils {
 						instead,
 						String.join("|", s)));
 	}
+	
+	public static String progressBar(Float percent, Integer size) {
+		StringBuilder str = new StringBuilder();
+		Integer i = (int) ((percent * size) / 100);
+		for (int j = 0; j < size; j ++) {
+			if (j < i) {
+				str.append("#");
+			} else {
+				str.append(".");
+			}
+		}
+		return "[" + str.toString() + "]";
+	}
 }

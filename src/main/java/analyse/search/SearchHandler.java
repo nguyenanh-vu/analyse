@@ -16,6 +16,7 @@ import analyse.messageanalysis.Message;
 import analyse.messageanalysis.Parameter;
 import analyse.messageanalysis.Reactions;
 import analyse.session.Session;
+import analyse.session.SessionPrinter;
 import analyse.session.SessionTools;
 
 public class SearchHandler extends SessionTools {
@@ -48,7 +49,7 @@ public class SearchHandler extends SessionTools {
 			try {
 				p = this.getSession().searchParameter(s[2]);
 			} catch (NotFoundException e) {
-				System.out.println(e.getMessage());
+				SessionPrinter.printException(e);
 			}
 		}
 		if (s[0].contentEquals("simple")) {
@@ -113,7 +114,7 @@ public class SearchHandler extends SessionTools {
 						break;
 				}
 			} catch (NotFoundException e) {
-				System.out.println(e.getMessage());
+				SessionPrinter.printException(e);
 			}
 		}
 	}
@@ -133,7 +134,7 @@ public class SearchHandler extends SessionTools {
 	 */
 	public boolean addParams(Parameter p) {
 		if (this.params.contains(p)) {
-			System.out.println(String.format("Parameter with name %s already exists", p.getName()));
+			this.println(String.format("Parameter with name %s already exists", p.getName()));
 			return false;
 		} else {
 			this.params.add(p);
@@ -161,7 +162,7 @@ public class SearchHandler extends SessionTools {
 		SimpleResult result = new SimpleResult(res, this.counter, 
 				str, total, params);
 		this.results.add(result);
-		System.out.println(result.toString());
+		this.println(result.toString());
 		this.counter++;
 	}
 	
