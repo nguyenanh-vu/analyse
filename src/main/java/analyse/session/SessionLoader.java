@@ -65,6 +65,19 @@ public class SessionLoader extends SessionTools {
 				}
 			}
 			switch (s[0]) {
+				case "folder":
+					switch (s[2]) {
+						case "fb":
+							MessengerUtils.loadFolder(file, labels, editor);
+							break;
+						case "whatsapp":
+							WhatsappUtils.loadFolder(file, labels, editor);
+							break;
+						default:
+							UIUtils.modeUnknown(s[2], Arrays.asList("fb", "whatsapp"));
+							break;
+					}
+					break;
 				case "whatsapp":
 					WhatsappUtils.load(file, labels, s[2], this.editor);
 					break;

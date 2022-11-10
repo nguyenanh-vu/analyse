@@ -28,6 +28,26 @@ public class WhatsappUtils{
 			DateTimeFormatter.ofPattern("dd/MM/yyyy, HH:mm ");
 	
 	/**
+	 * load whole folder as Whatsapp Messenger file
+	 * @param file File folder to parse
+	 * @param labels
+	 * @param conversation
+	 * @param editor
+	 */
+	public static void loadFolder(File file, List<Label> labels, SessionEditor editor) {
+		if (!file.isDirectory()) {
+			System.out.println(String.format("%s not a directory", file.toString()));
+		} else {
+			for (File f : file.listFiles()) {
+				String fileName[] = f.toPath().getFileName().toString().split("\\."); 
+				if (fileName.length > 1 && fileName[1].contentEquals("txt")) {
+					WhatsappUtils.load(f, labels, FileNameUtils.check(fileName[0]), editor);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Load data from Whatsapp backup file
 	 * @param file File to backup file
 	 * @param labels List<analyse.messageanalysis.Label>
@@ -37,13 +57,13 @@ public class WhatsappUtils{
 	 */
 	public static void load(File file, List<Label> labels, 
 			String conversation, SessionEditor editor) {
+		Pattern datePattern = Pattern
+				.compile("\\d\\d/\\d\\d/\\d\\d\\d\\d, \\d\\d:\\d\\d ");
 		try {
 			InputStream  is = new FileInputStream(file);
 			Scanner myReader = new Scanner(is);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
-				Pattern datePattern = Pattern
-						.compile("\\d\\d/\\d\\d/\\d\\d\\d\\d, \\d\\d:\\d\\d ");
 				Message message = null;
 				if (datePattern.matcher(data).find()) {
 					message = WhatsappUtils.parse(data, labels, conversation);

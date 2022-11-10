@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +69,7 @@ public class SearchHandler extends SessionTools {
 			this.addParams(new Parameter(s[1]));
 		} else {
 			try {
-				List<String> possibleParams = Arrays.asList("minDate", "maxDate");
+				List<String> possibleParams = new LinkedList<String>(Arrays.asList("minDate", "maxDate"));
 				possibleParams.addAll(Parameter.possibleKeys);
 				possibleParams.addAll(Reactions.possibleKeys);
 				Parameter p = this.getSession().searchParameter(s[1]);
