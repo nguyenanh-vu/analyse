@@ -139,7 +139,7 @@ public class Message implements Comparable<Message>, JSONExportable {
 		str.append(String.format("\"labels\":%s,\n	", this.conversation.labelsToJSON()));
 		str.append(this.reactions.toString() + ",\n	");
 		str.append(String.format("\"content\":\"%s\"", this.content
-				.replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\"")));
+				.replace("\\", "\\\\").replace("\r", "\\r").replace("\n", "\\n").replace("\"", "\\\"")));
 		return "{" + str.toString() + "}";
 	}
 	
