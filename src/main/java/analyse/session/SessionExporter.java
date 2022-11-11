@@ -206,7 +206,8 @@ public class SessionExporter extends SessionTools {
 		} catch (IOException e) {
 			SessionPrinter.printException(e);
 		}
-		try (FileWriter fw = new FileWriter(file, true);){
+		try (FileWriter fw = new FileWriter(file, true)){
+			this.printf("Exporting %s data to %s", mode, file.toString());
 			BufferedWriter bw = new BufferedWriter(fw);
 			switch (mode) {
 				case "authors":
@@ -234,6 +235,8 @@ public class SessionExporter extends SessionTools {
 			}
 			bw.newLine();
 			bw.close();
+			this.overwrite();
+			this.printfln("Sucessfully exported %s data to %s", mode, file.toString());
 		} catch (IOException e) {
 			SessionPrinter.printException(e);
 		}
