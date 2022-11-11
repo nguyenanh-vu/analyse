@@ -122,6 +122,9 @@ public class SessionController extends SessionTools{
 					case "println":
 						this.println(String.join(" ", args));
 						break;
+					case "overwrite":
+						this.overwrite();
+						break;
 					//ui
 					case "list":
 						this.info.list(args);

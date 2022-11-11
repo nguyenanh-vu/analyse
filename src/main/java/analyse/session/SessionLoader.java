@@ -75,11 +75,15 @@ public class SessionLoader extends SessionTools {
 					}
 					break;
 				case "whatsapp":
+					this.printf("Loading Whatsapp file %s", file.toString());
 					WhatsappUtils.load(file, labels, s[2], this.editor);
+					this.overwrite();
 					this.printfln("Whatsapp file %s finished loading and parsing", file.toString());
 					break;
 				case "fb":
+					this.printf("Loading Whatsapp file %s", file.toString());
 					MessengerUtils.load(file, labels, s[2], this.editor);
+					this.overwrite();
 					this.printfln("Facebook Messenger file %s finished loading and parsing", file.toString());
 					break;
 				case "session":
