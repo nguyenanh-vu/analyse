@@ -43,15 +43,21 @@ public class SessionExporter extends SessionTools {
 	public void exportSession(BufferedWriter bw, String path) throws IOException {
 		bw.write("{\n	\"authors\":");
 		this.export(bw, this.getSession().getAuthorList(), 0, "authors" , path, false);
+		this.overwrite();
 		bw.write(",\n	\"labels\":");
+		this.overwrite();
 		this.export(bw, this.getSession().getLabels(), 0, "labels" , path, false);
 		bw.write(",\n	\"conversations\":");
+		this.overwrite();
 		this.export(bw, this.getSession().getConversations(), 0, "conversations" , path, false);
 		bw.write(",\n	\"parameters\":");
+		this.overwrite();
 		this.export(bw, this.getSession().getSearchHandler().getParams(), 0, "parameters" , path, false);
 		bw.write(",\n	\"results\":");
+		this.overwrite();
 		this.export(bw, this.getSession().getSearchHandler().getResults(), 0, "results" , path, false);
 		bw.write(",\n	\"messages\":");
+		this.overwrite();
 		this.export(bw, this.getSession().getMessageList(), 0, "messages" , path, false);
 		bw.write("\n}");
 	}
