@@ -13,7 +13,7 @@ import analyse.exceptions.NotFoundException;
 import analyse.session.Session;
 import analyse.session.SessionPrinter;
 
-public class Parameter extends NamedObject {
+public class Parameter extends NamedObject implements JSONExportable {
 	private static final DateTimeFormatter formatter = 
 			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 	public static final List<String> possibleKeys = Arrays
@@ -109,8 +109,13 @@ public class Parameter extends NamedObject {
 				String.join(",", this.subParameters)));
 		return str.toString();
 	}
-	
+
+	@Override
 	public String toJSON() {
+		return this.toJSON(false);
+	}
+	
+	public String toJSON(Boolean verbose) {
 		List<String> subParams = new ArrayList<>();
 		for (String s : this.subParameters) {
 			subParams.add("\"" + s + "\"");

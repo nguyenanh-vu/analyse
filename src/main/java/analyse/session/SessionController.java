@@ -160,6 +160,7 @@ public class SessionController extends SessionTools{
 			this.loader.setSession(this.getSession());
 			this.loader.setEditor(this.editor);
 			this.info.setSession(this.getSession());
+			this.getSession().getFileSystem().setSession(this.getSession());
 			this.println("New session successfully started");
 		} else {
 			this.getSession().restart();

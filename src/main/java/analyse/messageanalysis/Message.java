@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 /**
  * class representing messages
  */
-public class Message implements Comparable<Message> {
+public class Message implements Comparable<Message>, JSONExportable {
 	private Long id;
 	private LocalDateTime timestamp;
 	private Author author;
@@ -124,7 +124,7 @@ public class Message implements Comparable<Message> {
 	}
 	
 	public String toJSON() {
-		return toJSON(false);
+		return this.toJSON(false);
 	}
 	
 	public String toJSON(Boolean verbose) {

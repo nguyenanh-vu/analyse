@@ -160,7 +160,8 @@ public class SearchHandler extends SessionTools {
 				}
 				progression = ((float) total * 100)/this.getSession()
 						.getMessageList().size();
-				if (total % (this.getSession().getMessageList().size() / 1000) == 0) {
+				if (this.getSession().getMessageList().size() < 1000 || 
+						total % (this.getSession().getMessageList().size() / 1000) == 0) {
 					this.printf("\r%s %.02f%% Simple search regex: %s parameters: %s", 
 							UIUtils.progressBar(progression, 10), progression, 
 							str, params == null ? "null" : params.getName());

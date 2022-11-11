@@ -2,9 +2,10 @@ package analyse.search;
 
 import java.util.Map;
 
+import analyse.messageanalysis.JSONExportable;
 import analyse.messageanalysis.Parameter;
 
-public interface Result extends Comparable<Result> {
+public interface Result extends Comparable<Result>, JSONExportable {
 	/**
 	 * getter
 	 * @return Map<?,?> this.results
@@ -41,12 +42,6 @@ public interface Result extends Comparable<Result> {
 	 * @return String
 	 */
 	public String toString();
-	
-	/**
-	 * get JSON representation of search informations
-	 * @return String
-	 */
-	public String toJSON();
 	
 	/**
 	 * getter

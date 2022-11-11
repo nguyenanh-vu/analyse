@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Class representing message author
  */
-public class Author extends LabelledObject{
+public class Author extends LabelledObject implements JSONExportable {
 	private List<Label> labels = new ArrayList<>();
 	private List<Conversation> conversations = new ArrayList<>();
 	
@@ -96,6 +96,11 @@ public class Author extends LabelledObject{
 	}
 	
 	public String toJSON() {
+		return this.toJSON(false);
+	}
+	
+	@Override
+	public String toJSON(Boolean verbose) {
 		StringBuilder str = new StringBuilder();
 		str.append(String.format("\"name\": \"%s\",", this.getName()));
 		str.append(String.format("\"labels\": %s,", this.labelsToJSON()));

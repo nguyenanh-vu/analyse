@@ -1,6 +1,6 @@
 package analyse.messageanalysis;
 
-public class Conversation extends LabelledObject {
+public class Conversation extends LabelledObject implements JSONExportable {
 	public Conversation(String name) {
 		this.setName(name);
 	}
@@ -24,6 +24,11 @@ public class Conversation extends LabelledObject {
 	}
 	
 	public String toJSON() {
+		return this.toJSON(false);
+	}
+
+	@Override
+	public String toJSON(Boolean verbose) {
 		return String.format("{\"name\":\"%s\",\"labels\":%s}", 
 				this.getName(), this.labelsToJSON());
 	}

@@ -3,7 +3,7 @@ package analyse.messageanalysis;
 /**
  * class representing data label
  */
-public class Label extends NamedObject{
+public class Label extends NamedObject implements JSONExportable{
 	public Label(String name) {
 		this.setName(name);
 	}
@@ -19,5 +19,15 @@ public class Label extends NamedObject{
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public String toJSON() {
+		return this.toJSON(false);
+	}
+
+	@Override
+	public String toJSON(Boolean verbose) {
+		return "\"" + this.getName() + "\"";
 	}
 }

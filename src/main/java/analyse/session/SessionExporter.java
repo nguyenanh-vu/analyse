@@ -6,16 +6,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import analyse.UI.UIUtils;
 import analyse.exceptions.NotEnoughArgumentException;
-import analyse.messageanalysis.Author;
-import analyse.messageanalysis.Conversation;
-import analyse.messageanalysis.Label;
-import analyse.messageanalysis.Message;
-import analyse.messageanalysis.Parameter;
-import analyse.search.Result;
+import analyse.messageanalysis.JSONExportable;
 import analyse.utils.JSONUtils;
 
 /**
@@ -39,148 +35,24 @@ public class SessionExporter extends SessionTools {
 		bw.write(str);
 	}
 	/**
-	 * write List<analyse.messageanalysis.Author> to file as JSON
-	 * @param bw BufferedWriter
-	 * @param indent
-	 * @throws IOException 
-	 */
-	public void exportAuthors(BufferedWriter bw, Integer indent) throws IOException {
-		SessionExporter.indentWrite(bw, "[", indent);
-		boolean isFirst = true;
-		for (Author a : this.getSession().getAuthorList()) {
-			bw.write(isFirst ? "" : ",");
-			bw.newLine();
-			SessionExporter.indentWrite(bw,a.toJSON(), indent + 1);
-			isFirst = false;
-		}
-		bw.newLine();
-		SessionExporter.indentWrite(bw, "]", indent);
-	}
-	
-	/**
-	 * write List<analyse.messageanalysis.Message> to file as JSON
-	 * @param bw BufferedWriter
-	 * @param indent
-	 * @throws IOException 
-	 */
-	public void exportMessages(BufferedWriter bw, Integer indent) throws IOException {
-		this.exportMessages(false, bw, indent);
-	}
-	
-	/**
-	 * write List<analyse.messageanalysis.Message> to file as JSON
-	 * @param verbose Boolean if true add labels to message
-	 * @param bw BufferedWriter
-	 * @param indent
-	 * @throws IOException 
-	 */
-	public void exportMessages(Boolean verbose, BufferedWriter bw, Integer indent) throws IOException {
-		SessionExporter.indentWrite(bw, "[", indent);
-		boolean isFirst = true;
-		for (Message m : this.getSession().getMessageList()) {
-			bw.write(isFirst ? "" : ",");
-			bw.newLine();
-			SessionExporter.indentWrite(bw,m.toJSON(verbose), indent + 1);
-			isFirst = false;
-		}
-		bw.newLine();
-		SessionExporter.indentWrite(bw, "]", indent);
-	}
-	
-	/**
-	 * write List<analyse.search.Result> to file as JSON
-	 * @param bw BufferedWriter
-	 * @param indent
-	 * @throws IOException 
-	 */
-	public void exportResults(BufferedWriter bw, Integer indent) throws IOException {
-		SessionExporter.indentWrite(bw, "[", indent);
-		boolean isFirst = true;
-		for (Result r : this.getSession().getSearchHandler().getResults()) {
-			bw.write(isFirst ? "" : ",");
-			bw.newLine();
-			SessionExporter.indentWrite(bw, r.toJSON(), indent + 1);
-			isFirst = false;
-		}
-		bw.newLine();
-		SessionExporter.indentWrite(bw, "]", indent);
-	}
-	
-	/**
-	 * write List<analyse.messageanalysis.Label> to file as JSON
-	 * @param bw BufferedWriter
-	 * @param indent
-	 * @throws IOException 
-	 */
-	public void exportLabels(BufferedWriter bw, Integer indent) throws IOException {
-		SessionExporter.indentWrite(bw, "[", indent);
-		boolean isFirst = true;
-		for (Label l : this.getSession().getLabels()) {
-			bw.write(isFirst ? "" : ",");
-			bw.newLine();
-			SessionExporter.indentWrite(bw, "\"" + l.getName() + "\"", indent + 1);
-			isFirst = false;
-		}
-		bw.newLine();
-		SessionExporter.indentWrite(bw, "]", indent);
-	}
-	
-	/**
-	 * write List<analyse.messageanalysis.Conversation> to file as JSON
-	 * @param bw BufferedWriter
-	 * @param indent
-	 * @throws IOException 
-	 */
-	public void exportConversations(BufferedWriter bw, Integer indent) throws IOException {
-		SessionExporter.indentWrite(bw, "[", indent);
-		boolean isFirst = true;
-		for (Conversation c : this.getSession().getConversations()) {
-			bw.write(isFirst ? "" : ",");
-			bw.newLine();
-			SessionExporter.indentWrite(bw, c.toJSON(), indent + 1);
-			isFirst = false;
-		}
-		bw.newLine();
-		SessionExporter.indentWrite(bw, "]", indent);
-	}
-	
-	/**
-	 * write List<analyse.messageanalysis.Parameter> to file as JSON
-	 * @param bw
-	 * @param indent
-	 * @throws IOException
-	 */
-	public void exportParams(BufferedWriter bw, Integer indent) throws IOException {
-		SessionExporter.indentWrite(bw, "[", indent);
-		boolean isFirst = true;
-		for (Parameter p : this.getSession().getSearchHandler().getParams()) {
-			bw.write(isFirst ? "" : ",");
-			bw.newLine();
-			SessionExporter.indentWrite(bw, p.toJSON(), indent + 1);
-			isFirst = false;
-		}
-		bw.newLine();
-		SessionExporter.indentWrite(bw, "]", indent);
-	}
-	
-	/**
 	 * Export whole session data to file as JSON
 	 * @param bw BufferedWriter
+	 * @param path 
 	 * @throws IOException 
 	 */
-	public void exportSession(BufferedWriter bw) throws IOException {
+	public void exportSession(BufferedWriter bw, String path) throws IOException {
 		bw.write("{\n	\"authors\":");
-		this.exportAuthors(bw, 1);
+		this.export(bw, this.getSession().getAuthorList(), 0, "authors" , path, false);
 		bw.write(",\n	\"labels\":");
-		this.exportLabels(bw, 1);
+		this.export(bw, this.getSession().getLabels(), 0, "labels" , path, false);
 		bw.write(",\n	\"conversations\":");
-		this.exportConversations(bw, 1);
+		this.export(bw, this.getSession().getConversations(), 0, "conversations" , path, false);
 		bw.write(",\n	\"parameters\":");
-		this.exportParams(bw, 1);
+		this.export(bw, this.getSession().getSearchHandler().getParams(), 0, "parameters" , path, false);
 		bw.write(",\n	\"results\":");
-		this.exportResults(bw, 1);
+		this.export(bw, this.getSession().getSearchHandler().getResults(), 0, "results" , path, false);
 		bw.write(",\n	\"messages\":");
-		this.exportMessages(bw, 1);
+		this.export(bw, this.getSession().getMessageList(), 0, "messages" , path, false);
 		bw.write("\n}");
 	}
 	
@@ -209,29 +81,35 @@ public class SessionExporter extends SessionTools {
 		try (FileWriter fw = new FileWriter(file, true)){
 			this.printf("Exporting %s data to %s", mode, file.toString());
 			BufferedWriter bw = new BufferedWriter(fw);
+			List<? extends JSONExportable> l = null;
+			Boolean verbose = false;
 			switch (mode) {
 				case "authors":
-					exportAuthors(bw, 0);
+					l = this.getSession().getAuthorList();
 					break;
 				case "labels":
-					this.exportLabels(bw, 0);
+					l = this.getSession().getLabels();
 					break;
 				case "messages":
-					this.exportMessages(bw, 0);
+					l = this.getSession().getMessageList();
 					break;
 				case "vmessages":
-					this.exportMessages(true, bw, 0);
+					l = this.getSession().getMessageList();
+					verbose = true;
 					break;
 				case "results":
-					this.exportResults(bw, 0);
+					l = this.getSession().getSearchHandler().getResults();
 					break;
 				case "session":
-					this.exportSession(bw);
+					this.exportSession(bw, file.toString());
 					break;
 				default:
 					UIUtils.modeUnknown(mode, Arrays.asList("authors",
 							"labels", "messages", "vmessages", "results", "session"));
 					break;
+			}
+			if (l != null) {
+				this.export(bw, l, 0, mode, file.toString(), verbose);
 			}
 			bw.newLine();
 			bw.close();
@@ -240,5 +118,42 @@ public class SessionExporter extends SessionTools {
 		} catch (IOException e) {
 			SessionPrinter.printException(e);
 		}
+	}
+	
+	/**
+	 * write List<JSONExportable> to file as JSON objects
+	 * @param bw BufferedWriter
+	 * @param l List<JSONExportable> containing objects to export
+	 * @param indent Integer level of indentation
+	 * @param mode String type of objects written
+	 * @param path String path of file
+	 * @param verbose Boolean
+	 * @throws IOException
+	 */
+	public void export(BufferedWriter bw, List<? extends JSONExportable> l, 
+			Integer indent, String mode, String path, Boolean verbose) throws IOException {
+		SessionExporter.indentWrite(bw, "[", indent);
+		if (!l.isEmpty()) {
+			boolean isFirst = true;
+			int size = l.size();
+			int total = 0;
+			float progression;
+			for (JSONExportable s : l) {
+				total++;
+				progression = ((float) total * 100)/this.getSession()
+						.getMessageList().size();
+				if (size < 1000 || total % (size / 1000) == 0) {
+					this.printf("\r%s %.02f%% Writing %s data to : %s", 
+							UIUtils.progressBar(progression, 10), progression, 
+							mode, path);
+				}
+				bw.write(isFirst ? "" : ",");
+				bw.newLine();
+				SessionExporter.indentWrite(bw, s.toJSON(), indent + 1);
+				isFirst = false;
+			}
+		}
+		bw.newLine();
+		SessionExporter.indentWrite(bw, "]", indent);
 	}
 }

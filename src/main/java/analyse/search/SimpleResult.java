@@ -94,8 +94,14 @@ public class SimpleResult implements Result{
 		return String.format("id: %d, type: SIMPLE, regex: \"%s\",total: %d, average: %f, variance: %f", 
 				this.id, this.regex, this.total, this.avg, this.var);
 	}
-	
+
+	@Override
 	public String toJSON() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public String toJSON(Boolean verbose) {
 		List<String> res = new ArrayList<>();
 		for (Map.Entry<Message,Integer> entry : resultSet.entrySet()) {
 			res.add(String.format("{\"id\":%d,\"value\":%d}"
