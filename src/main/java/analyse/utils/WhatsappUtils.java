@@ -80,7 +80,7 @@ public class WhatsappUtils{
 		}
 		author.addConversation(conv);
 		return new Message(0l, LocalDateTime.parse(s1[0], formatter), 
-				author, s2[1],conv);
+				author, s2[1].replace("\r", ""),conv);
 	}
 	
 }
