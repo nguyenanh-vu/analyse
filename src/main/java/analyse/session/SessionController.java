@@ -2,8 +2,6 @@ package analyse.session;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -210,43 +208,25 @@ public class SessionController extends SessionTools{
 	 * Save to file as defined by SessionFileSystem.files
 	 */
 	private void save(String[] s) {
-		File file = null;
-		String str = "";
+		File file;
 		if (s.length == 0) {
 			file = this.getSession().getFileSystem().get("sessionFile");
-			str = this.exporter.exportSession();
+			if (file != null) {
+				this.exporter.export("session",file);	
+			} else {
+				this.println("No save file address. Use \"export session [file path]\" instead or set sessionFile [file path]");
+			}
 		} else if (SessionExporter.exportable.containsKey(s[0])) {
 			file = this.getSession().getFileSystem()
 					.get(SessionExporter.exportable.get(s[0]));
-			switch (s[0]) {
-				case "messages":
-					str = this.exporter.exportMessages();
-					break;
-				case "vmessages":
-					str = this.exporter.exportMessages(true);
-					break;
-				case "session":
-					str = this.exporter.exportSession();
-					break;
-				case "results":
-					str = this.exporter.exportResults();
-					break;
-				default:
-					UIUtils.modeUnknown(s[0], new ArrayList<String>(
-							SessionExporter.exportable.keySet()));
-					break;
+			if (file == null) {
+				this.println("No save file address. Use \"export [mode] [file path]\" instead or set [mode] [file path]");
+			} else {
+				this.exporter.export(s[0], file);
 			}
-		}
-		if (file == null) {
-			this.println("No save file address. Use \"export [mode] [file path]\" instead or set fileSession [file path]");
 		} else {
-			try (FileWriter fw = new FileWriter(file)){
-				fw.write(str);
-				this.printfln("%s data written to %s", (s.length == 0) ? "session" : s[0], 
-						file.toString());
-			} catch (IOException e) {
-				SessionPrinter.printException(e);
-			}
+			UIUtils.modeUnknown(s[0], new ArrayList<String>(
+					SessionExporter.exportable.keySet()));
 		}
 	}
 }

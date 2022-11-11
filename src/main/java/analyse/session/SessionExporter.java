@@ -1,12 +1,11 @@
 package analyse.session;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import analyse.UI.UIUtils;
@@ -31,97 +30,158 @@ public class SessionExporter extends SessionTools {
 			put("results", "resultsFile");
 			put("session", "sessionFile");
 		}};
-	/**
-	 * Export List<analyse.messageanalysis.Author> to JSON
-	 * @return JSON data
-	 */
-	public String exportAuthors() {
-		List<String> str = new ArrayList<>();
-		for (Author author : this.getSession().getAuthorList()) {
-			str.add(author.toJSON());
+		
+	private static void indentWrite(BufferedWriter bw, String s, Integer indent) throws IOException {
+		String str = s;
+		for (int i = 0; i < indent; i++) {
+			str = JSONUtils.indent(str);
 		}
-		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
+		bw.write(str);
 	}
-	
 	/**
-	 * Export List<analyse.messageanalysis.Message> to JSON
-	 * @param session analyse.session.Session
-	 * @return JSON data
+	 * write List<analyse.messageanalysis.Author> to file as JSON
+	 * @param bw BufferedWriter
+	 * @param indent
+	 * @throws IOException 
 	 */
-	public String exportMessages() {
-		return this.exportMessages(false);
+	public void exportAuthors(BufferedWriter bw, Integer indent) throws IOException {
+		SessionExporter.indentWrite(bw, "[", indent);
+		boolean isFirst = true;
+		for (Author a : this.getSession().getAuthorList()) {
+			bw.write(isFirst ? "" : ",");
+			bw.newLine();
+			SessionExporter.indentWrite(bw,a.toJSON(), indent + 1);
+			isFirst = false;
+		}
+		bw.newLine();
+		SessionExporter.indentWrite(bw, "]", indent);
 	}
 	
 	/**
-	 * Export List<analyse.messageanalysis.Message> to JSON
+	 * write List<analyse.messageanalysis.Message> to file as JSON
+	 * @param bw BufferedWriter
+	 * @param indent
+	 * @throws IOException 
+	 */
+	public void exportMessages(BufferedWriter bw, Integer indent) throws IOException {
+		this.exportMessages(false, bw, indent);
+	}
+	
+	/**
+	 * write List<analyse.messageanalysis.Message> to file as JSON
 	 * @param verbose Boolean if true add labels to message
-	 * @return JSON data
+	 * @param bw BufferedWriter
+	 * @param indent
+	 * @throws IOException 
 	 */
-	public String exportMessages(Boolean verbose) {
-		List<String> str = new ArrayList<>();
-		for (Message message : this.getSession().getMessageList()) {
-			str.add(message.toJSON(verbose));
+	public void exportMessages(Boolean verbose, BufferedWriter bw, Integer indent) throws IOException {
+		SessionExporter.indentWrite(bw, "[", indent);
+		boolean isFirst = true;
+		for (Message m : this.getSession().getMessageList()) {
+			bw.write(isFirst ? "" : ",");
+			bw.newLine();
+			SessionExporter.indentWrite(bw,m.toJSON(verbose), indent + 1);
+			isFirst = false;
 		}
-		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
+		bw.newLine();
+		SessionExporter.indentWrite(bw, "]", indent);
 	}
 	
 	/**
-	 * Export List<analyse.search.Result> to JSON
-	 * @return JSON data
+	 * write List<analyse.search.Result> to file as JSON
+	 * @param bw BufferedWriter
+	 * @param indent
+	 * @throws IOException 
 	 */
-	public String exportResults() {
-		List<String> str = new ArrayList<>();
-		for (Result r: this.getSession().getSearchHandler().getResults()) {
-			str.add(r.toJSON());
+	public void exportResults(BufferedWriter bw, Integer indent) throws IOException {
+		SessionExporter.indentWrite(bw, "[", indent);
+		boolean isFirst = true;
+		for (Result r : this.getSession().getSearchHandler().getResults()) {
+			bw.write(isFirst ? "" : ",");
+			bw.newLine();
+			SessionExporter.indentWrite(bw, r.toJSON(), indent + 1);
+			isFirst = false;
 		}
-		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
+		bw.newLine();
+		SessionExporter.indentWrite(bw, "]", indent);
 	}
 	
 	/**
-	 * Export List<analyse.messageanalysis.Label> to JSON
-	 * @return JSON data
+	 * write List<analyse.messageanalysis.Label> to file as JSON
+	 * @param bw BufferedWriter
+	 * @param indent
+	 * @throws IOException 
 	 */
-	public String exportLabels() {
-		List<String> str = new ArrayList<>();
-		for (Label label : this.getSession().getLabels()) {
-			str.add("\"" + label.getName() + "\"");
+	public void exportLabels(BufferedWriter bw, Integer indent) throws IOException {
+		SessionExporter.indentWrite(bw, "[", indent);
+		boolean isFirst = true;
+		for (Label l : this.getSession().getLabels()) {
+			bw.write(isFirst ? "" : ",");
+			bw.newLine();
+			SessionExporter.indentWrite(bw, "\"" + l.getName() + "\"", indent + 1);
+			isFirst = false;
 		}
-		return "[" + String.join(",", str) + "]";
+		bw.newLine();
+		SessionExporter.indentWrite(bw, "]", indent);
 	}
 	
 	/**
-	 * Export List<analyse.messageanalysis.Conversation> to JSON
-	 * @return JSON data
+	 * write List<analyse.messageanalysis.Conversation> to file as JSON
+	 * @param bw BufferedWriter
+	 * @param indent
+	 * @throws IOException 
 	 */
-	public String exportConversations() {
-		List<String> str = new ArrayList<>();
-		for (Conversation conv : this.getSession().getConversations()) {
-			str.add(conv.toJSON());
+	public void exportConversations(BufferedWriter bw, Integer indent) throws IOException {
+		SessionExporter.indentWrite(bw, "[", indent);
+		boolean isFirst = true;
+		for (Conversation c : this.getSession().getConversations()) {
+			bw.write(isFirst ? "" : ",");
+			bw.newLine();
+			SessionExporter.indentWrite(bw, c.toJSON(), indent + 1);
+			isFirst = false;
 		}
-		return "[\n" + JSONUtils.indent(String.join(",\n", str)) + "\n]";
+		bw.newLine();
+		SessionExporter.indentWrite(bw, "]", indent);
 	}
 	
-	public String exportParams() {
-		List<String> str = new ArrayList<>();
+	/**
+	 * write List<analyse.messageanalysis.Parameter> to file as JSON
+	 * @param bw
+	 * @param indent
+	 * @throws IOException
+	 */
+	public void exportParams(BufferedWriter bw, Integer indent) throws IOException {
+		SessionExporter.indentWrite(bw, "[", indent);
+		boolean isFirst = true;
 		for (Parameter p : this.getSession().getSearchHandler().getParams()) {
-			str.add(p.toJSON());
-		} 
-		return "[\n" + JSONUtils.indent(String.join(",", str)) + "\n]";
+			bw.write(isFirst ? "" : ",");
+			bw.newLine();
+			SessionExporter.indentWrite(bw, p.toJSON(), indent + 1);
+			isFirst = false;
+		}
+		bw.newLine();
+		SessionExporter.indentWrite(bw, "]", indent);
 	}
 	
 	/**
-	 * Export whole session data
-	 * @return JSON data
+	 * Export whole session data to file as JSON
+	 * @param bw BufferedWriter
+	 * @throws IOException 
 	 */
-	public String exportSession() {
-		StringBuilder str = new StringBuilder();
-		str.append(String.format("\n\"authors\":%s,",this.exportAuthors()));
-		str.append(String.format("\n\"labels\":%s,",this.exportLabels()));
-		str.append(String.format("\n\"conversations\":%s,",this.exportConversations()));
-		str.append(String.format("\n\"parameters\":%s,",this.exportParams()));
-		str.append(String.format("\n\"results\":%s,",this.exportResults()));
-		str.append(String.format("\n\"messages\":%s",this.exportMessages()));
-		return "{" + JSONUtils.indent(str.toString()) + "}";
+	public void exportSession(BufferedWriter bw) throws IOException {
+		bw.write("{\n	\"authors\":");
+		this.exportAuthors(bw, 1);
+		bw.write(",\n	\"labels\":");
+		this.exportLabels(bw, 1);
+		bw.write(",\n	\"conversations\":");
+		this.exportConversations(bw, 1);
+		bw.write(",\n	\"parameters\":");
+		this.exportParams(bw, 1);
+		bw.write(",\n	\"results\":");
+		this.exportResults(bw, 1);
+		bw.write(",\n	\"messages\":");
+		this.exportMessages(bw, 1);
+		bw.write("\n}");
 	}
 	
 	/**
@@ -131,51 +191,51 @@ public class SessionExporter extends SessionTools {
 	 * @throws NotEnoughArgumentException
 	 */
 	public void export(String[] s) throws NotEnoughArgumentException {
-		UIUtils.notEnoughArguments(s, 1);
-		boolean toFile = false;
-		File file = null;
-		if (s.length > 1) {
-			toFile = true;
-			file = this.getSession().getFileSystem().getPath(s[1]).toFile();
-		} 
-		String str = null;
-		switch (s[0]) {
-			case "authors":
-				str = this.exportAuthors();
-				break;
-			case "labels":
-				str = this.exportLabels();
-				break;
-			case "messages":
-				str = this.exportMessages();
-				break;
-			case "vmessages":
-				str = this.exportMessages(true);
-				break;
-			case "results":
-				str = this.exportResults();
-				break;
-			case "session":
-				str = this.exportSession();
-				break;
-			default:
-				UIUtils.modeUnknown(s[0], Arrays.asList("authors",
-						"labels", "messages", "vmessages", "results", "session"));
-				break;
+		UIUtils.notEnoughArguments(s, 2);
+		File file = this.getSession().getFileSystem().getPath(s[1]).toFile();;
+		if (SessionExporter.exportable.containsKey(s[0])) {
+			this.getSession().getFileSystem()
+			.set(SessionExporter.exportable.get(s[0]), file);
 		}
-		if (toFile && str != null) {
-			if (SessionExporter.exportable.containsKey(s[0])) {
-				this.getSession().getFileSystem()
-				.set(SessionExporter.exportable.get(s[0]), file);
+		this.export(s[0], file);
+	}
+	
+	public void export(String mode, File file) {
+		try (FileWriter fw = new FileWriter(file);){
+			fw.write("");
+		} catch (IOException e) {
+			SessionPrinter.printException(e);
+		}
+		try (FileWriter fw = new FileWriter(file, true);){
+			BufferedWriter bw = new BufferedWriter(fw);
+			switch (mode) {
+				case "authors":
+					exportAuthors(bw, 0);
+					break;
+				case "labels":
+					this.exportLabels(bw, 0);
+					break;
+				case "messages":
+					this.exportMessages(bw, 0);
+					break;
+				case "vmessages":
+					this.exportMessages(true, bw, 0);
+					break;
+				case "results":
+					this.exportResults(bw, 0);
+					break;
+				case "session":
+					this.exportSession(bw);
+					break;
+				default:
+					UIUtils.modeUnknown(mode, Arrays.asList("authors",
+							"labels", "messages", "vmessages", "results", "session"));
+					break;
 			}
-			try (FileWriter fw = new FileWriter(file)){
-				fw.write(str);
-				this.printfln("%s data written to %s", s[0], s[1]);
-			} catch (IOException e) {
-				SessionPrinter.printException(e);
-			}
-		} else {
-			this.println(str);
+			bw.newLine();
+			bw.close();
+		} catch (IOException e) {
+			SessionPrinter.printException(e);
 		}
 	}
 }
