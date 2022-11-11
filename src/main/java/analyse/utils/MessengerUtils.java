@@ -93,7 +93,7 @@ public class MessengerUtils {
                 TimeZone.getDefault().toZoneId());
 		String content;
 		try {
-			content = new String(o.getString("content").getBytes("ISO-8859-1"), "utf-8");
+			content = new String(o.getString("content").getBytes("ISO-8859-1"), "utf-8").replace("\r", "");
 		} catch (UnsupportedEncodingException | JSONException e) {
 			throw new JSONParsingException(o, e.getMessage());
 		}

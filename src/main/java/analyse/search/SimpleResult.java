@@ -97,8 +97,7 @@ public class SimpleResult implements Result{
 
 	@Override
 	public String toJSON() {
-		// TODO Auto-generated method stub
-		return null;
+		return toJSON(false);
 	}
 	
 	public String toJSON(Boolean verbose) {
