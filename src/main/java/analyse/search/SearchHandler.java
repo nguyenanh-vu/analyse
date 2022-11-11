@@ -150,18 +150,27 @@ public class SearchHandler extends SessionTools {
 	public void simpleSearch(String str, Parameter params) {
 		Map<Message, Integer> res = new HashMap<>();
 		Integer total = 0;
+		float progression = 0f;
 		for (Message message : this.getSession().getMessageList()) {
-			total ++;
 			if (params == null || params.matches(message)) {
+				total ++;
 				int count = message.count(str);
 				if (count != 0) {
 					res.put(message, count);
+				}
+				progression = ((float) total * 100)/this.getSession()
+						.getMessageList().size();
+				if (total % (this.getSession().getMessageList().size() / 1000) == 0) {
+					this.printf("\r%s %.02f%% Simple search regex: %s parameters: %s", 
+							UIUtils.progressBar(progression, 10), progression, 
+							str, params == null ? "null" : params.getName());
 				}
 			}
 		}
 		SimpleResult result = new SimpleResult(res, this.counter, 
 				str, total, params);
 		this.results.add(result);
+		this.overwrite();
 		this.println(result.toString());
 		this.counter++;
 	}

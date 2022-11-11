@@ -8,7 +8,11 @@ public class SessionPrinter extends SessionTools {
 	}
 	
 	public void print(String s) {
-		this.previous += s.length();
+		if (s.contains("\r")) {
+			this.previous = s.length() - s.indexOf("\r") - 1;
+		} else {
+			this.previous += s.length();
+		}
 		System.out.print(s);
 	}
 	
@@ -19,7 +23,11 @@ public class SessionPrinter extends SessionTools {
 	
 	public void printf(String s, Object... args) {
 		String str = String.format(s, args);
-		this.previous += str.length();
+		if (str.contains("\r")) {
+			this.previous = str.length() - str.indexOf("\r") - 1;
+		} else {
+			this.previous += str.length();
+		}
 		System.out.print(str);
 	}
 	
