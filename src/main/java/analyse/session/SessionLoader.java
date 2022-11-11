@@ -247,22 +247,22 @@ public class SessionLoader extends SessionTools {
 				String[] fileName = f.toPath().getFileName().toString().split("\\."); 
 				if (fileName.length > 1 && fileName[1]
 						.contentEquals("json") && mode.contentEquals("fb")) {
-					MessengerUtils.load(f, labels, FileNameUtils.check(fileName[0]), this.editor);
 					this.overwrite();
 					count++;
 					this.printProgress(count, size, f, mode);
+					MessengerUtils.load(f, labels, FileNameUtils.check(fileName[0]), this.editor);
 				} else if (fileName.length > 1 && fileName[1]
 						.contentEquals("txt") && mode.contentEquals("whatsapp")) {
-					WhatsappUtils.load(f, labels, FileNameUtils.check(fileName[0]), this.editor);
 					this.overwrite();
 					count++;
 					this.printProgress(count, size, f, mode);
+					WhatsappUtils.load(f, labels, FileNameUtils.check(fileName[0]), this.editor);
 				} else if (fileName.length > 1 && fileName[1]
 						.contentEquals("json") && mode.contentEquals("messages")) {
-					this.loadMessages(f);
 					this.overwrite();
 					count++;
 					this.printProgress(count, size, f, mode);
+					this.loadMessages(f);
 				} 
 			}
 			this.overwrite();
@@ -271,8 +271,8 @@ public class SessionLoader extends SessionTools {
 	}
 	
 	private void printProgress(int count, int size, File file, String mode) {
-		this.printf("%s %d/%d %s file loaded: %s", 
-				UIUtils.progressBar(((float) count * 100)/size, size),
+		this.printf("%s %d/%d loading %s file: %s", 
+				UIUtils.progressBar(((float) count * 100)/size, 10),
 				count, size, mode, file.toPath().getFileName().toString());
 	}
 }

@@ -47,6 +47,8 @@ public class SessionController extends SessionTools{
 		//special cases
 		if (s.length == 0) {
 			this.println("No command");
+		} else if (str.contentEquals("")) {
+			
 		} else if (str.trim().startsWith("//")) {
 			
 		} else if (s[0].contentEquals("help")) {
@@ -182,14 +184,20 @@ public class SessionController extends SessionTools{
 	 */
 	private void run(File file) {
 		try {
-			this.printfln("Running script %s", file.toString());
-			Scanner myReader = new Scanner(file);
-			while (myReader.hasNextLine()) {
-				this.decide(myReader.nextLine());
+			if (file.toPath().getFileName().toString().split("\\.")[1].contentEquals("txt")) {
+				String[] prev = {this.getSession().getFileSystem().getCurrentDir().toString()};
+				String[] newdir = {file.toPath().getParent().toString()};
+				this.getSession().getFileSystem().cd(newdir);
+				this.printfln("Running script %s", file.toString());
+				Scanner myReader = new Scanner(file);
+				while (myReader.hasNextLine()) {
+					this.decide(myReader.nextLine());
+				}
+				myReader.close();
+				this.getSession().getFileSystem().cd(prev);
+				this.printfln("Finished running script %s", file.toString());
 			}
-			myReader.close();
-			this.printfln("Finished running script %s", file.toString());
-		} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException | NotEnoughArgumentException e) {
 	    	this.println("An error occurred.");
 	    	SessionPrinter.printException(e);
 	    }
