@@ -113,8 +113,12 @@ public class SessionController extends SessionTools{
 					case "run":
 						this.run(args);
 						break;
+					//print
 					case "print":
-						this.print(args);
+						this.print(String.join(" ", args));
+						break;
+					case "println":
+						this.println(String.join(" ", args));
 						break;
 					//ui
 					case "list":
@@ -233,13 +237,5 @@ public class SessionController extends SessionTools{
 				SessionPrinter.printException(e);
 			}
 		}
-	}
-	
-	/**
-	 * print a line
-	 * @param s
-	 */
-	private void print(String[] s) {
-		this.println(String.join(" ", Arrays.asList(s)));
 	}
 }
