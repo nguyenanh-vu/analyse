@@ -272,7 +272,7 @@ public class SessionLoader extends SessionTools {
 	
 	private void printProgress(int count, int size, File file, String mode) {
 		this.printf("%s %d/%d %s file loaded: %s", 
-				UIUtils.progressBar(((float) count * 100)/size, size),
+				UIUtils.progressBar(((float) count * 100)/size, 10),
 				count, size, mode, file.toPath().getFileName().toString());
 	}
 }
