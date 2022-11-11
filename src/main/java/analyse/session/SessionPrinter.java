@@ -51,6 +51,6 @@ public class SessionPrinter extends SessionTools {
 	}
 	
 	public static void printException(Exception e) {
-		System.out.println(e.getMessage());
+		System.out.println(e.toString());
 	}
 }

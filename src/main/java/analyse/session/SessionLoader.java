@@ -1,19 +1,19 @@
 package analyse.session;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import analyse.UI.UIUtils;
 import analyse.exceptions.JSONParsingException;
@@ -27,6 +27,7 @@ import analyse.messageanalysis.Parameter;
 import analyse.messageanalysis.Reactions;
 import analyse.search.SimpleResult;
 import analyse.utils.FileNameUtils;
+import analyse.utils.JSONUtils;
 import analyse.utils.MessengerUtils;
 import analyse.utils.WhatsappUtils;
 
@@ -112,27 +113,24 @@ public class SessionLoader extends SessionTools {
 	 */
 	public void loadSession(File file) {
 		try {
-			InputStream  is = new FileInputStream(file);
-			Scanner myReader = new Scanner(is);
-			StringBuilder str = new StringBuilder();
-			while (myReader.hasNextLine()) {
-				String data = myReader.nextLine();
-				str.append(data);
-			}
-			this.printfln("Session data file %s finished loading", file.toString());
-			JSONObject jo = new JSONObject(str.toString());
-			 
+			JSONObject jo = JSONUtils.convert(
+					(org.json.simple.JSONObject) (new JSONParser().parse(new FileReader(file))));
+			this.printf("Session data file %s finished loading", file.toString());
+			this.overwrite();
 			this.parseAuthors(jo.getJSONArray("authors"));
+			this.overwrite();
 			this.parseMessages(jo.getJSONArray("messages"));
+			this.overwrite();
 			this.parseParams(jo.getJSONArray("parameters"));
+			this.overwrite();
 			this.parseResults(jo.getJSONArray("results"));
+			this.overwrite();
 			
 			this.getSession().getFileSystem().set("sessionFile", file);
-			this.printfln("Session data file %s finished parsing", file.toString());
-			myReader.close();
-	    } catch (FileNotFoundException | JSONException | JSONParsingException e) {
-	    	this.println("An error occurred.");
-	    	this.println(e.getLocalizedMessage());
+			this.overwrite();
+			this.printfln("Session data file %s finished loading and parsing", file.toString());
+	    } catch (IOException | JSONException | JSONParsingException | ParseException e) {
+	    	SessionPrinter.printException(e);
 	    }
 	}
 	
@@ -142,6 +140,7 @@ public class SessionLoader extends SessionTools {
 	 */
 	private void parseAuthors(JSONArray authors) {
 		for (int i = 0; i < authors.length() ; i++) {
+			this.printProgress(i, authors.length(), "Parsing authors");
 			JSONObject o = authors.getJSONObject(i);
 			Author author = new Author(o.getString("name"));
 			JSONArray labels = o.getJSONArray("labels");
@@ -162,18 +161,14 @@ public class SessionLoader extends SessionTools {
 	 */
 	private void loadMessages(File file) {
 		try {
-			InputStream  is = new FileInputStream(file);
-			Scanner myReader = new Scanner(is);
-			StringBuilder str = new StringBuilder();
-			while (myReader.hasNextLine()) {
-				String data = myReader.nextLine();
-				str.append(data);
-			}
-			this.printfln("Messages data file %s finished loading", file.toString());
-			JSONArray jo = new JSONArray(str.toString());
+			JSONArray jo = JSONUtils.convert(
+					(org.json.simple.JSONArray) (new JSONParser().parse(new FileReader(file))));
+			this.printf("Messages data file %s finished loading", file.toString());
+			this.overwrite();
 			this.parseMessages(jo);
-			myReader.close();
-		} catch (FileNotFoundException | JSONParsingException | JSONException e) {
+			this.overwrite();
+			this.printfln("Messages data file %s finished loading and parsing", file.toString());
+		} catch (IOException | JSONParsingException | JSONException | ParseException e) {
 			SessionPrinter.printException(e);;
 		}
 		
@@ -186,6 +181,7 @@ public class SessionLoader extends SessionTools {
 	 */
 	private void parseMessages(JSONArray messages) throws JSONParsingException {
 		for (int i = 0; i < messages.length(); i++) {
+			this.printProgress(i, messages.length(), "Parsing messages");
 			JSONObject o = messages.getJSONObject(i);
 			LocalDateTime date = LocalDateTime.parse(o.getString("date"),formatter);
 			Author author = new Author(o.getString("author"));
@@ -213,6 +209,7 @@ public class SessionLoader extends SessionTools {
 	 */
 	private void parseResults(JSONArray results) {
 		for (int i = 0; i < results.length(); i++) {
+			this.printProgress(i, results.length(), "Parsing results");
 			JSONObject o = results.getJSONObject(i);
 			if (o.getString("type").contentEquals("SIMPLE")) {
 				try {
@@ -230,6 +227,7 @@ public class SessionLoader extends SessionTools {
 	 */
 	private void parseParams(JSONArray params) {
 		for (int i = 0; i < params.length(); i++) {
+			this.printProgress(i, params.length(), "Parsing parameters");
 			JSONObject o = params.getJSONObject(i);
 			this.getSession().getSearchHandler().addParams(Parameter.parse(o));
 		}
@@ -271,6 +269,14 @@ public class SessionLoader extends SessionTools {
 			}
 			this.overwrite();
 			this.printfln("%d %s files in %s successfully loaded", count, mode, file.toString());
+		}
+	}
+	
+	private void printProgress(Integer total, Integer size, String text) {
+		if (size < 1000 || total % (size / 1000) == 0) {
+			float progression = ((float) total * 100)/size;
+			this.printf("\r%s %.02f%% %s", 
+					UIUtils.progressBar(progression, 10), progression, text);
 		}
 	}
 	

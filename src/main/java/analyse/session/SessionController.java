@@ -200,7 +200,6 @@ public class SessionController extends SessionTools{
 				this.printfln("Finished running script %s", file.toString());
 			}
 		} catch (FileNotFoundException | NotEnoughArgumentException e) {
-	    	this.println("An error occurred.");
 	    	SessionPrinter.printException(e);
 	    }
 	}

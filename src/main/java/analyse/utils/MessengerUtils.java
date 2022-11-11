@@ -1,21 +1,21 @@
 package analyse.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import analyse.exceptions.JSONParsingException;
 import analyse.messageanalysis.Author;
@@ -53,14 +53,8 @@ public class MessengerUtils {
 	public static void load(File file,  List<Label> labels,
 			String conversation, SessionEditor editor) {
 		try {
-			InputStream  is = new FileInputStream(file);
-			Scanner myReader = new Scanner(is);
-			StringBuilder str = new StringBuilder();
-			while (myReader.hasNextLine()) {
-				String data = myReader.nextLine();
-				str.append(data);
-			}
-			JSONObject jo = new JSONObject(str.toString());
+			JSONObject jo = JSONUtils.convert(
+					(org.json.simple.JSONObject) (new JSONParser().parse(new FileReader(file))));
 			JSONArray messages = jo.getJSONArray("messages");
 			for (int i = 0; i < messages.length(); i++) {
 				JSONObject o = messages.getJSONObject(i);
@@ -69,8 +63,7 @@ public class MessengerUtils {
 					editor.addMessage(MessengerUtils.parse(o, labels, conversation));
 				}
 			}
-			myReader.close();
-	    } catch (FileNotFoundException | JSONException | JSONParsingException e) {
+	    } catch (IOException | JSONException | JSONParsingException | ParseException e) {
 	    	System.out.println("An error occurred.");
 	    	System.out.println(e.getMessage());
 	    }
