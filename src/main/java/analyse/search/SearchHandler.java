@@ -16,6 +16,7 @@ import analyse.messageanalysis.Message;
 import analyse.messageanalysis.Parameter;
 import analyse.messageanalysis.Reactions;
 import analyse.session.Session;
+import analyse.session.SessionPrinter;
 import analyse.session.SessionTools;
 
 public class SearchHandler extends SessionTools {
@@ -48,7 +49,7 @@ public class SearchHandler extends SessionTools {
 			try {
 				p = this.getSession().searchParameter(s[2]);
 			} catch (NotFoundException e) {
-				System.out.println(e.getMessage());
+				SessionPrinter.printException(e);
 			}
 		}
 		if (s[0].contentEquals("simple")) {
@@ -113,7 +114,7 @@ public class SearchHandler extends SessionTools {
 						break;
 				}
 			} catch (NotFoundException e) {
-				System.out.println(e.getMessage());
+				SessionPrinter.printException(e);
 			}
 		}
 	}
@@ -133,7 +134,7 @@ public class SearchHandler extends SessionTools {
 	 */
 	public boolean addParams(Parameter p) {
 		if (this.params.contains(p)) {
-			System.out.println(String.format("Parameter with name %s already exists", p.getName()));
+			this.println(String.format("Parameter with name %s already exists", p.getName()));
 			return false;
 		} else {
 			this.params.add(p);
@@ -149,19 +150,28 @@ public class SearchHandler extends SessionTools {
 	public void simpleSearch(String str, Parameter params) {
 		Map<Message, Integer> res = new HashMap<>();
 		Integer total = 0;
+		float progression = 0f;
 		for (Message message : this.getSession().getMessageList()) {
-			total ++;
 			if (params == null || params.matches(message)) {
+				total ++;
 				int count = message.count(str);
 				if (count != 0) {
 					res.put(message, count);
+				}
+				progression = ((float) total * 100)/this.getSession()
+						.getMessageList().size();
+				if (total % (this.getSession().getMessageList().size() / 1000) == 0) {
+					this.printf("\r%s %.02f%% Simple search regex: %s parameters: %s", 
+							UIUtils.progressBar(progression, 10), progression, 
+							str, params == null ? "null" : params.getName());
 				}
 			}
 		}
 		SimpleResult result = new SimpleResult(res, this.counter, 
 				str, total, params);
 		this.results.add(result);
-		System.out.println(result.toString());
+		this.overwrite();
+		this.println(result.toString());
 		this.counter++;
 	}
 	

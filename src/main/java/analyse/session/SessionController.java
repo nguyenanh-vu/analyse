@@ -46,7 +46,7 @@ public class SessionController extends SessionTools{
 		String[] s = str.split(" ");
 		//special cases
 		if (s.length == 0) {
-			System.out.println("No command");
+			this.println("No command");
 		} else if (str.trim().startsWith("//")) {
 			
 		} else if (s[0].contentEquals("help")) {
@@ -113,8 +113,12 @@ public class SessionController extends SessionTools{
 					case "run":
 						this.run(args);
 						break;
+					//print
 					case "print":
-						this.print(args);
+						this.print(String.join(" ", args));
+						break;
+					case "println":
+						this.println(String.join(" ", args));
 						break;
 					//ui
 					case "list":
@@ -133,11 +137,11 @@ public class SessionController extends SessionTools{
 						this.getSession().getSearchHandler().params(args);
 						break;
 					default:
-						System.out.println(String.format("Command \"%s\" unknown", s[0]));
+						this.printfln("Command \"%s\" unknown", s[0]);
 						break;
 				}
 			} catch (NotEnoughArgumentException e) {
-				System.out.println(e.getMessage());
+				SessionPrinter.printException(e);
 			}
 		}
 	}
@@ -153,10 +157,10 @@ public class SessionController extends SessionTools{
 			this.loader.setSession(this.getSession());
 			this.loader.setEditor(this.editor);
 			this.info.setSession(this.getSession());
-			System.out.println("New session successfully started");
+			this.println("New session successfully started");
 		} else {
 			this.getSession().restart();
-			System.out.println("Session successfully restarted");
+			this.println("Session successfully restarted");
 		}
 		
 	}
@@ -178,16 +182,16 @@ public class SessionController extends SessionTools{
 	 */
 	private void run(File file) {
 		try {
-			System.out.println(String.format("Running script %s", file.toString()));
+			this.printfln("Running script %s", file.toString());
 			Scanner myReader = new Scanner(file);
 			while (myReader.hasNextLine()) {
 				this.decide(myReader.nextLine());
 			}
 			myReader.close();
-			System.out.println(String.format("Finished running script %s", file.toString()));
+			this.printfln("Finished running script %s", file.toString());
 		} catch (FileNotFoundException e) {
-	    	System.out.println("An error occurred.");
-	    	System.out.println(e.getMessage());
+	    	this.println("An error occurred.");
+	    	SessionPrinter.printException(e);
 	    }
 	}
 	
@@ -223,23 +227,15 @@ public class SessionController extends SessionTools{
 			}
 		}
 		if (file == null) {
-			System.out.println("No save file address. Use \"export [mode] [file path]\" instead or set fileSession [file path]");
+			this.println("No save file address. Use \"export [mode] [file path]\" instead or set fileSession [file path]");
 		} else {
 			try (FileWriter fw = new FileWriter(file)){
 				fw.write(str);
-				System.out.println(String.format("%s data written to %s", (s.length == 0) ? "session" : s[0], 
-						file.toString()));
+				this.printfln("%s data written to %s", (s.length == 0) ? "session" : s[0], 
+						file.toString());
 			} catch (IOException e) {
-				System.out.println(e.getMessage());
+				SessionPrinter.printException(e);
 			}
 		}
-	}
-	
-	/**
-	 * print a line
-	 * @param s
-	 */
-	private void print(String[] s) {
-		System.out.println(String.join(" ", Arrays.asList(s)));
 	}
 }

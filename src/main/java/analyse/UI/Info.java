@@ -17,6 +17,7 @@ import analyse.messageanalysis.comparators.MessageComparator;
 import analyse.messageanalysis.comparators.NamedObjectComparator;
 import analyse.search.Result;
 import analyse.search.ResultComparator;
+import analyse.session.SessionPrinter;
 import analyse.session.SessionTools;
 
 public class Info extends SessionTools {
@@ -33,19 +34,19 @@ public class Info extends SessionTools {
 			switch (s[0]) {
 				case "authors":
 					Author a = this.getSession().searchAuthor(s[1]);
-					System.out.println(a.toJSON());
+					this.println(a.toJSON());
 					break;
 				case "messages":
 					Message m = this.getSession().searchMessage(Long.valueOf(s[1]));
-					System.out.println(m.toJSON());
+					this.println(m.toJSON());
 					break;
 				case "results":
 					Result r = this.getSession().searchResult(Long.valueOf(s[1]));
-					System.out.println(r.toJSON());
+					this.println(r.toJSON());
 					break;
 				case "parameters":
 					Parameter p = this.getSession().searchParameter(s[1]);
-					System.out.println(p.toJSON());
+					this.println(p.toJSON());
 					break;
 				default:
 					UIUtils.modeUnknown(s[0],Arrays.asList("authors", 
@@ -53,7 +54,7 @@ public class Info extends SessionTools {
 					break;
 			}
 		} catch (NotFoundException e) {
-			System.out.println(e.getMessage());
+			SessionPrinter.printException(e);
 		}
 	}
 	
@@ -80,10 +81,10 @@ public class Info extends SessionTools {
 						total++;
 						if (param == null) {
 							count++;
-							System.out.println(a.toString());
+							this.println(a.toString());
 						} else if (param.matches(a)) {
 							count++;
-							System.out.println(a.toString());
+							this.println(a.toString());
 						}
 					}
 					break;
@@ -95,10 +96,10 @@ public class Info extends SessionTools {
 						total++;
 						if (param == null) {
 							count++;
-							System.out.println(m.toString());
+							this.println(m.toString());
 						} else if (param.matches(m)) {
 							count++;
-							System.out.println(m.toString());
+							this.println(m.toString());
 						}
 					}
 					break;
@@ -109,7 +110,7 @@ public class Info extends SessionTools {
 					for (Label l : labels) {
 						count++;
 						total++;
-						System.out.println(l.getName());
+						this.println(l.getName());
 					}
 					break;
 				case "conversations":
@@ -119,7 +120,7 @@ public class Info extends SessionTools {
 					for (Conversation c : conversations) {
 						count++;
 						total++;
-						System.out.println(c.toString());
+						this.println(c.toString());
 					}
 					break;
 				case "results":
@@ -130,10 +131,10 @@ public class Info extends SessionTools {
 						total++;
 						if (param == null) {
 							count++;
-							System.out.println(r.toString());
+							this.println(r.toString());
 						} else if (r.getParams().equals(param)) {
 							count++;
-							System.out.println(r.toString());
+							this.println(r.toString());
 						}
 					}
 					break;
@@ -144,7 +145,7 @@ public class Info extends SessionTools {
 					for (Parameter p : params) {
 						count++;
 						total++;
-						System.out.println(p.toString());
+						this.println(p.toString());
 					}
 					break;
 				default:
@@ -153,10 +154,10 @@ public class Info extends SessionTools {
 					break;
 			}
 			if (total > 0) {
-				System.out.println(String.format("%d out of %d %s displayed", count, total, s[0]));
+				this.printfln("%d out of %d %s displayed", count, total, s[0]);
 			}
 		} catch (NotFoundException e) {
-			System.out.println(e.getMessage());
+			SessionPrinter.printException(e);
 		}
 		
 	}
@@ -175,13 +176,13 @@ public class Info extends SessionTools {
 			messageList.sort(new DatedMessageComparator());
 			for (Message m : messageList) {
 				if (m.getConversation().equals(conv)) {
-					System.out.println(String.format("%s %s: %s",
+					this.printfln("%s %s: %s",
 							m.getTimestamp().format(formatter),
-							m.getAuthor().getName(), m.getContent()));
+							m.getAuthor().getName(), m.getContent());
 				}
 			}
 		} catch (NotFoundException e) {
-			System.out.println(e.getMessage());
+			SessionPrinter.printException(e);
 		}
 	}
 }

@@ -54,7 +54,7 @@ public class SessionLoader extends SessionTools {
 	 */
 	public void load(String[] s) throws NotEnoughArgumentException {
 		if (this.getSession() == null) {
-			System.out.println("No session started");
+			this.println("No session started");
 		} else {
 			UIUtils.notEnoughArguments(s, 3);
 			File file = this.getSession().getFileSystem().getPath(s[1]).toFile();
@@ -76,9 +76,11 @@ public class SessionLoader extends SessionTools {
 					break;
 				case "whatsapp":
 					WhatsappUtils.load(file, labels, s[2], this.editor);
+					this.printfln("Whatsapp file %s finished loading and parsing", file.toString());
 					break;
 				case "fb":
 					MessengerUtils.load(file, labels, s[2], this.editor);
+					this.printfln("Facebook Messenger file %s finished loading and parsing", file.toString());
 					break;
 				case "session":
 					if (Boolean.TRUE.equals(Boolean.valueOf(s[2]))) {
@@ -113,7 +115,7 @@ public class SessionLoader extends SessionTools {
 				String data = myReader.nextLine();
 				str.append(data);
 			}
-			System.out.println(String.format("Session data file %s finished loading", file.toString()));
+			this.printfln("Session data file %s finished loading", file.toString());
 			JSONObject jo = new JSONObject(str.toString());
 			 
 			this.parseAuthors(jo.getJSONArray("authors"));
@@ -122,11 +124,11 @@ public class SessionLoader extends SessionTools {
 			this.parseResults(jo.getJSONArray("results"));
 			
 			this.getSession().getFileSystem().set("sessionFile", file);
-			System.out.println(String.format("Session data file %s finished parsing", file.toString()));
+			this.printfln("Session data file %s finished parsing", file.toString());
 			myReader.close();
 	    } catch (FileNotFoundException | JSONException | JSONParsingException e) {
-	    	System.out.println("An error occurred.");
-	    	System.out.println(e.getLocalizedMessage());
+	    	this.println("An error occurred.");
+	    	this.println(e.getLocalizedMessage());
 	    }
 	}
 	
@@ -163,12 +165,12 @@ public class SessionLoader extends SessionTools {
 				String data = myReader.nextLine();
 				str.append(data);
 			}
-			System.out.println(String.format("Session data file %s finished loading", file.toString()));
+			this.printfln("Messages data file %s finished loading", file.toString());
 			JSONArray jo = new JSONArray(str.toString());
 			this.parseMessages(jo);
 			myReader.close();
 		} catch (FileNotFoundException | JSONParsingException | JSONException e) {
-			System.out.println(e.getMessage());;
+			SessionPrinter.printException(e);;
 		}
 		
 	}
@@ -212,7 +214,7 @@ public class SessionLoader extends SessionTools {
 				try {
 					this.getSession().getSearchHandler().addResult(SimpleResult.parse(o, this.getSession()));
 				} catch (JSONException | NotFoundException e) {
-					System.out.println(e.getMessage());
+					SessionPrinter.printException(e);
 				}
 			}
 		}
@@ -237,21 +239,40 @@ public class SessionLoader extends SessionTools {
 	 */
 	private void loadFolder(File file, List<Label> labels, String mode) {
 		if (!file.isDirectory()) {
-			System.out.println(String.format("%s not a directory", file.toString()));
+			this.printfln("%s not a directory", file.toString());
 		} else {
+			int size = file.listFiles().length;
+			int count = 0;
 			for (File f : file.listFiles()) {
 				String[] fileName = f.toPath().getFileName().toString().split("\\."); 
 				if (fileName.length > 1 && fileName[1]
 						.contentEquals("json") && mode.contentEquals("fb")) {
 					MessengerUtils.load(f, labels, FileNameUtils.check(fileName[0]), this.editor);
+					this.overwrite();
+					count++;
+					this.printProgress(count, size, f, mode);
 				} else if (fileName.length > 1 && fileName[1]
 						.contentEquals("txt") && mode.contentEquals("whatsapp")) {
 					WhatsappUtils.load(f, labels, FileNameUtils.check(fileName[0]), this.editor);
+					this.overwrite();
+					count++;
+					this.printProgress(count, size, f, mode);
 				} else if (fileName.length > 1 && fileName[1]
 						.contentEquals("json") && mode.contentEquals("messages")) {
-					this.loadMessages(file);
+					this.loadMessages(f);
+					this.overwrite();
+					count++;
+					this.printProgress(count, size, f, mode);
 				} 
 			}
+			this.overwrite();
+			this.printfln("%d %s files in %s successfully loaded", count, mode, file.toString());
 		}
+	}
+	
+	private void printProgress(int count, int size, File file, String mode) {
+		this.printf("%s %d/%d %s file loaded: %s", 
+				UIUtils.progressBar(((float) count * 100)/size, size),
+				count, size, mode, file.toPath().getFileName().toString());
 	}
 }

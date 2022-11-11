@@ -23,6 +23,7 @@ public class Session extends LabelledObject {
 	private SessionFilesSystem fileSystem = new SessionFilesSystem();
 	private Long counter = 0L;
 	private SearchHandler searchHandler = new SearchHandler(this);
+	private SessionPrinter printer = new SessionPrinter();
 	
 	public void restart() {
 		this.authorList =  new ArrayList<>();
@@ -31,6 +32,8 @@ public class Session extends LabelledObject {
 		this.fileSystem.reset();
 		this.conversations = new ArrayList<>();
 		this.searchHandler.reset();
+		this.printer.reset();
+		this.printer.setSession(this);
 		counter = 0L;
 	}
 	
@@ -76,6 +79,10 @@ public class Session extends LabelledObject {
 	
 	public SessionFilesSystem getFileSystem() {
 		return this.fileSystem;
+	}
+	
+	public SessionPrinter getPrinter() {
+		return this.printer;
 	}
 	
 	/**

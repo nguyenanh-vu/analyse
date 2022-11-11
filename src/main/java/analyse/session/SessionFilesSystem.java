@@ -15,7 +15,7 @@ import java.util.Map;
 import analyse.UI.UIUtils;
 import analyse.exceptions.NotEnoughArgumentException;
 
-public class SessionFilesSystem {
+public class SessionFilesSystem extends SessionTools{
 	Map<String, File> files;
 	private File currentDir = null;
 	
@@ -45,9 +45,9 @@ public class SessionFilesSystem {
 		File newDir= this.getPath(s[0])
 				.toAbsolutePath().toFile();
 		if (!newDir.exists()) {
-			System.out.println(String.format("Directory %s not found", s[0]));
+			this.printfln("Directory %s not found", s[0]);
 		} else if (!newDir.isDirectory()) {
-			System.out.println(String.format("%s not a directory", s[0]));
+			this.printfln("%s not a directory", s[0]);
 		} else {
 			this.currentDir = newDir;
 		}
@@ -69,7 +69,7 @@ public class SessionFilesSystem {
 			list = this.currentDir.list();
 		}
 		for (String str : list) {
-			System.out.println(str);
+			this.println(str);
 		}
 	}
 	
@@ -81,7 +81,7 @@ public class SessionFilesSystem {
 		try {
 			Files.move(source, target);
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			SessionPrinter.printException(e);
 		}
 	}
 	
@@ -90,9 +90,9 @@ public class SessionFilesSystem {
 		if (this.files.containsKey(s[0])) {
 			File file = this.files.get(s[0]);
 			if (file != null) {
-				System.out.println(file.toPath().toString());
+				this.println(file.toPath().toString());
 			} else {
-				System.out.println(String.format("File %s not yet defined", s[0]));
+				this.printfln("File %s not yet defined", s[0]);
 			}
 		} else {
 			UIUtils.parameterUnknown(s[0], 

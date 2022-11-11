@@ -23,7 +23,7 @@ public class SessionEditor extends SessionTools {
 		try {
 			a = this.getSession().searchAuthor(message.getAuthor().getName());
 		} catch (NotFoundException e) {
-			System.out.println(e.getMessage());
+			SessionPrinter.printException(e);
 		}
 		Conversation conv = message.getConversation();
 		this.addConversation(conv);
@@ -31,7 +31,7 @@ public class SessionEditor extends SessionTools {
 			conv = this.getSession()
 					.searchConversation(message.getConversation().getName());
 		} catch (NotFoundException e) {
-			System.out.println(e.getMessage());
+			SessionPrinter.printException(e);
 		}
 		Message newMessage = new Message(this.getSession().getCounter(), message.getTimestamp(), 
 				a, message.getContent(), conv, message.getReactions());
@@ -96,7 +96,7 @@ public class SessionEditor extends SessionTools {
 					a.addConversation(conv);
 				}
 			} catch (NotFoundException e) {
-				System.out.println(e.getMessage());
+				SessionPrinter.printException(e);
 			}
 		}
 	}
@@ -131,7 +131,7 @@ public class SessionEditor extends SessionTools {
 					break;
 			}
 		}catch (NotFoundException e) {
-			System.out.println(e.getMessage());
+			SessionPrinter.printException(e);
 		}
 	}
 	
@@ -238,7 +238,7 @@ public class SessionEditor extends SessionTools {
 					break;
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			SessionPrinter.printException(e);
 		}
 	}
 	
@@ -269,7 +269,7 @@ public class SessionEditor extends SessionTools {
 					break;
 			}
 		} catch (NotFoundException e) {
-			System.out.println(e.getMessage());
+			SessionPrinter.printException(e);
 		}
 	}
 	

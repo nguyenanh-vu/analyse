@@ -170,12 +170,12 @@ public class SessionExporter extends SessionTools {
 			}
 			try (FileWriter fw = new FileWriter(file)){
 				fw.write(str);
-				System.out.println(String.format("%s data written to %s", s[0], s[1]));
+				this.printfln("%s data written to %s", s[0], s[1]);
 			} catch (IOException e) {
-				System.out.println(e.getMessage());
+				SessionPrinter.printException(e);
 			}
 		} else {
-			System.out.println(str);
+			this.println(str);
 		}
 	}
 }
