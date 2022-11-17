@@ -19,7 +19,7 @@ import lombok.Getter;
 @Getter
 public class SimpleResult implements Result{
 	Long id;
-	Map<Message,Integer> resultSet;
+	Map<Message,Integer> results;
 	Integer total;
 	Double avg;
 	Double var;
@@ -30,7 +30,7 @@ public class SimpleResult implements Result{
 			Long id, String regex, int s, Parameter params) {
 		this.id = id;
 		this.regex = regex;
-		this.resultSet = resultSet;
+		this.results = resultSet;
 		this.params = params;
 		int size = s;
 		this.total = 0;
@@ -47,7 +47,7 @@ public class SimpleResult implements Result{
 	
 	/**
 	 * All arguments constructor
-	 * @param resultSet
+	 * @param results
 	 * @param id
 	 * @param regex
 	 * @param total
@@ -59,18 +59,13 @@ public class SimpleResult implements Result{
 			String regex, Integer total, Double avg, Double var, Parameter params) {
 		this.id = id;
 		this.regex = regex;
-		this.resultSet = resultSet;
+		this.results = resultSet;
 		this.total = total;
 		this.avg = avg;
 		this.var = var;
 		this.params = params;
 	}
 	
-	@Override
-	public Map<Message, Integer> getResults() {
-		return this.resultSet;
-	}
-
 	@Override
 	public String getType() {
 		return "SIMPLE";
@@ -89,7 +84,7 @@ public class SimpleResult implements Result{
 	
 	public String toJSON(Boolean verbose) {
 		List<String> res = new ArrayList<>();
-		for (Map.Entry<Message,Integer> entry : resultSet.entrySet()) {
+		for (Map.Entry<Message,Integer> entry : results.entrySet()) {
 			res.add(String.format("{\"id\":%d,\"value\":%d}"
 					,entry.getKey().getId(), entry.getValue()));
 		}
