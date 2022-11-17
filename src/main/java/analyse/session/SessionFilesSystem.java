@@ -14,7 +14,9 @@ import java.util.Map;
 
 import analyse.UI.UIUtils;
 import analyse.exceptions.NotEnoughArgumentException;
+import lombok.Getter;
 
+@Getter
 public class SessionFilesSystem extends SessionTools{
 	Map<String, File> files;
 	private File currentDir = null;
@@ -115,14 +117,6 @@ public class SessionFilesSystem extends SessionTools{
 		}
 	}
 	
-	/**
-	 * getter
-	 * @return
-	 */
-	public File getCurrentDir() {
-		return this.currentDir;
-	}
-	
 	public File get(String key) {
 		if (this.files.containsKey(key)) {
 			return this.files.get(key);
@@ -131,7 +125,7 @@ public class SessionFilesSystem extends SessionTools{
 		}
 	}
 	
-	Path getPath(String s) {
+	public Path getPath(String s) {
 		String path = s;
 		if (path.startsWith("~")) {
 			path = path.substring(1);

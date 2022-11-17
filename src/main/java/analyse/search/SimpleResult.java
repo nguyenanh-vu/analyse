@@ -14,7 +14,9 @@ import analyse.messageanalysis.Message;
 import analyse.messageanalysis.Parameter;
 import analyse.session.Session;
 import analyse.utils.JSONUtils;
+import lombok.Getter;
 
+@Getter
 public class SimpleResult implements Result{
 	Long id;
 	Map<Message,Integer> resultSet;
@@ -75,21 +77,6 @@ public class SimpleResult implements Result{
 	}
 
 	@Override
-	public Double getAvg() {
-		return this.avg;
-	}
-
-	@Override
-	public Double getVar() {
-		return this.var;
-	}
-
-	@Override
-	public Long getId() {
-		return this.id;
-	}
-
-	@Override
 	public String toString() {
 		return String.format("id: %d, type: SIMPLE, regex: \"%s\",total: %d, average: %f, variance: %f", 
 				this.id, this.regex, this.total, this.avg, this.var);
@@ -119,11 +106,6 @@ public class SimpleResult implements Result{
 		return "{" + str.toString() + "}";
 	}
 
-	@Override
-	public Parameter getParams() {
-		return this.params;
-	}
-	
 	/**
 	 * parse result from 
 	 * @param o

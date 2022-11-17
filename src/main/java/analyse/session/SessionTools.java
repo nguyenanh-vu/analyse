@@ -1,18 +1,15 @@
 package analyse.session;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Common class for session tools
  */
+@Getter
+@Setter
 public class SessionTools {
 	private Session session;
-	
-	public Session getSession() {
-		return this.session;
-	}
-	
-	public void setSession(Session session) {
-		this.session = session;
-	}
 	
 	public SessionPrinter getPrinter() {
 		return this.session.getPrinter();

@@ -18,7 +18,9 @@ import analyse.messageanalysis.Reactions;
 import analyse.session.Session;
 import analyse.session.SessionPrinter;
 import analyse.session.SessionTools;
+import lombok.Getter;
 
+@Getter
 public class SearchHandler extends SessionTools {
 	private static final DateTimeFormatter formatter = 
 			DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm");
@@ -174,21 +176,5 @@ public class SearchHandler extends SessionTools {
 		this.overwrite();
 		this.println(result.toString());
 		this.counter++;
-	}
-	
-	/**
-	 * getter
-	 * @return List<Result> this.results
-	 */
-	public List<Result> getResults() {
-		return this.results;
-	}
-	
-	/**
-	 * getter
-	 * @return List<Parameter> this.params
-	 */
-	public List<Parameter> getParams() {
-		return this.params;
 	}
 }

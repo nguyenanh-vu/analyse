@@ -3,9 +3,12 @@ package analyse.messageanalysis;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+
 /**
  * Class representing message author
  */
+@Getter
 public class Author extends LabelledObject implements JSONExportable {
 	private List<Label> labels = new ArrayList<>();
 	private List<Conversation> conversations = new ArrayList<>();
@@ -16,14 +19,6 @@ public class Author extends LabelledObject implements JSONExportable {
 	 */
 	public Author(String name) {
 		this.setName(name);
-	}
-	
-	/**
-	 * getter
-	 * @return List<analyse.messageanalysis.Conversation> this.conversations
-	 */
-	public List<Conversation> getConversations() {
-		return this.conversations;
 	}
 	
 	public List<Label> getAllLabels() {

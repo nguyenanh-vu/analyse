@@ -12,10 +12,12 @@ import analyse.messageanalysis.Message;
 import analyse.messageanalysis.Parameter;
 import analyse.search.Result;
 import analyse.search.SearchHandler;
+import lombok.Getter;
 
 /**
  * class representing user session
  */
+@Getter
 public class Session extends LabelledObject {
 	private List<Author> authorList = new ArrayList<>();
 	private List<Message> messageList = new ArrayList<>();
@@ -35,54 +37,6 @@ public class Session extends LabelledObject {
 		this.printer.reset();
 		this.printer.setSession(this);
 		counter = 0L;
-	}
-	
-	/**
-	 * getter
-	 * @return List<analyse.messageanalysis.Author> this.authorList
-	 */
-	public List<Author> getAuthorList() {
-		return this.authorList;
-	}
-	
-	/**
-	 * getter
-	 * @return List<analyse.messageanalysis.Message> this.messageList
-	 */
-	public List<Message> getMessageList() {
-		return this.messageList;
-	}
-	
-	/**
-	 * getter
-	 * @return List<analyse.messageanalysis.Conversation> this.conversations
-	 */
-	public List<Conversation> getConversations() {
-		return this.conversations;
-	}
-	
-	/**
-	 * getter
-	 * @return Long this.counter
-	 */
-	public Long getCounter() {
-		return this.counter;
-	}
-	
-	/**
-	 * getter
-	 * @return SearchHandler this.searchHandler
-	 */
-	public SearchHandler getSearchHandler() {
-		return this.searchHandler;
-	}
-	
-	public SessionFilesSystem getFileSystem() {
-		return this.fileSystem;
-	}
-	
-	public SessionPrinter getPrinter() {
-		return this.printer;
 	}
 	
 	/**

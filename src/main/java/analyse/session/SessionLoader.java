@@ -30,22 +30,16 @@ import analyse.utils.FileNameUtils;
 import analyse.utils.JSONUtils;
 import analyse.utils.MessengerUtils;
 import analyse.utils.WhatsappUtils;
+import lombok.Setter;
 
 /**
  * Data loader for analyse.session.Session
  */
+@Setter
 public class SessionLoader extends SessionTools {
 	private static final DateTimeFormatter formatter = 
 			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 	private SessionEditor editor;
-	
-	/**
-	 * setter
-	 * @param editor SessionEditor
-	 */
-	public void setEditor(SessionEditor editor) {
-		this.editor = editor;
-	}
 	
 	/**
 	 * Command-line controller for data loader

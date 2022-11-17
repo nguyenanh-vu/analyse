@@ -4,9 +4,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * class representing messages
  */
+@Getter
+@Setter
 public class Message implements Comparable<Message>, JSONExportable {
 	private Long id;
 	private LocalDateTime timestamp;
@@ -53,62 +58,6 @@ public class Message implements Comparable<Message>, JSONExportable {
 		this.content = content;
 		this.conversation = conversation;
 		this.reactions = reactions;
-	}
-	
-	/**
-	 * getter
-	 * @return Long this.id
-	 */
-	public Long getId() {
-		return this.id;
-	}
-	
-	/**
-	 * getter
-	 * @return analyse.messageanalysis.Author this.author
-	 */
-	public Author getAuthor() {
-		return this.author;
-	}
-	
-	/**
-	 * getter
-	 * @return LocalDateTime this.timestamp
-	 */
-	public LocalDateTime getTimestamp() {
-		return this.timestamp;
-	}
-	
-	/**
-	 * getter
-	 * @return String this.content
-	 */
-	public String getContent() {
-		return this.content;
-	}
-	
-	/**
-	 * getter
-	 * @return Conversation this.converation
-	 */
-	public Conversation getConversation() {
-		return this.conversation;
-	}
-	
-	/**
-	 * setter
-	 * @param author analyse.messageanalysis.Author
-	 */
-	public void setAuthor(Author author) {
-		this.author = author;
-	}
-	
-	/**
-	 * setter
-	 * @param author analyse.messageanalysis.Conversation
-	 */
-	public void setConversation(Conversation conv) {
-		this.conversation = conv;
 	}
 	
 	@Override
@@ -165,10 +114,6 @@ public class Message implements Comparable<Message>, JSONExportable {
 		return res;
 	}
 	
-	public Reactions getReactions() {
-		return this.reactions;
-	}
-
 	@Override
 	public int compareTo(Message o) {
 		return this.id.compareTo(o.getId());

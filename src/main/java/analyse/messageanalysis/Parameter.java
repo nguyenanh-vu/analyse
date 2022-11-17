@@ -12,7 +12,11 @@ import org.json.JSONObject;
 import analyse.exceptions.NotFoundException;
 import analyse.session.Session;
 import analyse.session.SessionPrinter;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class Parameter extends NamedObject implements JSONExportable {
 	private static final DateTimeFormatter formatter = 
 			DateTimeFormatter.ofPattern("yyyyMMddHHmm");
@@ -181,26 +185,6 @@ public class Parameter extends NamedObject implements JSONExportable {
 		}	
 	}
 	
-	public LocalDateTime getMaxDate() {
-		return maxDate;
-	}
-
-	public void setMaxDate(LocalDateTime maxDate) {
-		this.maxDate = maxDate;
-	}
-
-	public LocalDateTime getMinDate() {
-		return minDate;
-	}
-
-	public void setMinDate(LocalDateTime minDate) {
-		this.minDate = minDate;
-	}
-	
-	public Reactions getReactions() {
-		return this.reactions;
-	}
-	
 	public void setReactions(String key, Integer value) {
 		this.reactions.set(key, value);
 	}
@@ -221,14 +205,6 @@ public class Parameter extends NamedObject implements JSONExportable {
 		}
 		this.subParameters.add(str);
 		return true;
-	}
-	
-	/**
-	 * getter
-	 * @return List<String> this.subParameters
-	 */
-	public List<String> getSubParameters() {
-		return this.subParameters;
 	}
 	
 	/**
