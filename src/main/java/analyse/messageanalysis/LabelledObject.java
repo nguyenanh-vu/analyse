@@ -3,16 +3,11 @@ package analyse.messageanalysis;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+
+@Getter
 public class LabelledObject extends NamedObject{
 	private List<Label> labels = new ArrayList<>();
-	
-	/**
-	 * getter
-	 * @return List<analyse.messageanalysis.Label> this.labels
-	 */
-	public List<Label> getLabels() {
-		return this.labels;
-	}
 	
 	/**
 	 * Attach label to author
