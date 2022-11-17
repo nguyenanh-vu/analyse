@@ -134,11 +134,6 @@ public class SimpleResult implements Result{
 	}
 
 	@Override
-	public Integer getTotal() {
-		return this.total;
-	}
-
-	@Override
 	public int compareTo(Result o) {
 		return this.getId().compareTo(o.getId());
 	}
